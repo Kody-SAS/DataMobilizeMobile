@@ -4,7 +4,7 @@ import { StyleSheet, Image, Platform } from 'react-native';
 import { Collapsible } from '../../components/Collapsible';
 import { ExternalLink } from '../../components/ExternalLink';
 import ParallaxScrollView from '../../components/ParallaxScrollView';
-import { ThemedText } from '../../components/ThemedText';
+import { TextBlock } from '../../components/TextBlock';
 import { ThemedView } from '../../components/ThemedView';
 
 export default function TabTwoScreen() {
@@ -13,74 +13,74 @@ export default function TabTwoScreen() {
       headerBackgroundColor={{ light: '#D0D0D0', dark: '#353636' }}
       headerImage={<Ionicons size={310} name="code-slash" style={styles.headerImage} />}>
       <ThemedView style={styles.titleContainer}>
-        <ThemedText type="title">Explore</ThemedText>
+        <TextBlock type="title">Explore</TextBlock>
       </ThemedView>
-      <ThemedText>This app includes example code to help you get started.</ThemedText>
+      <TextBlock>This app includes example code to help you get started.</TextBlock>
       <Collapsible title="File-based routing">
-        <ThemedText>
+        <TextBlock>
           This app has two screens:{' '}
-          <ThemedText type="defaultSemiBold">app/(tabs)/index.tsx</ThemedText> and{' '}
-          <ThemedText type="defaultSemiBold">app/(tabs)/explore.tsx</ThemedText>
-        </ThemedText>
-        <ThemedText>
-          The layout file in <ThemedText type="defaultSemiBold">app/(tabs)/_layout.tsx</ThemedText>{' '}
+          <TextBlock type="defaultSemiBold">app/(tabs)/index.tsx</TextBlock> and{' '}
+          <TextBlock type="defaultSemiBold">app/(tabs)/explore.tsx</TextBlock>
+        </TextBlock>
+        <TextBlock>
+          The layout file in <TextBlock type="defaultSemiBold">app/(tabs)/_layout.tsx</TextBlock>{' '}
           sets up the tab navigator.
-        </ThemedText>
+        </TextBlock>
         <ExternalLink href="https://docs.expo.dev/router/introduction">
-          <ThemedText type="link">Learn more</ThemedText>
+          <TextBlock type="link">Learn more</TextBlock>
         </ExternalLink>
       </Collapsible>
       <Collapsible title="Android, iOS, and web support">
-        <ThemedText>
+        <TextBlock>
           You can open this project on Android, iOS, and the web. To open the web version, press{' '}
-          <ThemedText type="defaultSemiBold">w</ThemedText> in the terminal running this project.
-        </ThemedText>
+          <TextBlock type="defaultSemiBold">w</TextBlock> in the terminal running this project.
+        </TextBlock>
       </Collapsible>
       <Collapsible title="Images">
-        <ThemedText>
-          For static images, you can use the <ThemedText type="defaultSemiBold">@2x</ThemedText> and{' '}
-          <ThemedText type="defaultSemiBold">@3x</ThemedText> suffixes to provide files for
+        <TextBlock>
+          For static images, you can use the <TextBlock type="defaultSemiBold">@2x</TextBlock> and{' '}
+          <TextBlock type="defaultSemiBold">@3x</TextBlock> suffixes to provide files for
           different screen densities
-        </ThemedText>
+        </TextBlock>
         <Image source={require('@/assets/images/react-logo.png')} style={{ alignSelf: 'center' }} />
         <ExternalLink href="https://reactnative.dev/docs/images">
-          <ThemedText type="link">Learn more</ThemedText>
+          <TextBlock type="link">Learn more</TextBlock>
         </ExternalLink>
       </Collapsible>
       <Collapsible title="Custom fonts">
-        <ThemedText>
-          Open <ThemedText type="defaultSemiBold">app/_layout.tsx</ThemedText> to see how to load{' '}
-          <ThemedText style={{ fontFamily: 'SpaceMono' }}>
+        <TextBlock>
+          Open <TextBlock type="defaultSemiBold">app/_layout.tsx</TextBlock> to see how to load{' '}
+          <TextBlock style={{ fontFamily: 'SpaceMono' }}>
             custom fonts such as this one.
-          </ThemedText>
-        </ThemedText>
+          </TextBlock>
+        </TextBlock>
         <ExternalLink href="https://docs.expo.dev/versions/latest/sdk/font">
-          <ThemedText type="link">Learn more</ThemedText>
+          <TextBlock type="link">Learn more</TextBlock>
         </ExternalLink>
       </Collapsible>
       <Collapsible title="Light and dark mode components">
-        <ThemedText>
+        <TextBlock>
           This template has light and dark mode support. The{' '}
-          <ThemedText type="defaultSemiBold">useColorScheme()</ThemedText> hook lets you inspect
+          <TextBlock type="defaultSemiBold">useColorScheme()</TextBlock> hook lets you inspect
           what the user's current color scheme is, and so you can adjust UI colors accordingly.
-        </ThemedText>
+        </TextBlock>
         <ExternalLink href="https://docs.expo.dev/develop/user-interface/color-themes/">
-          <ThemedText type="link">Learn more</ThemedText>
+          <TextBlock type="link">Learn more</TextBlock>
         </ExternalLink>
       </Collapsible>
       <Collapsible title="Animations">
-        <ThemedText>
+        <TextBlock>
           This template includes an example of an animated component. The{' '}
-          <ThemedText type="defaultSemiBold">components/HelloWave.tsx</ThemedText> component uses
-          the powerful <ThemedText type="defaultSemiBold">react-native-reanimated</ThemedText> library
+          <TextBlock type="defaultSemiBold">components/HelloWave.tsx</TextBlock> component uses
+          the powerful <TextBlock type="defaultSemiBold">react-native-reanimated</TextBlock> library
           to create a waving hand animation.
-        </ThemedText>
+        </TextBlock>
         {Platform.select({
           ios: (
-            <ThemedText>
-              The <ThemedText type="defaultSemiBold">components/ParallaxScrollView.tsx</ThemedText>{' '}
+            <TextBlock>
+              The <TextBlock type="defaultSemiBold">components/ParallaxScrollView.tsx</TextBlock>{' '}
               component provides a parallax effect for the header image.
-            </ThemedText>
+            </TextBlock>
           ),
         })}
       </Collapsible>

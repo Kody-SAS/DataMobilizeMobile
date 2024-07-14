@@ -2,7 +2,7 @@ import { Image, StyleSheet, Platform } from 'react-native';
 
 import { HelloWave } from '../../components/HelloWave';
 import ParallaxScrollView from '../../components/ParallaxScrollView';
-import { ThemedText } from '../../components/ThemedText';
+import { TextBlock } from '../../components/TextBlock';
 import { ThemedView } from '../../components/ThemedView';
 
 export default function HomeScreen() {
@@ -16,35 +16,35 @@ export default function HomeScreen() {
         />
       }>
       <ThemedView style={styles.titleContainer}>
-        <ThemedText type="title">Welcome!</ThemedText>
+        <TextBlock type="title">Welcome!</TextBlock>
         <HelloWave />
       </ThemedView>
       <ThemedView style={styles.stepContainer}>
-        <ThemedText type="subtitle">Step 1: Try it</ThemedText>
-        <ThemedText>
-          Edit <ThemedText type="defaultSemiBold">app/(tabs)/index.tsx</ThemedText> to see changes.
+        <TextBlock type="subtitle">Step 1: Try it</TextBlock>
+        <TextBlock>
+          Edit <TextBlock type="defaultSemiBold">app/(tabs)/index.tsx</TextBlock> to see changes.
           Press{' '}
-          <ThemedText type="defaultSemiBold">
+          <TextBlock type="defaultSemiBold">
             {Platform.select({ ios: 'cmd + d', android: 'cmd + m' })}
-          </ThemedText>{' '}
+          </TextBlock>{' '}
           to open developer tools.
-        </ThemedText>
+        </TextBlock>
       </ThemedView>
       <ThemedView style={styles.stepContainer}>
-        <ThemedText type="subtitle">Step 2: Explore</ThemedText>
-        <ThemedText>
+        <TextBlock type="subtitle">Step 2: Explore</TextBlock>
+        <TextBlock>
           Tap the Explore tab to learn more about what's included in this starter app.
-        </ThemedText>
+        </TextBlock>
       </ThemedView>
       <ThemedView style={styles.stepContainer}>
-        <ThemedText type="subtitle">Step 3: Get a fresh start</ThemedText>
-        <ThemedText>
+        <TextBlock type="subtitle">Step 3: Get a fresh start</TextBlock>
+        <TextBlock>
           When you're ready, run{' '}
-          <ThemedText type="defaultSemiBold">npm run reset-project</ThemedText> to get a fresh{' '}
-          <ThemedText type="defaultSemiBold">app</ThemedText> directory. This will move the current{' '}
-          <ThemedText type="defaultSemiBold">app</ThemedText> to{' '}
-          <ThemedText type="defaultSemiBold">app-example</ThemedText>.
-        </ThemedText>
+          <TextBlock type="defaultSemiBold">npm run reset-project</TextBlock> to get a fresh{' '}
+          <TextBlock type="defaultSemiBold">app</TextBlock> directory. This will move the current{' '}
+          <TextBlock type="defaultSemiBold">app</TextBlock> to{' '}
+          <TextBlock type="defaultSemiBold">app-example</TextBlock>.
+        </TextBlock>
       </ThemedView>
     </ParallaxScrollView>
   );

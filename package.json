@@ -9,23 +9,32 @@
     "ios": "expo start --ios",
     "web": "expo start --web",
     "test": "jest --watchAll",
-    "lint": "expo lint"
+    "lint": "expo lint",
+    "clean-android": "cd android && rm -R .gradle && cd app && rm -R build && cd .. && cd ..",
+    "build-internal-android": "eas build --platform android --profile preview --clear-cache",
+    "build-prod-android": "eas build --platform android --profile production --clear-cache",
+    "build-dev-ios": "eas build --platform ios --profile development",
+    "build-prod-ios": "eas build --platform ios --profile production --clear-cache",
+    "submit-android": "eas submit -p android",
+    "submit-ios": "eas submit -p ios",
+    "list-env-variables": "eas secret:list",
+    "publish-env": "eas secret:push --scope project --env-file .env"
   },
   "jest": {
     "preset": "jest-expo"
   },
   "dependencies": {
     "@expo/vector-icons": "^14.0.2",
-    "@react-native-async-storage/async-storage": "^1.24.0",
+    "@react-native-async-storage/async-storage": "1.23.1",
     "@react-navigation/native": "^6.0.2",
     "@reduxjs/toolkit": "^2.2.6",
     "drizzle-orm": "^0.31.4",
-    "expo": "~51.0.18",
+    "expo": "~51.0.20",
     "expo-constants": "~16.0.2",
     "expo-font": "~12.0.7",
     "expo-linking": "~6.3.1",
     "expo-notifications": "~0.28.9",
-    "expo-router": "~3.5.17",
+    "expo-router": "~3.5.18",
     "expo-splash-screen": "~0.27.5",
     "expo-sqlite": "^14.0.4",
     "expo-status-bar": "~1.12.1",
@@ -43,8 +52,7 @@
     "react-native-screens": "3.31.1",
     "react-native-web": "~0.19.10",
     "react-redux": "^9.1.2",
-    "redux-persist": "^6.0.0",
-    "styled-components": "^6.1.11"
+    "redux-persist": "^6.0.0"
   },
   "devDependencies": {
     "@babel/core": "^7.20.0",
