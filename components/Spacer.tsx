@@ -2,9 +2,9 @@ import { StyleSheet, View, ViewProps } from "react-native"
 
 type SpacerProps = ViewProps & {
     variant: "small" | "medium" | "large",
-    position: "top" | "bottom" | "left" | "right"
+    position?: "top" | "bottom" | "left" | "right"
 }
-export const Spacer = ({style, variant, position, ...rest}: SpacerProps) => {
+export const Spacer = ({style, variant, position = "bottom", ...rest}: SpacerProps) => {
     return (
         <View style={[
             style,

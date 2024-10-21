@@ -28,10 +28,11 @@ export default {
       favicon: "./assets/images/favicon.png"
     },
     plugins: [
-      "expo-router"
+      "expo-router",
+      "expo-font"
     ],
     experiments: {
-      typedRoutes: true
+      typedRoutes: false
     }
   }
 }

@@ -1,5 +1,7 @@
 import { ReactNode } from "react"
-import { Button, StyleSheet, TouchableOpacity, TouchableOpacityProps } from "react-native"
+import { Button, StyleSheet, TouchableOpacity, TouchableOpacityProps, useColorScheme } from "react-native"
+import { ButtonTypeEnum } from "../type"
+import { Colors } from "../constants/Colors"
 
 type ButtonActionProps = TouchableOpacityProps & {
     variant: ButtonTypeEnum,
@@ -13,14 +15,16 @@ export const ButtonAction = ({
     onPress,
     ...rest
 }: ButtonActionProps) => {
+    //const theme = useColorScheme() ?? 'light';
     return (
         <TouchableOpacity
+            activeOpacity={0.7}
             onPress={onPress}
             style={[
                 style,
-                variant == "primary" ? styles.primary : undefined,
-                variant == "secondary" ? styles.secondary : undefined,
-                variant == "tertiary" ? styles.tertiary : undefined
+                variant == ButtonTypeEnum.primary ? styles.primary : undefined,
+                variant == ButtonTypeEnum.secondary ? styles.secondary : undefined,
+                variant == ButtonTypeEnum.tertiary ? styles.tertiary : undefined
             ]}
             {...rest}
         >
@@ -31,12 +35,24 @@ export const ButtonAction = ({
 
 const styles = StyleSheet.create({
     primary: {
-
+        borderRadius: 8,
+        padding: 8,
+        justifyContent: "center",
+        alignItems: "center",
+        backgroundColor: Colors.light.background.primary
     },
     secondary: {
-
+        borderRadius: 8,
+        padding: 8,
+        justifyContent: "center",
+        alignItems: "center",
+        backgroundColor: Colors.light.background.secondary
     },
     tertiary: {
-
+        borderRadius: 8,
+        padding: 8,
+        justifyContent: "center",
+        alignItems: "center",
+        backgroundColor: Colors.light.background.tertiary
     }
 })
