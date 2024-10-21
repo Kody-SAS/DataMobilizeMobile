@@ -31,16 +31,22 @@ const languageDetector: any = {
     async: true,
     detect: async (callback: any) => {
         //get any previously stored language or using the device language
-        AsyncStorage.getItem('language')
-        .then((value: string | null) : void => {
+        if (Platform.OS == "ios" || Platform.OS == "android") {
+
+            const value = await AsyncStorage.getItem('language');
+    
             if (value == null) {
                 const deviceLang = getDeviceLang();
                 callback(deviceLang);
                 return
             }
-
+    
             callback(value);
-        })
+        }
+        else {
+            callback("fr");
+        }
+
     },
     init: () => {},
     cacheUserLanguage: () => {}
