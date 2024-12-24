@@ -5,7 +5,7 @@ import { TextBlock } from '../../components/TextBlock';
 export default function TabTwoScreen() {
   return (
     <View>
-      <TextBlock>Explore screen</TextBlock>
+      <TextBlock>Map screen</TextBlock>
     </View>
   );
 }

@@ -73,6 +73,10 @@ export default function RootLayout() {
           <PersistGate persistor={persistor} loading={loadingComponent}>
             <Stack>
               <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
+              <Stack.Screen name="(account)" options={{ headerShown: false }} />
+              <Stack.Screen name="(onboarding)/onboarding" options={{ headerShown: false }} />
+              <Stack.Screen name="(homeStack)" options={{ headerShown: false }} />
+              <Stack.Screen name="(mapStack)" options={{ headerShown: false }} />
             </Stack>
             {Platform.OS == 'android' && 
               <StatusBar translucent={true} barStyle="dark-content" backgroundColor={Colors.light.background.tertiary}/>
