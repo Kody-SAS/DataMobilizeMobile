@@ -8,22 +8,22 @@ export const Colors = {
   light: {
     text: {
       primary: "#000000",
-      secondary: "#898989",
+      secondary: "#828282",
       error: "#B3261E"
     },
     background: {
-      primary: "#197438",
-      secondary: "#98BF69",
-      tertiary: "#B2F4C7",
-      quaternary: "#F6F6F6",
-      quinary: "#FFFFFF"
+      primary: "#1645E6",
+      secondary: "#EEEEEE",
+      tertiary: "#E0E0E0",
+      quaternary: "#FFFFFF",
+      quinary: "#F6F6F6"
     },
     icon: {
-      primary: "#197438",
-      secondary: "#FFFFFF"
+      primary: "#000000",
+      secondary: "#EEEEEE"
     },
-    tabIconDefault: "#FFFFFF",
-    tabIconSelected: "#197438",
+    tabIconDefault: "#EEEEEE",
+    tabIconSelected: "#000000",
   },
   dark: {
     text: {

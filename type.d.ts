@@ -57,3 +57,28 @@ export enum LineHeightsEnum {
     h2 = 28,
     h1 = 30
 }
+
+export type CreateUser = {
+    username: string;
+    email: string;
+    password: string;
+    localisation?: string;
+}
+
+export type User = {
+    id?: string;
+    username: string;
+    email: string;
+    isVerified: boolean;
+    localisation?: string;
+}
+
+export type LoginUser = {
+    email: string;
+    password: string;
+}
+
+export type VerifyUser = {
+    userId: string,
+    code: string
+}
