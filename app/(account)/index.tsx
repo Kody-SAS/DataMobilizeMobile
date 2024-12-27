@@ -33,7 +33,7 @@ export default function Login() {
     }
 
     const handleNavigationToRegister = () => {
-        router.push("(account)/register");
+        router.push("/(account)/register");
     }
 
     const handleSigninWithGoogle = () => {
