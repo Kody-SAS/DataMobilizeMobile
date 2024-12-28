@@ -3,7 +3,7 @@ import { View, StyleSheet, Platform } from "react-native";
 import { Colors } from "../../constants/Colors";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { TextBlock } from "../../components/TextBlock";
-import { ButtonTypeEnum, FontsEnum, FontSizesEnum, TextBlockTypeEnum } from "../../type";
+import { ButtonTypeEnum, FontsEnum, FontSizesEnum, TextBlockTypeEnum } from "../../type.d";
 import { Spacer } from "../../components/Spacer";
 import { useTranslation } from "react-i18next";
 import { TextInput } from "react-native-paper";
@@ -46,6 +46,10 @@ export default function Login() {
 
     return (
         <SafeAreaView style={styles.container}>
+            <Spacer variant="large" />
+            <Spacer variant="large" />
+            <Spacer variant="large" />
+
             <TextBlock type={TextBlockTypeEnum.h1} style={{ textAlign: "center" }}>
                 DataMobilize
             </TextBlock>
@@ -57,32 +61,31 @@ export default function Login() {
             <TextBlock type={TextBlockTypeEnum.body} style={{ textAlign: "center" }}>
                 {t("loginToContinue")}
             </TextBlock>
-            <Spacer variant="medium" />
+            <Spacer variant="large" />
             <TextInput
+                mode="outlined"
                 value={email}
                 onChangeText={(t) => setEmail(t)}
                 contentStyle={{
                     fontSize: FontSizesEnum.body,
                     fontFamily: FontsEnum.body,
                 }}
-                underlineColor={Colors.light.background.primary}
-                activeOutlineColor={Colors.light.background.secondary}
+                activeOutlineColor={Colors.light.background.primary}
                 keyboardType="email-address"
-                maxLength={11}
                 placeholder="email@domain.com"
                 placeholderTextColor={Colors.light.text.secondary}
             />
             <Spacer variant="large" />
 
             <TextInput
+                mode="outlined"
                 value={password}
                 onChangeText={(t) => setPassword(t)}
                 contentStyle={{
                     fontSize: FontSizesEnum.body,
                     fontFamily: FontsEnum.body,
                 }}
-                underlineColor={Colors.light.background.primary}
-                activeOutlineColor={Colors.light.background.secondary}
+                activeOutlineColor={Colors.light.background.primary}
                 secureTextEntry
                 placeholder={t("password")}
                 placeholderTextColor={Colors.light.text.secondary}
@@ -93,7 +96,7 @@ export default function Login() {
                 variant={ButtonTypeEnum.primary}
                 content={
                     <TextBlock type={TextBlockTypeEnum.body} style={styles.description}>
-                        t("continue")
+                        {t("continue")}
                     </TextBlock>}
                 onPress={handleLogin}
             />
@@ -133,7 +136,7 @@ export default function Login() {
                 onPress={handleSigninWithGoogle}
             />
             {
-                Platform.OS == "ios" &&
+                Platform.OS != "ios" &&
                 <>
                     <Spacer variant="medium" />
                     <ButtonAction

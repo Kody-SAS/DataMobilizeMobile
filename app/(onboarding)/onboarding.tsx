@@ -3,7 +3,7 @@ import { Spacer } from "../../components/Spacer";
 import { TextBlock } from "../../components/TextBlock";
 import { useTranslation } from "react-i18next";
 import { ButtonAction } from "../../components/ButtonAction";
-import { ButtonTypeEnum, TextBlockTypeEnum } from "../../type";
+import { ButtonTypeEnum, TextBlockTypeEnum } from "../../type.d";
 import { Colors } from "../../constants/Colors";
 import { useDispatch } from "react-redux";
 import { setOnboardingStatus } from "../../redux/slices/onboardingSlice";
@@ -45,6 +45,7 @@ export default function onboarding() {
             <ButtonAction 
                 onPress={finishOnboarding}
                 variant={ButtonTypeEnum.primary}
+                style={{width: "90%"}}
                 content={
                     <TextBlock type={TextBlockTypeEnum.h4} style={styles.description}>
                         {t("start")}
@@ -69,7 +70,6 @@ const styles = StyleSheet.create({
     description: {
         verticalAlign: "middle",
         color: Colors.light.background.quinary,
-        paddingHorizontal: 96,
         paddingVertical: 4
     }
 })

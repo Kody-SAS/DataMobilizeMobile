@@ -1,5 +1,23 @@
 {
     "translation": {
-        "greeting": "Hello world!"
+        "onboardingMessage": "Together, let's make our roads safer.",
+        "start": "Start",
+        "error": "Error:",
+        "info": "Info:",
+        "connectAndTryAgain": "Connect to the internet and try again.",
+        "comingSoon": "Coming soon",
+        "welcomeBack": "Welcome back",
+        "loginToContinue": "Login to continue",
+        "password": "Password",
+        "continue": "Continue",
+        "noAccountQuestion": "Don't have an account? ",
+        "create": "Create",
+        "or": "or",
+        "continueWithGoogle": "Continue with Google",
+        "continueWithApple": "Continue with Apple",
+        "informTermsAndPolicy": "By continuing, you agree to our ",
+        "termsOfService": "Terms of Service",
+        "and": " and ",
+        "privacyPolicy": "Privacy Policy"
     }
 }

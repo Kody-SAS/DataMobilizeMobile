@@ -1,6 +1,6 @@
 import { ReactNode } from "react"
 import { Button, StyleSheet, TouchableOpacity, TouchableOpacityProps, useColorScheme } from "react-native"
-import { ButtonTypeEnum } from "../type"
+import { ButtonTypeEnum } from "../type.d"
 import { Colors } from "../constants/Colors"
 
 type ButtonActionProps = TouchableOpacityProps & {
