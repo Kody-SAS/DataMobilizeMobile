@@ -7,8 +7,8 @@ export default function AccountLayout() {
             <Stack.Screen name="register" options={{headerShown: false}} />
             <Stack.Screen name="forgot" options={{headerShown: false}} />
             <Stack.Screen name="verify" options={{headerShown: false}} />
-            <Stack.Screen name="termsandconditions" options={{headerShown: false}} />
-            <Stack.Screen name="privacypolicy" options={{headerShown: false}} />
+            <Stack.Screen name="termsofservice" options={{title: "Terms of Service"}} />
+            <Stack.Screen name="privacypolicy" options={{title: "Privacy Policy"}} />
         </Stack>
     )
 }

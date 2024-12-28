@@ -2,7 +2,8 @@
 export enum ButtonTypeEnum {
     primary = "primary",
     secondary = "secondary",
-    tertiary = "tertiary"
+    tertiary = "tertiary",
+    quarternary = "quarternary"
 }
 
 // text type

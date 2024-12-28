@@ -7,6 +7,7 @@ import { router } from "expo-router";
 
 
 const initialState = {
+    createUser: {} as CreateUser,
     user: {} as User,
     isAccountVerified: false,
     isGuess: false,
@@ -179,6 +180,9 @@ export const accountSlice = createSlice({
     name: 'account',
     initialState,
     reducers: {
+        setCreateUser: (state, action) => {
+            state.createUser = action.payload as CreateUser;
+        },
         setUser: (state, action) => {
             //state.isOnboarded = true
             state.user = action.payload
@@ -227,9 +231,10 @@ export const accountSlice = createSlice({
     },
 });
 
-export const {setUser, setIsGuess} = accountSlice.actions;
+export const {setCreateUser, setUser, setIsGuess} = accountSlice.actions;
 
 //selectors
+export const selectCreateUser = (state: any) => state.account.createUser as CreateUser;
 export const selectUser = (state: any) => state.account.user as User;
 export const selectIsAccountVerified = (state: any) => state.account.isAccountVerified as boolean;
 export const selectIsGuess = (state: any) => state.account.isGuess as boolean;

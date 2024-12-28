@@ -24,7 +24,8 @@ export const ButtonAction = ({
                 style,
                 variant == ButtonTypeEnum.primary ? styles.primary : undefined,
                 variant == ButtonTypeEnum.secondary ? styles.secondary : undefined,
-                variant == ButtonTypeEnum.tertiary ? styles.tertiary : undefined
+                variant == ButtonTypeEnum.tertiary ? styles.tertiary : undefined,
+                variant == ButtonTypeEnum.quarternary ? styles.quarternary : undefined
             ]}
             {...rest}
         >
@@ -54,5 +55,10 @@ const styles = StyleSheet.create({
         justifyContent: "center",
         alignItems: "center",
         backgroundColor: Colors.light.background.tertiary
+    },
+    quarternary: {
+        justifyContent: "center",
+        alignItems: "center",
+        color: Colors.light.background.primary
     }
 })
