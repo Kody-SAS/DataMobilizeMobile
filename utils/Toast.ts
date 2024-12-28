@@ -1,5 +1,5 @@
 import Toast from "react-native-toast-message";
-import { FontsEnum, FontSizesEnum, FontWeightsEnum, LineHeightsEnum } from "../type";
+import { FontsEnum, FontSizesEnum, FontWeightsEnum, LineHeightsEnum } from "../type.d";
 
 export default function ToastMessage(type: "success" | "error" | "info", text1: string, text2: string) {
     Toast.show({
