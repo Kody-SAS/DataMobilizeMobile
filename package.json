@@ -18,7 +18,7 @@
     "submit-android": "eas submit -p android",
     "submit-ios": "eas submit -p ios",
     "list-env-variables": "eas secret:list",
-    "publish-env": "eas secret:push --scope project --env-file .env"
+    "publish-env": "eas secret:push --scope project --env-file .env.production"
   },
   "jest": {
     "preset": "jest-expo"

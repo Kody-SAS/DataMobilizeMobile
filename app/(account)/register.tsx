@@ -40,7 +40,7 @@ export default function Register() {
         }
 
         if (password !== confirmPassword) {
-            setErrorMessage(t("passwordMismatch"));
+            setErrorMessage(t("passwordDismatch"));
             return;
         }
         
@@ -58,8 +58,8 @@ export default function Register() {
         }));
     }
 
-    const handleNavigationToRegister = () => {
-        router.push("/(account)/register");
+    const handleNavigationToLogin = () => {
+        router.push("/(account)/");
     }
 
     const handleSigninWithGoogle = () => {
@@ -111,7 +111,7 @@ export default function Register() {
                 }}
                 activeOutlineColor={Colors.light.background.primary}
                 keyboardType="default"
-                placeholder="Peter"
+                placeholder={t("username")}
                 placeholderTextColor={Colors.light.text.secondary}
             />
             <Spacer variant="large" />
@@ -161,6 +161,15 @@ export default function Register() {
             />
             <Spacer variant="large" />
             <Spacer variant="large" />
+
+            {errorMessage.length > 0 && (
+                            <View>
+                                <TextBlock type={TextBlockTypeEnum.caption} style={{ color: "red" }}>
+                                    {errorMessage}
+                                </TextBlock>
+                                <Spacer variant="medium" />
+                            </View>
+                    )}
             <ButtonAction
                 variant={ButtonTypeEnum.primary}
                 content={
@@ -173,15 +182,15 @@ export default function Register() {
             <Spacer variant="large" />
             <View style={styles.createOption}>
                 <TextBlock type={TextBlockTypeEnum.body} style={styles.questionAccount}>
-                    {t("noAccountQuestion")}
+                    {t("alreadyHaveAccountQuestion")}
                 </TextBlock>
                 <ButtonAction
                     variant={ButtonTypeEnum.quarternary}
                     content={
                         <TextBlock type={TextBlockTypeEnum.body} style={styles.primaryText}>
-                            {t("create")}
+                            {t("login")}
                         </TextBlock>}
-                    onPress={handleNavigationToRegister}
+                    onPress={handleNavigationToLogin}
                 />
             </View>
             <Spacer variant="large" />
@@ -318,6 +327,7 @@ const styles = StyleSheet.create({
     termsAndPolicy: {
         flexDirection: "row",
         flexWrap: "wrap",
+        justifyContent: "center",
     },
     socialBtnContainer: {
         flexDirection: "row",

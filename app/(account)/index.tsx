@@ -277,6 +277,7 @@ const styles = StyleSheet.create({
     termsAndPolicy: {
         flexDirection: "row",
         flexWrap: "wrap",
+        justifyContent: "center",
     },
     socialBtnContainer: {
         flexDirection: "row",

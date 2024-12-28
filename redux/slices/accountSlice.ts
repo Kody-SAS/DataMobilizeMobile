@@ -70,13 +70,13 @@ export const sendValidationCode = createAsyncThunk("account/sendValidationCode",
 
 export const validateCode = createAsyncThunk("account/validateCode", async(verifyUser: VerifyUser, thunkAPI) => {
     try {
-        const response: Response = await fetch(process.env.EXPO_PUBLIC_API_URL + "/users/verify", {
+        const response: Response = await fetch(process.env.EXPO_PUBLIC_API_URL + `/users/verify/${verifyUser.userId}`, {
             method: "POST",
             headers: {
                 'Accept': 'application/json',
                 'Content-Type': 'application/json'
             },
-            body: JSON.stringify(verifyUser)
+            body: JSON.stringify({code: verifyUser.code})
         });
 
         if(response.ok) {
