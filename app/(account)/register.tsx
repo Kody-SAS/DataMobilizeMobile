@@ -28,7 +28,7 @@ export default function Register() {
     const {t} = useTranslation();
     const dispatch = useDispatch<ThunkDispatch<any, any, any>>();
 
-    const handleLogin = () => {
+    const handleCreateAccount = () => {
         if (!isConnected) {
             ToastMessage("error", t("error"), t("connectAndTryAgain"));
             return;
@@ -44,6 +44,8 @@ export default function Register() {
             return;
         }
         
+        router.push("/(account)/verify");
+        return;
         setCreateUser({
             username,
             email,
@@ -176,7 +178,7 @@ export default function Register() {
                     <TextBlock type={TextBlockTypeEnum.body} style={styles.description}>
                         {t("continue")}
                     </TextBlock>}
-                onPress={handleLogin}
+                onPress={handleCreateAccount}
             />
             <Spacer variant="large" />
             <Spacer variant="large" />

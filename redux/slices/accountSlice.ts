@@ -196,6 +196,8 @@ export const accountSlice = createSlice({
         .addCase(sendValidationCode.fulfilled, (state, action) => {
             console.log("send code succeeded")
             state.user = {... action.payload as any};
+
+            router.push("/(account)/verify");
         })
         .addCase(sendValidationCode.rejected, (state, action) => {
             const t = i18n.t;

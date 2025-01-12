@@ -1,10 +1,14 @@
-import { View } from "react-native";
-import { TextBlock } from "../../components/TextBlock";
+import WebView from "react-native-webview";
 
 export default function TermsOfService() {
     return (
-        <View>
-            <TextBlock>Terms of Service screen</TextBlock>
-        </View>
-    );
+        <WebView
+            source={{uri: process.env.TERMS_OF_SERVICE_URL}}
+            style={{
+                flex: 1,
+                width: "100%",
+                height: "100%",
+            }}
+        />
+    )
 }
