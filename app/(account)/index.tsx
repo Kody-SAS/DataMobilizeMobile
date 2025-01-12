@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { View, StyleSheet, Platform } from "react-native";
+import { View, StyleSheet, Platform, Image, ScrollView } from "react-native";
 import { Colors } from "../../constants/Colors";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { TextBlock } from "../../components/TextBlock";
@@ -18,6 +18,7 @@ import { router } from "expo-router";
 export default function Login() {
     const [email, setEmail] = useState<string>("");
     const [password, setPassword] = useState<string>("");
+    const [errorMessage, setErrorMessage] = useState<string>("");
 
     const {isConnected} = useNetInfo();
     const {t} = useTranslation();
@@ -28,7 +29,13 @@ export default function Login() {
             ToastMessage("error", t("error"), t("connectAndTryAgain"));
             return;
         }
+
+        if(!email || !password) {
+            setErrorMessage(t("fillAllFields"));
+            return;
+        }
         
+        setErrorMessage("");
         dispatch(loginUser({email, password}));
     }
 
@@ -44,8 +51,17 @@ export default function Login() {
         ToastMessage("info", t("info"), t("comingSoon"));
     }
 
+    const handleTermsOfService = () => {
+        router.push("/(account)/termsofservice");
+    }
+
+    const handlePrivacyPolicy = () => {
+        router.push("/(account)/privacypolicy");
+    }
+
     return (
         <SafeAreaView style={styles.container}>
+            <ScrollView>
             <Spacer variant="large" />
             <Spacer variant="large" />
             <Spacer variant="large" />
@@ -55,13 +71,16 @@ export default function Login() {
             </TextBlock>
             <Spacer variant="large" />
             <Spacer variant="large" />
-            <TextBlock type={TextBlockTypeEnum.h3} style={{ textAlign: "center" }}>
+            <TextBlock type={TextBlockTypeEnum.h4} style={{ textAlign: "center" }}>
                 {t("welcomeBack")}
             </TextBlock>
+            <Spacer variant="medium" />
+
             <TextBlock type={TextBlockTypeEnum.body} style={{ textAlign: "center" }}>
                 {t("loginToContinue")}
             </TextBlock>
             <Spacer variant="large" />
+            <Spacer variant="medium" />
             <TextInput
                 mode="outlined"
                 value={email}
@@ -92,6 +111,15 @@ export default function Login() {
             />
             <Spacer variant="large" />
             <Spacer variant="large" />
+
+            {errorMessage.length > 0 && (
+                <View>
+                    <TextBlock type={TextBlockTypeEnum.caption} style={{ color: "red" }}>
+                        {errorMessage}
+                    </TextBlock>
+                    <Spacer variant="medium" />
+                </View>
+            )}
             <ButtonAction
                 variant={ButtonTypeEnum.primary}
                 content={
@@ -107,32 +135,39 @@ export default function Login() {
                     {t("noAccountQuestion")}
                 </TextBlock>
                 <ButtonAction
-                    variant={ButtonTypeEnum.tertiary}
+                    variant={ButtonTypeEnum.quarternary}
                     content={
-                        <TextBlock type={TextBlockTypeEnum.body} style={styles.create}>
+                        <TextBlock type={TextBlockTypeEnum.body} style={styles.primaryText}>
                             {t("create")}
                         </TextBlock>}
                     onPress={handleNavigationToRegister}
                 />
             </View>
             <Spacer variant="large" />
-            <Spacer variant="large" />
+            <Spacer variant="medium" />
 
             <View style={styles.divider}>
                 <View style={styles.dividerLine} />
-                <TextBlock type={TextBlockTypeEnum.body} style={styles.description}>
+                <TextBlock type={TextBlockTypeEnum.body} style={styles.secondaryText}>
                     {t("or")}
                 </TextBlock>
                 <View style={styles.dividerLine} />
             </View>
             <Spacer variant="large" />
-            <Spacer variant="large" />
+            <Spacer variant="medium" />
             <ButtonAction
                 variant={ButtonTypeEnum.secondary}
                 content={
-                    <TextBlock type={TextBlockTypeEnum.body} style={styles.description}>
-                        {t("continueWithGoogle")}
-                    </TextBlock>}
+                    <View style={styles.socialBtnContainer}>
+                        <Image
+                            source={require("../../assets/images/GoogleLogo.png")}
+                            style={styles.btnLogo}
+                            resizeMode="contain" />
+                        <TextBlock type={TextBlockTypeEnum.body}>
+                            {t("continueWithGoogle")}
+                        </TextBlock>
+                    </View>
+                    }
                 onPress={handleSigninWithGoogle}
             />
             {
@@ -142,9 +177,16 @@ export default function Login() {
                     <ButtonAction
                         variant={ButtonTypeEnum.secondary}
                         content={
-                            <TextBlock type={TextBlockTypeEnum.body} style={styles.description}>
-                                {t("continueWithApple")}
-                            </TextBlock>}
+                            <View style={styles.socialBtnContainer}>
+                                <Image
+                                    source={require("../../assets/images/AppleLogo.png")}
+                                    style={styles.btnLogo}
+                                    resizeMode="contain" />
+                                <TextBlock type={TextBlockTypeEnum.body}>
+                                    {t("continueWithApple")}
+                                </TextBlock>
+                            </View>
+                            }
                         onPress={handleSigninWithApple}
                     />
                 </>
@@ -153,19 +195,32 @@ export default function Login() {
             <Spacer variant="small" />
 
             <View style={styles.termsAndPolicy}>
-                <TextBlock type={TextBlockTypeEnum.body} style={styles.description}>
+                <TextBlock type={TextBlockTypeEnum.body} style={styles.secondaryText}>
                     {t("informTermsAndPolicy")}
                 </TextBlock>
-                <TextBlock type={TextBlockTypeEnum.body} style={styles.description}>
-                    {t("termsOfService")}
-                </TextBlock>
-                <TextBlock type={TextBlockTypeEnum.body} style={styles.description}>
+                <ButtonAction
+                    variant={ButtonTypeEnum.quarternary}
+                    content={
+                        <TextBlock type={TextBlockTypeEnum.body} style={styles.primaryText}>
+                            {t("termsOfService")}
+                        </TextBlock>
+                    }
+                    onPress={handleTermsOfService}
+                />
+                <TextBlock type={TextBlockTypeEnum.body} style={styles.secondaryText}>
                     {t("and")}
                 </TextBlock>
-                <TextBlock type={TextBlockTypeEnum.body} style={styles.description}>
-                    {t("privacyPolicy")}
-                </TextBlock>
+                <ButtonAction
+                    variant={ButtonTypeEnum.quarternary}
+                    content={
+                        <TextBlock type={TextBlockTypeEnum.body} style={styles.primaryText}>
+                            {t("privacyPolicy")}
+                        </TextBlock>
+                    }
+                    onPress={handlePrivacyPolicy}
+                />
             </View>
+            </ScrollView>
         </SafeAreaView>
     )
 }
@@ -202,8 +257,11 @@ const styles = StyleSheet.create({
     questionAccount: {
         color: Colors.light.text.secondary
     },
-    create: {
-        color: Colors.light.icon.primary
+    primaryText: {
+        color: Colors.light.background.primary
+    },
+    secondaryText: {
+        color: Colors.light.text.secondary
     },
     divider: {
         flexDirection: "row",
@@ -211,13 +269,24 @@ const styles = StyleSheet.create({
         alignItems: "center"
     },
     dividerLine: {
-        height: 1,
+        height: 0.5,
         backgroundColor: Colors.light.text.secondary,
-        flex: 1
+        flex: 1,
+        marginHorizontal: 8
     },
     termsAndPolicy: {
         flexDirection: "row",
+        flexWrap: "wrap",
+        justifyContent: "center",
+    },
+    socialBtnContainer: {
+        flexDirection: "row",
         justifyContent: "center",
         alignItems: "center"
+    },
+    btnLogo: {
+        width: 20,
+        height: 20,
+        marginRight: 8
     }
 })

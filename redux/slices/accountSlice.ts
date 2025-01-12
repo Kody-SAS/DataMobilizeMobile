@@ -7,6 +7,7 @@ import { router } from "expo-router";
 
 
 const initialState = {
+    createUser: {} as CreateUser,
     user: {} as User,
     isAccountVerified: false,
     isGuess: false,
@@ -69,13 +70,13 @@ export const sendValidationCode = createAsyncThunk("account/sendValidationCode",
 
 export const validateCode = createAsyncThunk("account/validateCode", async(verifyUser: VerifyUser, thunkAPI) => {
     try {
-        const response: Response = await fetch(process.env.EXPO_PUBLIC_API_URL + "/users/verify", {
+        const response: Response = await fetch(process.env.EXPO_PUBLIC_API_URL + `/users/verify/${verifyUser.userId}`, {
             method: "POST",
             headers: {
                 'Accept': 'application/json',
                 'Content-Type': 'application/json'
             },
-            body: JSON.stringify(verifyUser)
+            body: JSON.stringify({code: verifyUser.code})
         });
 
         if(response.ok) {
@@ -179,6 +180,9 @@ export const accountSlice = createSlice({
     name: 'account',
     initialState,
     reducers: {
+        setCreateUser: (state, action) => {
+            state.createUser = action.payload as CreateUser;
+        },
         setUser: (state, action) => {
             //state.isOnboarded = true
             state.user = action.payload
@@ -192,6 +196,8 @@ export const accountSlice = createSlice({
         .addCase(sendValidationCode.fulfilled, (state, action) => {
             console.log("send code succeeded")
             state.user = {... action.payload as any};
+
+            router.push("/(account)/verify");
         })
         .addCase(sendValidationCode.rejected, (state, action) => {
             const t = i18n.t;
@@ -227,9 +233,10 @@ export const accountSlice = createSlice({
     },
 });
 
-export const {setUser, setIsGuess} = accountSlice.actions;
+export const {setCreateUser, setUser, setIsGuess} = accountSlice.actions;
 
 //selectors
+export const selectCreateUser = (state: any) => state.account.createUser as CreateUser;
 export const selectUser = (state: any) => state.account.user as User;
 export const selectIsAccountVerified = (state: any) => state.account.isAccountVerified as boolean;
 export const selectIsGuess = (state: any) => state.account.isGuess as boolean;
