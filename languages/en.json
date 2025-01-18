@@ -33,6 +33,7 @@
         "failedToSendCode": "Failed to send code",
         "enterCode": "Enter the code you received by mail. You can also check your spam folder.",
         "notReceivedCode": "Didn't receive the code? ",
-        "resend": "Resend"
+        "resend": "Resend",
+        "failedToChangePassword": "Failed to change password"
     }
 }

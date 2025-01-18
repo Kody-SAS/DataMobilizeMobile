@@ -83,3 +83,9 @@ export type VerifyUser = {
     userId: string,
     code: string
 }
+
+export type ForgotUser = {
+    userId: string;
+    isVerified: boolean;
+    localisation?: string;
+}

@@ -2,13 +2,14 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 import {createAsyncThunk, createSlice} from "@reduxjs/toolkit";
 import ToastMessage from "../../utils/Toast";
 import i18n from "../../languages";
-import { CreateUser, LoginUser, User, VerifyUser } from "../../type";
+import { CreateUser, ForgotUser, LoginUser, User, VerifyUser } from "../../type";
 import { router } from "expo-router";
 
 
 const initialState = {
     createUser: {} as CreateUser,
     user: {} as User,
+    forgotUser: {} as ForgotUser,
     isAccountVerified: false,
     isGuess: false,
 }
@@ -176,6 +177,85 @@ export const deleteUser = createAsyncThunk("account/deleteUser", async(user: Use
     }
 })
 
+export const sendForgotPasswordCode = createAsyncThunk("account/sendForgotPasswordCode", async(email: string, thunkAPI) => {
+    try {
+        const response: Response = await fetch(process.env.EXPO_PUBLIC_API_URL + "/users/forgot", {
+            method: "POST",
+            headers: {
+                'Accept': 'application/json',
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(email)
+        });
+
+        if (response.ok) {
+            const json = await response.json();
+            console.log(json);
+            return json;
+        }
+        else {
+            console.log("Failed to send reactivation code to user");
+            return thunkAPI.rejectWithValue(await response.text());
+        }
+    }
+    catch(ex) {
+        console.error(ex);
+        return thunkAPI.rejectWithValue(ex);
+    }
+})
+
+export const validateForgotPasswordCode = createAsyncThunk("account/validateForgotPasswordCode", async({userId, code}: {userId: string, code: string}, thunkAPI) => {
+    try {
+        const response: Response = await fetch(process.env.EXPO_PUBLIC_API_URL + `/users/forgot/${userId}`, {
+            method: "POST",
+            headers: {
+                'Accept': 'application/json',
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(code)
+        });
+
+        if (response.ok) {
+            return;
+        }
+        else {
+            console.log("Failed to send reactivation code to user");
+            return thunkAPI.rejectWithValue(await response.text());
+        }
+    }
+    catch(ex) {
+        console.error(ex);
+        return thunkAPI.rejectWithValue(ex);
+    }
+})
+
+export const changePassword = createAsyncThunk("account/changePassword", async({userId, password}: {userId: string, password: string}, thunkAPI) => {
+    try {
+        const response: Response = await fetch(process.env.EXPO_PUBLIC_API_URL + `/users/changepassword/${userId}`, {
+            method: "PUT",
+            headers: {
+                'Accept': 'application/json',
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(password)
+        });
+        
+        if(response.ok) {
+            const json = await response.json();
+            console.log(json);
+            return json;
+        }
+        else {
+            console.log("Failed to send update user:", await response.json());
+            return thunkAPI.rejectWithValue(await response.text());
+        }
+    }
+    catch(ex) {
+        console.error(ex);
+        return thunkAPI.rejectWithValue(ex);
+    }
+})
+
 export const accountSlice = createSlice({
     name: 'account',
     initialState,
@@ -229,6 +309,51 @@ export const accountSlice = createSlice({
         })
         .addCase(updateUser.fulfilled, (state, action) => {
             state.user = {... action.payload as any};
+        })
+        .addCase(sendForgotPasswordCode.fulfilled, (state, action) => {
+            const t = i18n.t;
+
+            state.forgotUser = {... action.payload as any};
+            router.push("/(account)/verifyforgot");
+        })
+        .addCase(sendForgotPasswordCode.rejected, (state, action) => {
+            const t = i18n.t;
+            console.log("failed to send code")
+            ToastMessage(
+                "error",
+                t("error"),
+                t("failedToSendCode")
+            )
+        })
+        .addCase(validateForgotPasswordCode.fulfilled, (state, action) => {
+            router.push("/(account)/changepassword");
+        })
+        .addCase(validateForgotPasswordCode.rejected, (state, action) => {
+            const t = i18n.t;
+
+            ToastMessage(
+                "error",
+                t("error"),
+                t("failedToValidateCode")
+            )
+        })
+        .addCase(changePassword.fulfilled, (state, action) => {
+            const t = i18n.t;
+
+            state.isAccountVerified = true;
+            state.user = {... action.payload as any};
+            
+            ToastMessage("success", t("success"), t("accountCreated"));
+            router.replace("/(tabs)/");
+        })
+        .addCase(changePassword.rejected, (state, action) => {
+            const t = i18n.t;
+
+            ToastMessage(
+                "error",
+                t("error"),
+                t("failedToChangePassword")
+            )
         })
     },
 });
