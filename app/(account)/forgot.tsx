@@ -11,15 +11,25 @@ import { sendForgotPasswordCode } from "../../redux/slices/accountSlice";
 import { ThunkDispatch } from "@reduxjs/toolkit";
 import { TextInput } from "react-native-paper";
 import { ButtonAction } from "../../components/ButtonAction";
+import { router } from "expo-router";
+import ToastMessage from "../../utils/Toast";
+import { useNetInfo } from "@react-native-community/netinfo";
 
 export default function Forgot() {
     const [email, setEmail] = useState<string>("");
     const [errorMessage, setErrorMessage] = useState<string>("");
 
+    const {isConnected} = useNetInfo();
     const {t} = useTranslation();
     const dispatch = useDispatch<ThunkDispatch<any, any, any>>();
 
     const handleSendVerificationCode = () => {
+        router.push("/(tabs)/");
+        return;
+        if (!isConnected) {
+            ToastMessage("error", t("error"), t("connectAndTryAgain"));
+            return;
+        }
         if (!email) {
             setErrorMessage(t("fillTheField"));
             return;

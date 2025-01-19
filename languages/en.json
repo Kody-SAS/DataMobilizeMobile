@@ -36,9 +36,11 @@
         "enterCode": "Enter the code you received by mail. You can also check your spam folder.",
         "notReceivedCode": "Didn't receive the code? ",
         "resend": "Resend",
+        "forgot": "Forgot password",
         "failedToChangePassword": "Failed to change password",
         "forgotQuestion": "Did you forget your password? ",
         "changePassword": "Change password",
-        "provideEmailForgot": "Provide your account E-mail and we will send a verification code"
+        "provideEmailForgot": "Provide your account E-mail and we will send a verification code",
+        "provideNewPassword": "Provide your new password"
     }
 }
