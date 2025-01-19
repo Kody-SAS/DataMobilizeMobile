@@ -363,6 +363,7 @@ export const {setCreateUser, setUser, setIsGuess} = accountSlice.actions;
 //selectors
 export const selectCreateUser = (state: any) => state.account.createUser as CreateUser;
 export const selectUser = (state: any) => state.account.user as User;
+export const selectForgotUser = (state: any) => state.account.forgotUser as ForgotUser
 export const selectIsAccountVerified = (state: any) => state.account.isAccountVerified as boolean;
 export const selectIsGuess = (state: any) => state.account.isGuess as boolean;
 

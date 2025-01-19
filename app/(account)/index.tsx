@@ -59,6 +59,10 @@ export default function Login() {
         router.push("/(account)/privacypolicy");
     }
 
+    const handleNavigationToForgot = () => {
+        router.push("/(account)/forgot");
+    }
+
     return (
         <SafeAreaView style={styles.container}>
             <ScrollView>
@@ -141,6 +145,21 @@ export default function Login() {
                             {t("create")}
                         </TextBlock>}
                     onPress={handleNavigationToRegister}
+                />
+            </View>
+            <Spacer variant="large" />
+
+            <View style={styles.createOption}>
+                <TextBlock type={TextBlockTypeEnum.body} style={styles.questionAccount}>
+                    {t("forgotQuestion")}
+                </TextBlock>
+                <ButtonAction
+                    variant={ButtonTypeEnum.quarternary}
+                    content={
+                        <TextBlock type={TextBlockTypeEnum.body} style={styles.primaryText}>
+                            {t("changePassword")}
+                        </TextBlock>}
+                    onPress={handleNavigationToForgot}
                 />
             </View>
             <Spacer variant="large" />

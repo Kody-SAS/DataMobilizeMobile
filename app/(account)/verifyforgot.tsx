@@ -3,14 +3,14 @@ import { TextBlock } from "../../components/TextBlock";
 import { Spacer } from "../../components/Spacer";
 import { TextInput } from "react-native-paper";
 import { ButtonAction } from "../../components/ButtonAction";
-import { ButtonTypeEnum, CreateUser, TextBlockTypeEnum, User } from "../../type";
+import { ButtonTypeEnum, CreateUser, ForgotUser, TextBlockTypeEnum, User } from "../../type";
 import { Colors } from "../../constants/Colors";
 import { useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { useTranslation } from "react-i18next";
 import ToastMessage from "../../utils/Toast";
 import { useNetInfo } from "@react-native-community/netinfo";
-import { selectCreateUser, selectUser, sendForgotPasswordCode, sendValidationCode, validateCode, validateForgotPasswordCode } from "../../redux/slices/accountSlice";
+import { selectCreateUser, selectForgotUser, selectUser, sendForgotPasswordCode, sendValidationCode, validateCode, validateForgotPasswordCode } from "../../redux/slices/accountSlice";
 import { ThunkDispatch } from "@reduxjs/toolkit";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { router } from "expo-router";
@@ -22,8 +22,7 @@ export default function LoginCodeCard() {
 
     const { t } = useTranslation();
     const dispatch = useDispatch<ThunkDispatch<any, any, any>>();
-    const createUser: CreateUser = useSelector(selectCreateUser);
-    const user: User = useSelector(selectUser);
+    const forgotUser: ForgotUser = useSelector(selectForgotUser);
     const inputs: any[] = [];
   
     const handleChange = (text: string, index: number) => {
@@ -49,7 +48,7 @@ export default function LoginCodeCard() {
         }
 
         dispatch(validateForgotPasswordCode({
-            userId: "fsdfsdf",
+            userId: forgotUser.userId,
             code
         }))
 
@@ -57,14 +56,15 @@ export default function LoginCodeCard() {
     }
 
     const verifyCode = async () => {
-        router.push("/(tabs)/");
-        return;
+        // for testing
+        // router.push("/(tabs)/");
+        // return;
         if (!isConnected) {
             ToastMessage("error", t("error"), t("connectAndTryAgain"));
             return;
         }
 
-        dispatch(validateCode({userId: user.id!, code: code}))
+        dispatch(validateForgotPasswordCode({userId: forgotUser.userId, code}))
     }
 
     return (
