@@ -41,6 +41,7 @@
         "forgotQuestion": "Did you forget your password? ",
         "changePassword": "Change password",
         "provideEmailForgot": "Provide your account E-mail and we will send a verification code",
-        "provideNewPassword": "Provide your new password"
+        "provideNewPassword": "Provide your new password",
+        "failedToGetNotificationToken": "Failed to register for notifications"
     }
 }
