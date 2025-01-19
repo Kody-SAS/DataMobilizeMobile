@@ -24,8 +24,9 @@ export default function Forgot() {
     const dispatch = useDispatch<ThunkDispatch<any, any, any>>();
 
     const handleSendVerificationCode = () => {
-        router.push("/(tabs)/");
-        return;
+        // for testing
+        // router.push("/(tabs)/");
+        // return;
         if (!isConnected) {
             ToastMessage("error", t("error"), t("connectAndTryAgain"));
             return;
