@@ -72,6 +72,7 @@ export type User = {
     email: string;
     isVerified: boolean;
     localisation?: string;
+    expoPushToken?: string;
 }
 
 export type LoginUser = {
