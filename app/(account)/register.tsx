@@ -44,8 +44,6 @@ export default function Register() {
             return;
         }
         
-        router.push("/(account)/verify");
-        return;
         setCreateUser({
             username,
             email,
@@ -128,7 +126,7 @@ export default function Register() {
                 }}
                 activeOutlineColor={Colors.light.background.primary}
                 keyboardType="email-address"
-                placeholder="email@domain.com"
+                placeholder={t("emailPlaceholder")}
                 placeholderTextColor={Colors.light.text.secondary}
             />
             <Spacer variant="large" />

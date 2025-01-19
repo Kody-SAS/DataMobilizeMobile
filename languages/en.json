@@ -13,6 +13,8 @@
         "createAccount": "Create an account",
         "loginToContinue": "Enter your credentials to continue",
         "username": "Name",
+        "email": "Email",
+        "emailPlaceholder": "me@example.com",
         "password": "Password",
         "confirmPassword": "Confirm Password",
         "fillAllFields": "Please fill in all fields",
@@ -34,6 +36,9 @@
         "enterCode": "Enter the code you received by mail. You can also check your spam folder.",
         "notReceivedCode": "Didn't receive the code? ",
         "resend": "Resend",
-        "failedToChangePassword": "Failed to change password"
+        "failedToChangePassword": "Failed to change password",
+        "forgotQuestion": "Did you forget your password? ",
+        "changePassword": "Change password",
+        "provideEmailForgot": "Provide your account E-mail and we will send a verification code"
     }
 }
