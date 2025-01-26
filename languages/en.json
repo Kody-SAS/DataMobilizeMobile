@@ -42,6 +42,14 @@
         "changePassword": "Change password",
         "provideEmailForgot": "Provide your account E-mail and we will send a verification code",
         "provideNewPassword": "Provide your new password",
-        "failedToGetNotificationToken": "Failed to register for notifications"
+        "failedToGetNotificationToken": "Failed to register for notifications",
+        "homeHeading": "Contribute to make our roads safer",
+        "perceptionTitle": "Share your safety perception/feeling",
+        "roadissueTitle": "Signal a road issue",
+        "alertaccidentTitle": "Alert an accident",
+        "auditTitle": "Conduct a safety audit",
+        "yourLocation": "Your location",   
+        "viewOnMap": "View on map",
+        "mapDescription": "Use the map to explore all the existing reporting, number of reports, road user safety perception overall, some filter (city, time period, etc..)"
     }
 }
