@@ -16,7 +16,8 @@ export const Colors = {
       secondary: "#EEEEEE",
       tertiary: "#E0E0E0",
       quaternary: "#FFFFFF",
-      quinary: "#F6F6F6"
+      quinary: "#F6F6F6",
+      senary: "#EBEDF0"
     },
     icon: {
       primary: "#000000",

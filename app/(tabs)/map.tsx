@@ -8,17 +8,28 @@ import { useTranslation } from 'react-i18next';
 import { useDispatch } from 'react-redux';
 import { ThunkDispatch } from '@reduxjs/toolkit';
 import { TextBlockTypeEnum } from '../../type';
+import { Searchbar } from 'react-native-paper';
+import { useState } from 'react';
+import MapView from 'react-native-maps';
 
 export default function Map() {
+  const [searchQuery, setSearchQuery] = useState<string>('');
   const {isConnected} = useNetInfo();
   const {t} = useTranslation();
   const dispatch = useDispatch<ThunkDispatch<any, any, any>>();
   
   return (
     <SafeAreaView style={styles.container}>
-      <TextBlock type={TextBlockTypeEnum.body} style={{ textAlign: "center" }}>
+      <TextBlock type={TextBlockTypeEnum.body} style={{ textAlign: "left" }}>
         {t("provideEmailForgot")}
       </TextBlock>
+      <Searchbar
+        placeholder={t("search")}
+        value={searchQuery}
+        onChangeText={setSearchQuery}
+        style={{ marginVertical: 16 }}
+        />
+      <MapView />
     </SafeAreaView>
   );
 }
