@@ -19,7 +19,7 @@ const onboardingPersistConfig = {
 const accountPersistConfig = {
     key: 'root',
     version: 1,
-    storage: AsyncStorage
+    storage: AsyncStorage,
 }
 
 const homePersistConfig = {

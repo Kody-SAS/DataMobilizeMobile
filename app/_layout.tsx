@@ -20,6 +20,7 @@ import { checkOnboardingStatus } from '../redux/slices/onboardingSlice';
 import { ActivityIndicator } from 'react-native-paper';
 import React from 'react';
 import Toast from 'react-native-toast-message';
+import { useTranslation } from 'react-i18next';
 
 // Prevent the splash screen from auto-hiding before asset loading is complete.
 SplashScreen.preventAutoHideAsync();
@@ -28,6 +29,7 @@ store.dispatch(checkOnboardingStatus())
 let persistor = persistStore(store);
 
 export default function RootLayout() {
+  const {t} = useTranslation();
   const colorScheme = useColorScheme();
   const [loaded] = useFonts({
     SpaceMono: require('../assets/fonts/SpaceMono-Regular.ttf'),
@@ -76,7 +78,7 @@ export default function RootLayout() {
               <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
               <Stack.Screen name="(account)" options={{ headerShown: false }} />
               <Stack.Screen name="(onboarding)/onboarding" options={{ headerShown: false }} />
-              <Stack.Screen name="(homeStack)" options={{ headerShown: false }} />
+              <Stack.Screen name="(homeStack)/reports" options={{ title: t('report') }} />
               <Stack.Screen name="(mapStack)" options={{ headerShown: false }} />
             </Stack>
             {Platform.OS == 'android' && 

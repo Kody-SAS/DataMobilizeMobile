@@ -3,7 +3,7 @@ import { TextBlock } from "../../components/TextBlock";
 import { Spacer } from "../../components/Spacer";
 import { TextInput } from "react-native-paper";
 import { ButtonAction } from "../../components/ButtonAction";
-import { ButtonTypeEnum, CreateUser, ForgotUser, TextBlockTypeEnum, User } from "../../type";
+import { ButtonTypeEnum, CreateUser, ForgotUser, TextBlockTypeEnum, User } from "../../type.d";
 import { Colors } from "../../constants/Colors";
 import { useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
@@ -13,7 +13,7 @@ import { useNetInfo } from "@react-native-community/netinfo";
 import { selectCreateUser, selectForgotUser, selectUser, sendForgotPasswordCode, sendValidationCode, validateCode, validateForgotPasswordCode } from "../../redux/slices/accountSlice";
 import { ThunkDispatch } from "@reduxjs/toolkit";
 import { SafeAreaView } from "react-native-safe-area-context";
-import { router } from "expo-router";
+import { router, useLocalSearchParams } from "expo-router";
 
 export default function LoginCodeCard() {
     const [code, setCode] = useState<string>("");
@@ -22,7 +22,7 @@ export default function LoginCodeCard() {
 
     const { t } = useTranslation();
     const dispatch = useDispatch<ThunkDispatch<any, any, any>>();
-    const forgotUser: ForgotUser = useSelector(selectForgotUser);
+    const forgotUser: ForgotUser = JSON.parse((useLocalSearchParams()).data as any);
     const inputs: any[] = [];
   
     const handleChange = (text: string, index: number) => {
@@ -46,13 +46,8 @@ export default function LoginCodeCard() {
             ToastMessage("error", t("error"), t("connectAndTryAgain"));
             return;
         }
-
-        dispatch(validateForgotPasswordCode({
-            userId: forgotUser.userId,
-            code
-        }))
-
-        ToastMessage("success", t("success"), t("codeSentToEmail"));
+        console.log(forgotUser.email)
+        dispatch(sendForgotPasswordCode(forgotUser.email))
     }
 
     const verifyCode = async () => {
@@ -135,6 +130,7 @@ const styles = StyleSheet.create({
     codeContainer: {
         flexDirection: 'row',
         justifyContent: 'space-between',
+        height: 75
     },
     codeInput: {
         width: 40,

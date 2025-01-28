@@ -7,10 +7,11 @@ import { useNetInfo } from '@react-native-community/netinfo';
 import { useTranslation } from 'react-i18next';
 import { useDispatch } from 'react-redux';
 import { ThunkDispatch } from '@reduxjs/toolkit';
-import { TextBlockTypeEnum } from '../../type';
+import { TextBlockTypeEnum } from '../../type.d';
 import { Searchbar } from 'react-native-paper';
 import { useState } from 'react';
 import MapView from 'react-native-maps';
+import { Spacer } from '../../components/Spacer';
 
 export default function Map() {
   const [searchQuery, setSearchQuery] = useState<string>('');
@@ -20,6 +21,10 @@ export default function Map() {
   
   return (
     <SafeAreaView style={styles.container}>
+      <TextBlock type={TextBlockTypeEnum.h1} style={{ textAlign: "left" }}>
+        {t("exploration")}
+      </TextBlock>
+      <Spacer variant="large" />
       <TextBlock type={TextBlockTypeEnum.body} style={{ textAlign: "left" }}>
         {t("provideEmailForgot")}
       </TextBlock>

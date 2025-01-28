@@ -1,10 +1,10 @@
 import { Image, View, StyleSheet, Touchable, TouchableOpacityProps, TouchableOpacity } from "react-native";
 import { TextBlock } from "./TextBlock";
 import { Spacer } from "./Spacer";
-import { TextBlockTypeEnum } from "../type";
+import { TextBlockTypeEnum } from "../type.d";
 
 type ReportCardProps = TouchableOpacityProps & {
-    imageUrl: string;
+    imageUrl: any;
     title: string;
 }
 export const ReportCard = ({imageUrl, title, onPress}: ReportCardProps) => {
@@ -14,7 +14,7 @@ export const ReportCard = ({imageUrl, title, onPress}: ReportCardProps) => {
             onPress={onPress}>
             <View style={styles.imageContainer}>
                 <Image 
-                    source={require(imageUrl)}
+                    source={imageUrl}
                     style={styles.image}
                     resizeMode="contain" />
             </View>
@@ -27,23 +27,21 @@ export const ReportCard = ({imageUrl, title, onPress}: ReportCardProps) => {
 const styles = StyleSheet.create({
     cardContainer: {
         backgroundColor: "transparent",
-        width: 120,
+        width: 160,
         height: 110,
-        padding: 8,
-        justifyContent: "center",
+        padding: 4,
         alignItems: "center"
     },
     imageContainer: {
         borderRadius: 4,
         backgroundColor: "#EBEDF0",
-        overflow: "hidden",
         justifyContent: "center",
         alignItems: "center",
-        width: 70,
-        height: 100
+        width: 130,
+        height: 110
     },
     image: {
-        width: 65,
-        height: 65
+        width: 75,
+        height: 75
     },
 })

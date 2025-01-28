@@ -30,7 +30,7 @@ export const getUser = createAsyncThunk("account/getUser", async (userId: string
             return json;
         }
         else {
-            console.log("Failed to get user", await response.json());
+            console.log("Failed to get user");
             return thunkAPI.rejectWithValue(await response.text());
         }
     }
@@ -59,7 +59,7 @@ export const sendValidationCode = createAsyncThunk("account/sendValidationCode",
             return json;
         }
         else {
-            console.log("Failed to send create user request", await response.json());
+            console.log("Failed to send create user request");
             return thunkAPI.rejectWithValue(await response.text());
         }
     }
@@ -83,10 +83,11 @@ export const validateCode = createAsyncThunk("account/validateCode", async(verif
         if(response.ok) {
             const json = await response.json();
             console.log(json);
+            router.replace("/(tabs)/");
             return json;
         }
         else {
-            console.log("Failed to validate user:", await response.json());
+            console.log("Failed to validate user");
             return thunkAPI.rejectWithValue(await response.text());
         }
     }
@@ -113,7 +114,7 @@ export const loginUser = createAsyncThunk("account/loginUser", async(loginUser: 
             return json;
         }
         else {
-            console.log("Failed to login user", await response.json());
+            console.log("Failed to login user");
             return thunkAPI.rejectWithValue(await response.text());
         }
     }
@@ -140,7 +141,7 @@ export const updateUser = createAsyncThunk("account/updateUser", async(user: Use
             return json;
         }
         else {
-            console.log("Failed to send update user:", await response.json());
+            console.log("Failed to send update user");
             return thunkAPI.rejectWithValue(await response.text());
         }
     }
@@ -167,7 +168,7 @@ export const deleteUser = createAsyncThunk("account/deleteUser", async(user: Use
             return json;
         }
         else {
-            console.log("Failed to delete user:", await response.json());
+            console.log("Failed to delete user");
             return thunkAPI.rejectWithValue(await response.text());
         }
     }
@@ -179,13 +180,13 @@ export const deleteUser = createAsyncThunk("account/deleteUser", async(user: Use
 
 export const sendForgotPasswordCode = createAsyncThunk("account/sendForgotPasswordCode", async(email: string, thunkAPI) => {
     try {
-        const response: Response = await fetch(process.env.EXPO_PUBLIC_API_URL + "/users/forgot", {
+        const response: Response = await fetch(process.env.EXPO_PUBLIC_API_URL + "/users/requestpasswordreset", {
             method: "POST",
             headers: {
                 'Accept': 'application/json',
                 'Content-Type': 'application/json'
             },
-            body: JSON.stringify(email)
+            body: JSON.stringify({email})
         });
 
         if (response.ok) {
@@ -206,13 +207,13 @@ export const sendForgotPasswordCode = createAsyncThunk("account/sendForgotPasswo
 
 export const validateForgotPasswordCode = createAsyncThunk("account/validateForgotPasswordCode", async({userId, code}: {userId: string, code: string}, thunkAPI) => {
     try {
-        const response: Response = await fetch(process.env.EXPO_PUBLIC_API_URL + `/users/forgot/${userId}`, {
+        const response: Response = await fetch(process.env.EXPO_PUBLIC_API_URL + `/users/${userId}/validcodeforpasswordreset`, {
             method: "POST",
             headers: {
                 'Accept': 'application/json',
                 'Content-Type': 'application/json'
             },
-            body: JSON.stringify(code)
+            body: JSON.stringify({code})
         });
 
         if (response.ok) {
@@ -231,22 +232,23 @@ export const validateForgotPasswordCode = createAsyncThunk("account/validateForg
 
 export const changePassword = createAsyncThunk("account/changePassword", async({userId, password}: {userId: string, password: string}, thunkAPI) => {
     try {
-        const response: Response = await fetch(process.env.EXPO_PUBLIC_API_URL + `/users/changepassword/${userId}`, {
+        const response: Response = await fetch(process.env.EXPO_PUBLIC_API_URL + `/users/${userId}/resetpassword`, {
             method: "PUT",
             headers: {
                 'Accept': 'application/json',
                 'Content-Type': 'application/json'
             },
-            body: JSON.stringify(password)
+            body: JSON.stringify({password})
         });
         
         if(response.ok) {
             const json = await response.json();
             console.log(json);
+            router.replace("/(tabs)/");
             return json;
         }
         else {
-            console.log("Failed to send update user:", await response.json());
+            console.log("Failed to send update user");
             return thunkAPI.rejectWithValue(await response.text());
         }
     }
@@ -274,10 +276,17 @@ export const accountSlice = createSlice({
     extraReducers: (builder) => {
         builder
         .addCase(sendValidationCode.fulfilled, (state, action) => {
-            console.log("send code succeeded")
-            state.user = {... action.payload as any};
+            const t = i18n.t;
 
-            router.push("/(account)/verify");
+            console.log("send code succeeded")
+            ToastMessage("success", t("success"), t("codeSentToEmail"));
+
+            state.user = {... action.payload as any};
+            const createUser = state.createUser as CreateUser;
+            const user = state.user as User;
+            const data = JSON.stringify({createUser, user});
+            
+            router.push({ pathname: "/(account)/verify", params: {data}});
         })
         .addCase(sendValidationCode.rejected, (state, action) => {
             const t = i18n.t;
@@ -295,7 +304,6 @@ export const accountSlice = createSlice({
             state.user = {... action.payload as any};
             
             ToastMessage("success", t("success"), t("accountCreated"));
-            router.replace("/(tabs)/");
             
         })
         .addCase(validateCode.rejected, (state, action) => {
@@ -314,7 +322,8 @@ export const accountSlice = createSlice({
             const t = i18n.t;
 
             state.forgotUser = {... action.payload as any};
-            router.push("/(account)/verifyforgot");
+            console.log("forgot user", JSON.stringify({... action.payload as any}));
+            router.push({pathname: "/(account)/verifyforgot", params: {data: JSON.stringify(state.forgotUser)}});
         })
         .addCase(sendForgotPasswordCode.rejected, (state, action) => {
             const t = i18n.t;
@@ -326,7 +335,7 @@ export const accountSlice = createSlice({
             )
         })
         .addCase(validateForgotPasswordCode.fulfilled, (state, action) => {
-            router.push("/(account)/changepassword");
+            router.push({pathname: "/(account)/changepassword", params: {data: JSON.stringify(state.forgotUser)}});
         })
         .addCase(validateForgotPasswordCode.rejected, (state, action) => {
             const t = i18n.t;
@@ -337,6 +346,19 @@ export const accountSlice = createSlice({
                 t("failedToValidateCode")
             )
         })
+        .addCase(loginUser.fulfilled, (state, action) => {
+            state.user = {... action.payload as any};
+            router.push("/(tabs)/");
+        })
+        .addCase(loginUser.rejected, (state, action) => {
+            const t = i18n.t;
+
+            ToastMessage(
+                "error",
+                t("error"),
+                t("failedToLogin")
+            )
+        })
         .addCase(changePassword.fulfilled, (state, action) => {
             const t = i18n.t;
 
@@ -344,7 +366,6 @@ export const accountSlice = createSlice({
             state.user = {... action.payload as any};
             
             ToastMessage("success", t("success"), t("accountCreated"));
-            router.replace("/(tabs)/");
         })
         .addCase(changePassword.rejected, (state, action) => {
             const t = i18n.t;

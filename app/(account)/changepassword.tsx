@@ -9,11 +9,11 @@ import { useNetInfo } from "@react-native-community/netinfo";
 import { useDispatch, useSelector } from "react-redux";
 import ToastMessage from "../../utils/Toast";
 import { TextInput } from "react-native-paper";
-import { ButtonTypeEnum, FontsEnum, FontSizesEnum, ForgotUser, TextBlockTypeEnum } from "../../type";
+import { ButtonTypeEnum, FontsEnum, FontSizesEnum, ForgotUser, TextBlockTypeEnum } from "../../type.d";
 import { Spacer } from "../../components/Spacer";
 import { ButtonAction } from "../../components/ButtonAction";
 import { changePassword, selectForgotUser } from "../../redux/slices/accountSlice";
-import { router } from "expo-router";
+import { router, useLocalSearchParams } from "expo-router";
 
 export default function ChangePassword() {
     const [password, setPassword] = useState<string>("");
@@ -23,7 +23,7 @@ export default function ChangePassword() {
     const {isConnected} = useNetInfo();
     const {t} = useTranslation();
     const dispatch = useDispatch<ThunkDispatch<any, any, any>>();
-    const forgotUser: ForgotUser = useSelector(selectForgotUser);
+    const forgotUser: ForgotUser = JSON.parse((useLocalSearchParams()).data as any);
 
     const handleChangePassword = () => {
         // for testing

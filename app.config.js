@@ -22,7 +22,12 @@ export default {
         foregroundImage: "./assets/images/adaptive-icon.png",
         backgroundColor: "#ffffff"
       },
-      package: "com.monkeyk1n9.datamobilize"
+      package: "com.monkeyk1n9.datamobilize",
+      config: {
+        googleMaps: {
+          apiKey: process.env.GOOGLE_MAPS_API_KEY
+        }
+      }
     },
     web: {
       bundler: "metro",

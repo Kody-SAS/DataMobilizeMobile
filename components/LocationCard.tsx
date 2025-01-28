@@ -2,9 +2,9 @@ import { View, StyleSheet } from "react-native"
 import { TextBlock } from "./TextBlock"
 import { useTranslation } from "react-i18next";
 import { ButtonAction } from "./ButtonAction";
-import { ButtonTypeEnum, TextBlockTypeEnum } from "../type";
+import { ButtonTypeEnum, TextBlockTypeEnum } from "../type.d";
 import { Spacer } from "./Spacer";
-import MapView from "react-native-maps";
+import MapView, { PROVIDER_GOOGLE } from "react-native-maps";
 
 export const LocationCard = () => {
     const {t} = useTranslation();
@@ -24,7 +24,7 @@ export const LocationCard = () => {
                     />
             </View>
             <Spacer variant="medium" />
-            <MapView style={styles.map}/>
+            <MapView style={styles.map} provider={PROVIDER_GOOGLE}/>
         </View>
     )
 }

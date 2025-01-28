@@ -3,7 +3,7 @@ import { TextBlock } from "../../components/TextBlock";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { Colors } from "../../constants/Colors";
 import { Spacer } from "../../components/Spacer";
-import { ButtonTypeEnum, FontsEnum, FontSizesEnum, TextBlockTypeEnum } from "../../type";
+import { ButtonTypeEnum, FontsEnum, FontSizesEnum, TextBlockTypeEnum } from "../../type.d";
 import { useTranslation } from "react-i18next";
 import { useState } from "react";
 import { useDispatch } from "react-redux";
@@ -43,7 +43,6 @@ export default function Forgot() {
     return (
         <SafeAreaView style={styles.container}>
             <ScrollView>
-                <Spacer variant="large" />
                 <TextBlock type={TextBlockTypeEnum.body} style={{ textAlign: "center" }}>
                     {t("provideEmailForgot")}
                 </TextBlock>

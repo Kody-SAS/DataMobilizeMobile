@@ -13,7 +13,7 @@ import { useNetInfo } from "@react-native-community/netinfo";
 import { selectCreateUser, selectUser, sendValidationCode, validateCode } from "../../redux/slices/accountSlice";
 import { ThunkDispatch } from "@reduxjs/toolkit";
 import { SafeAreaView } from "react-native-safe-area-context";
-import { router } from "expo-router";
+import { router, useLocalSearchParams } from "expo-router";
 
 export default function LoginCodeCard() {
     const [code, setCode] = useState<string>("");
@@ -22,8 +22,8 @@ export default function LoginCodeCard() {
 
     const { t } = useTranslation();
     const dispatch = useDispatch<ThunkDispatch<any, any, any>>();
-    const createUser: CreateUser = useSelector(selectCreateUser);
-    const user: User = useSelector(selectUser);
+    const data = useLocalSearchParams();
+    const {createUser, user} = JSON.parse(data.data as any);
     const inputs: any[] = [];
   
     const handleChange = (text: string, index: number) => {
@@ -55,7 +55,6 @@ export default function LoginCodeCard() {
             localisation: createUser.localisation,
         }))
 
-        ToastMessage("success", t("success"), t("codeSentToEmail"));
     }
 
     const verifyCode = async () => {
@@ -138,6 +137,7 @@ const styles = StyleSheet.create({
     codeContainer: {
         flexDirection: 'row',
         justifyContent: 'space-between',
+        height: 75
     },
     codeInput: {
         width: 40,

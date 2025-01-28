@@ -71,11 +71,11 @@ export default function Register() {
     }
 
     const handleTermsOfService = () => {
-        ToastMessage("info", t("info"), t("comingSoon"));
+        router.push("/(account)/termsofservice");
     }
 
     const handlePrivacyPolicy = () => {
-        ToastMessage("info", t("info"), t("comingSoon"));
+        router.push("/(account)/privacypolicy");
     }
 
     useEffect(() => {

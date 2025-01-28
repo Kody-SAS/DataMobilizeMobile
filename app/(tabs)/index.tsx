@@ -1,11 +1,11 @@
-import { Image, StyleSheet, Platform, View, FlatList } from 'react-native';
+import { Image, StyleSheet, Platform, View, FlatList, ScrollView } from 'react-native';
 
 import { TextBlock } from '../../components/TextBlock';
 import { useEffect } from 'react';
 import { registerForPushNotificationsAsync } from '../../utils/Permissions';
 import { useDispatch, useSelector } from 'react-redux';
 import { selectUser } from '../../redux/slices/accountSlice';
-import { TextBlockTypeEnum, User } from '../../type';
+import { TextBlockTypeEnum, User } from '../../type.d';
 import { useTranslation } from 'react-i18next';
 import { ThunkDispatch } from '@reduxjs/toolkit';
 import { useNetInfo } from '@react-native-community/netinfo';
@@ -15,34 +15,35 @@ import { Colors } from '../../constants/Colors';
 import { Spacer } from '../../components/Spacer';
 import { ReportCard } from '../../components/ReportCard';
 import { LocationCard } from '../../components/LocationCard';
+import { router } from 'expo-router';
 
 export default function HomeScreen() {
 
-  const user: User = useSelector(selectUser);
+  //const user: User = useSelector(selectUser);
   const { isConnected } = useNetInfo();
   const { t } = useTranslation();
   const dispatch = useDispatch<ThunkDispatch<any, any, any>>();
 
   const handlePerceptionPress = () => {
-
+    router.push("/(homeStack)/reports");
   }
 
   const handleRoadIssuePress = () => {
-
+    router.push("/(homeStack)/reports");
   }
 
   const handleAlertAccidentPress = () => {
-
+    router.push("/(homeStack)/reports");
   }
 
   const handleAuditPress = () => {
-
+    router.push("/(homeStack)/reports");
   }
 
   useEffect(() => {
     registerForPushNotificationsAsync()
       .then(data => {
-        user.expoPushToken = data;
+        //user.expoPushToken = data;
       })
       .catch(error => {
         ToastMessage(
@@ -55,39 +56,48 @@ export default function HomeScreen() {
 
   return (
     <SafeAreaView style={styles.container}>
-      <Image source={require("../../assets/images/logo.png")} style={styles.logo} />
-      <Spacer variant="large" />
-      <TextBlock type={TextBlockTypeEnum.h3}>{t("homeHeading")}</TextBlock>
-      <Spacer variant="medium" />
-      <View style={styles.cardContainer}>
-        <ReportCard
-          imageUrl='../../assets/images/perception.png'
-          title={t("perceptionTitle")}
-          onPress={handlePerceptionPress}
-          />
-        <ReportCard
-          imageUrl='../../assets/images/roadissue.png'
-          title={t("roadissueTitle")}
-          onPress={handleRoadIssuePress}
-          />
-      </View>
-      <Spacer variant="medium" />
-      <View>
-        <ReportCard
-          imageUrl='../../assets/images/alertaccident.png'
-          title={t("alertaccidentTitle")}
-          onPress={handleAlertAccidentPress}
-          />
-        <ReportCard
-          imageUrl='../../assets/images/audit.png'
-          title={t("auditTitle")}
-          onPress={handleAuditPress}
-          />
-      </View>
-      <Spacer variant="large" />
-      <View style={styles.divider} />
-      <LocationCard />
-
+      <Image source={require("../../assets/images/logo.png")} style={styles.logo} resizeMode='contain' />
+      <ScrollView>
+        <Spacer variant="large" />
+        <TextBlock type={TextBlockTypeEnum.h3}>{t("homeHeading")}</TextBlock>
+        <Spacer variant="large" />
+        <View style={styles.cardContainer}>
+          <ReportCard
+            imageUrl={require('../../assets/images/perception.png')}
+            title={t("perceptionTitle")}
+            onPress={handlePerceptionPress}
+            />
+          <ReportCard
+            imageUrl={require('../../assets/images/roadissue.png')}
+            title={t("roadissueTitle")}
+            onPress={handleRoadIssuePress}
+            />
+        </View>
+        <Spacer variant="large" />
+        <Spacer variant="large" />
+        <Spacer variant="large" />
+        <Spacer variant="large" />
+        <View style={styles.cardContainer}>
+          <ReportCard
+            imageUrl={require('../../assets/images/alertaccident.png')}
+            title={t("alertaccidentTitle")}
+            onPress={handleAlertAccidentPress}
+            />
+          <ReportCard
+            imageUrl={require('../../assets/images/audit.png')}
+            title={t("auditTitle")}
+            onPress={handleAuditPress}
+            />
+        </View>
+        <Spacer variant="large" />
+        <Spacer variant="large" />
+        <Spacer variant="large" />
+        <Spacer variant="large" />
+        <Spacer variant="large" />
+        <View style={styles.divider} />
+        <Spacer variant="large" />
+        <LocationCard />
+      </ScrollView>
     </SafeAreaView>
   );
 }
@@ -95,8 +105,7 @@ export default function HomeScreen() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    alignItems: "center",
-    justifyContent: "space-between",
+    padding: 16,
     backgroundColor: Colors.light.background.quinary
   },
   logo: {
@@ -105,8 +114,7 @@ const styles = StyleSheet.create({
   },
   cardContainer: {
     flexDirection: "row",
-    justifyContent: "center",
-    alignItems: "center"
+    justifyContent: "space-evenly",
   },
   divider: {
     height: 1,
