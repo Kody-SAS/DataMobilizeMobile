@@ -15,6 +15,7 @@ web-build/
 
 .env
 .env.production
+.env.development
 
 package-lock.json
 yarn.lock
