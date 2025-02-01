@@ -8,6 +8,7 @@
         "exploration": "Exploration",
         "profile": "Profile",
         "report": "Report",
+        "findSupport": "Find support",
         "connectAndTryAgain": "Connect to the internet and try again.",
         "comingSoon": "Coming soon",
         "welcomeBack": "Welcome back",
@@ -49,10 +50,15 @@
         "homeHeading": "Contribute to make our roads safer",
         "perceptionTitle": "Share your safety perception/feeling",
         "roadissueTitle": "Signal a road issue",
-        "alertaccidentTitle": "Alert an accident",
+        "alertaccidentTitle": "Alert and incident",
         "auditTitle": "Conduct a safety audit",
         "yourLocation": "Your location",   
         "viewOnMap": "View on map",
-        "mapDescription": "Use the map to explore all the existing reporting, number of reports, road user safety perception overall, some filter (city, time period, etc..)"
+        "mapDescription": "Use the map to explore all the existing reporting, number of reports, road user safety perception overall, some filter (city, time period, etc..)",
+        "locationPermissionDenied": "Location permission denied",
+        "stayAlertAndProactive": "Stay alert and proactive",
+        "shareLocation": "Share your location",
+        "shortestPath": "Find the shortest path"
+
     }
 }

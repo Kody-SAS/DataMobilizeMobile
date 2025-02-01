@@ -42,7 +42,8 @@ export default {
     plugins: [
       "expo-router",
       "expo-font",
-      "expo-localization"
+      "expo-localization",
+      "expo-location"
     ],
     experiments: {
       typedRoutes: false

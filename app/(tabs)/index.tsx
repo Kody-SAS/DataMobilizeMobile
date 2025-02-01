@@ -16,6 +16,7 @@ import { Spacer } from '../../components/Spacer';
 import { ReportCard } from '../../components/ReportCard';
 import { LocationCard } from '../../components/LocationCard';
 import { router } from 'expo-router';
+import { MoreOptionCard } from '../../components/MoreOptionCard';
 
 export default function HomeScreen() {
 
@@ -25,19 +26,39 @@ export default function HomeScreen() {
   const dispatch = useDispatch<ThunkDispatch<any, any, any>>();
 
   const handlePerceptionPress = () => {
-    router.push("/(homeStack)/reports");
+    router.push("/(homeStack)/report");
   }
 
   const handleRoadIssuePress = () => {
-    router.push("/(homeStack)/reports");
+    router.push("/(homeStack)/report");
   }
 
   const handleAlertAccidentPress = () => {
-    router.push("/(homeStack)/reports");
+    router.push("/(homeStack)/report");
   }
 
   const handleAuditPress = () => {
-    router.push("/(homeStack)/reports");
+    router.push("/(homeStack)/report");
+  }
+
+  const handleNavigateToFindSupport = () => {
+    router.push("/(homeStack)/findsupport");
+  }
+
+  const handleShareLocation = () => {
+    ToastMessage(
+      "info",
+      t("info"),
+      t("comingSoon")
+    )
+  }
+
+  const handleShortestPath = () => {
+    ToastMessage(
+      "info",
+      t("info"),
+      t("comingSoon")
+    )
   }
 
   useEffect(() => {
@@ -97,7 +118,34 @@ export default function HomeScreen() {
         <View style={styles.divider} />
         <Spacer variant="large" />
         <LocationCard />
-      </ScrollView>
+        <Spacer variant="large" />
+        <View style={styles.divider} />
+        <Spacer variant="large" />
+        <TextBlock type={TextBlockTypeEnum.h3}>{t("stayAlertAndProactive")}</TextBlock>
+        <Spacer variant="large" />
+        <View style={styles.cardContainer}>
+          <MoreOptionCard
+            imageUrl={require('../../assets/images/findsupport.png')}
+            title={t("findSupport")}
+            onPress={handleNavigateToFindSupport}
+            />
+          <MoreOptionCard
+            imageUrl={require('../../assets/images/sharelocation.png')}
+            title={t("shareLocation")}
+            onPress={handleShareLocation}
+            />
+          <MoreOptionCard
+            imageUrl={require('../../assets/images/shortestpath.png')}
+            title={t("shortestPath")}
+            onPress={handleShortestPath}
+            />
+        </View>
+        <Spacer variant="large" />
+        <Spacer variant="large" />
+        <Spacer variant="large" />
+        <Spacer variant="large" />
+        <Spacer variant="large" />
+        </ScrollView>
     </SafeAreaView>
   );
 }

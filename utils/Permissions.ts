@@ -2,6 +2,7 @@ import { Platform } from "react-native";
 import * as Device from 'expo-device';
 import * as Notifications from 'expo-notifications';
 import Constants from 'expo-constants';
+import * as Location from 'expo-location';
 
 function handleRegistrationError(message: string) {
 
@@ -49,4 +50,13 @@ export async function registerForPushNotificationsAsync() {
     } else {
         console.error('Must use physical device for push notifications');
     }
+}
+
+export const registerForForegroundLocationPermissionAsync = async () => {
+    const { status } = await Location.requestForegroundPermissionsAsync();
+    if (status !== 'granted') {
+        console.log('Permission to access location was denied');
+        return null;
+    }
+    return status;
 }

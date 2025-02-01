@@ -3,10 +3,11 @@ import {createAsyncThunk, createSlice} from "@reduxjs/toolkit";
 
 
 const initialState = {
-    
+    reports: [],
+    incidents: [],
 }
 
-export const checkOnboardingStatus = createAsyncThunk("map/checkOnboardingStatus", async () => {
+export const getAllReports = createAsyncThunk("map/getAllReports", async () => {
 
 })
 
@@ -20,7 +21,10 @@ export const mapSlice = createSlice({
     },
     extraReducers: (builder) => {
         builder
-        .addCase(checkOnboardingStatus.fulfilled, (state, action) => {
+        .addCase(getAllReports.fulfilled, (state, action) => {
+
+        })
+        .addCase(getAllReports.rejected, (state, action) => {
 
         })
     },
@@ -29,6 +33,7 @@ export const mapSlice = createSlice({
 export const {setOnboardingStatus} = mapSlice.actions;
 
 //selectors
-export const selectIsOnboarded = (state: any) => state.map.isOnboarded
+export const selectReports = (state: any) => state.map.reports;
+export const selectIncidents = (state: any) => state.map.incidents;
 
 export default mapSlice.reducer;

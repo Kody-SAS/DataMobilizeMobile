@@ -32,6 +32,7 @@ export default function TabLayout() {
           tabBarIcon: ({ color, focused }) => (
             <TabBarIcon name={focused ? "map" : 'map-outline'} color={color} />
           ),
+          tabBarHideOnKeyboard: true,
         }}
       />
       <Tabs.Screen
