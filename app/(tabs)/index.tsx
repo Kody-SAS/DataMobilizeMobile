@@ -5,7 +5,7 @@ import { useEffect } from 'react';
 import { registerForPushNotificationsAsync } from '../../utils/Permissions';
 import { useDispatch, useSelector } from 'react-redux';
 import { selectUser } from '../../redux/slices/accountSlice';
-import { TextBlockTypeEnum, User } from '../../type.d';
+import { ReportType, TextBlockTypeEnum, User } from '../../type.d';
 import { useTranslation } from 'react-i18next';
 import { ThunkDispatch } from '@reduxjs/toolkit';
 import { useNetInfo } from '@react-native-community/netinfo';
@@ -26,19 +26,19 @@ export default function HomeScreen() {
   const dispatch = useDispatch<ThunkDispatch<any, any, any>>();
 
   const handlePerceptionPress = () => {
-    router.push("/(homeStack)/report");
+    router.push({pathname: "/(homeStack)/report", params: {type: ReportType.SafetyPerception}});
   }
 
   const handleRoadIssuePress = () => {
-    router.push("/(homeStack)/report");
+    router.push({pathname: "/(homeStack)/report", params: {type: ReportType.Quick}});
   }
 
   const handleAlertAccidentPress = () => {
-    router.push("/(homeStack)/report");
+    router.push({pathname: "/(homeStack)/report", params: {type: ReportType.Incident}});
   }
 
   const handleAuditPress = () => {
-    router.push("/(homeStack)/report");
+    router.push({pathname: "/(homeStack)/report", params: {type: ReportType.Audit}});
   }
 
   const handleNavigateToFindSupport = () => {

@@ -10,6 +10,7 @@ import { useEffect, useState } from "react";
 import { registerForForegroundLocationPermissionAsync } from "../utils/Permissions";
 import ToastMessage from "../utils/Toast";
 import * as Location from 'expo-location';
+import { router } from "expo-router";
 
 export const LocationCard = () => {
     const [currentLocation, setCurrentLocation] = useState<Location.LocationObject | null>(null);
@@ -18,8 +19,7 @@ export const LocationCard = () => {
         const foregroundPermissionStatus = await registerForForegroundLocationPermissionAsync();
         if (foregroundPermissionStatus) {
             console.log('Permission granted');
-            const location = await Location.getCurrentPositionAsync({accuracy: Location.Accuracy.Balanced});
-            setCurrentLocation(location);
+            router.push("/(homeStack)/map");
             return;
         }
         console.log('Permission denied');
@@ -30,8 +30,18 @@ export const LocationCard = () => {
         )
     }
 
+    const locateUser = async() => {
+        const location = await Location.getCurrentPositionAsync({accuracy: Location.Accuracy.Balanced});
+        setCurrentLocation(location);
+    }
+
     useEffect(() => {
-        registerForForegroundLocationPermissionAsync();
+        registerForForegroundLocationPermissionAsync()
+        .then(data => {
+            if (data != null) {
+                locateUser();
+            }
+        });
     }, [])
     return (
         <View>

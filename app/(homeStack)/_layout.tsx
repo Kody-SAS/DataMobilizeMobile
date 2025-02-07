@@ -7,6 +7,7 @@ export default function HomeStackLayout() {
         <Stack>
             <Stack.Screen name='report' options={{ title: t('report') }} />
             <Stack.Screen name='findsupport' options={{ title: t('findSupport') }} />
+            <Stack.Screen name='map' options={{ title: t('location') }} />
         </Stack>
     )
 }

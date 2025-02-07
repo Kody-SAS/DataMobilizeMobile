@@ -91,3 +91,10 @@ export type ForgotUser = {
     isVerified: boolean;
     localisation?: string;
 }
+
+export enum ReportType {
+    SafetyPerception,
+    Quick,
+    Incident,
+    Audit
+}

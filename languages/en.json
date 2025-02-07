@@ -8,6 +8,10 @@
         "exploration": "Exploration",
         "profile": "Profile",
         "report": "Report",
+        "safetyPerceptionReport": "Safety perception",
+        "quickReport": "Quick report",
+        "incidentReport": "Incident report",
+        "auditReport": "Audit report",
         "findSupport": "Find support",
         "connectAndTryAgain": "Connect to the internet and try again.",
         "comingSoon": "Coming soon",
@@ -58,7 +62,10 @@
         "locationPermissionDenied": "Location permission denied",
         "stayAlertAndProactive": "Stay alert and proactive",
         "shareLocation": "Share your location",
-        "shortestPath": "Find the shortest path"
-
+        "shortestPath": "Find the shortest path",
+        "requiresLocationPermessionForReport": "You need to accept location permission to send a report.",
+        "goBack": "Go back",
+        "addPermission": "Change permission",
+        "location": "Location"
     }
 }
