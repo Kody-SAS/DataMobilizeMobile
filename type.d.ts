@@ -98,3 +98,20 @@ export enum ReportType {
     Incident,
     Audit
 }
+
+export enum RoadType {
+    Intersection,
+    Section,
+    RoundAbout,
+    Straight,
+    Turn
+}
+
+export enum UserType {
+    Pedestrian,
+    Cyclist,
+    Motocyclist,
+    Car,
+    Truck,
+    Bus
+}

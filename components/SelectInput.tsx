@@ -1,10 +1,11 @@
-import { Image, StyleSheet, View } from "react-native"
+import { FlatList, Image, StyleSheet, TouchableOpacity, View } from "react-native"
 import { Colors } from "../constants/Colors"
 import { TextBlock } from "./TextBlock";
 import { ButtonAction } from "./ButtonAction";
-import { ButtonTypeEnum, TextBlockTypeEnum } from "../type";
+import { ButtonTypeEnum, TextBlockTypeEnum } from "../type.d";
 import { useTranslation } from "react-i18next";
 import { SetStateAction, useState } from "react";
+import { Spacer } from "./Spacer";
 
 export type SelectedOption = {
     imageUrl: any;
@@ -14,13 +15,15 @@ export type SelectedOption = {
 export type SelectInputProps = {
     title: string;
     buttonText: string;
-    selectedInput: SelectedOption;
-    setSelectedInput: React.Dispatch<SetStateAction<SelectedOption>>;
+    selectionList: SelectedOption[];
+    selectedInput: SelectedOption | undefined;
+    setSelectedInput: React.Dispatch<SetStateAction<SelectedOption | undefined>>;
 }
 
 export const SelectInput = ({
     title,
     buttonText,
+    selectionList,
     selectedInput,
     setSelectedInput
 }: SelectInputProps) => {
@@ -39,28 +42,60 @@ export const SelectInput = ({
     return (
         <View>
             <View style={styles.heading}>
-                <TextBlock>{title}</TextBlock>
+                <TextBlock type={TextBlockTypeEnum.title}>{title}</TextBlock>
                 {!isOptionChange && (
                     <ButtonAction
                         variant={ButtonTypeEnum.quarternary}
                         onPress={handleActivateChange}
                         content={
-                            <TextBlock type={TextBlockTypeEnum.body}>{t("change")}</TextBlock>
+                            <TextBlock type={TextBlockTypeEnum.body} style={{color: Colors.light.background.primary}}>{buttonText}</TextBlock>
                         }
                     />
                 )}
             </View>
             {isOptionChange ? (
-                <View>
-                    
-                </View>
+                <FlatList
+                    data={selectionList}
+                    renderItem={({item, index}) => {
+                        return (
+                            <TouchableOpacity 
+                                id={index.toString()}
+                                onPress={() => handleOptionChange(item)}
+                                style={styles.listItemContainer}
+                                >
+                                <Image
+                                    source={item.imageUrl}
+                                    style={{width: 60, height: 60}}
+                                    resizeMode="contain"
+                                />
+                                <Spacer variant="medium" />
+                                <TextBlock type={TextBlockTypeEnum.caption} style={{textAlign: 'center'}}>{item.content}</TextBlock>
+                            </TouchableOpacity>
+                        )
+                    }}
+                    showsHorizontalScrollIndicator={true}
+                    horizontal={true}
+                    keyExtractor={item => item.imageUrl}
+                />
             ): (
-                <View style={styles.content}>
-                    <Image
-                        source={selectedInput.imageUrl}
-                    />
-                    <TextBlock type={TextBlockTypeEnum.body}>{selectedInput.content}</TextBlock>
-                </View>
+                <TouchableOpacity
+                    onPress={handleActivateChange}
+                    style={styles.content}>
+                        {selectedInput ? (
+                                <>
+                                    <Image
+                                        source={selectedInput?.imageUrl}
+                                        style={{width: 35, height: 35, marginRight: 8}}
+                                        resizeMode="contain"
+                                    />
+                                    <TextBlock type={TextBlockTypeEnum.body}>{selectedInput?.content}</TextBlock>
+                                </>
+                            )
+                            : (
+                                <TextBlock type={TextBlockTypeEnum.body}>{t("clickToSelect")}</TextBlock>
+                            )
+                        }
+                </TouchableOpacity>
             )}
         </View>
     )
@@ -79,5 +114,12 @@ const styles = StyleSheet.create({
         borderColor: Colors.light.background.tertiary,
         padding: 8,
         flexDirection: "row",
+        alignItems: 'center',
+        height: 45
+    },
+    listItemContainer: {
+        width: 65,
+        height: 100,
+        margin: 4
     }
 })

@@ -3,10 +3,8 @@ import * as Location from "expo-location";
 import { registerForForegroundLocationPermissionAsync } from "../../utils/Permissions";
 import ToastMessage from "../../utils/Toast";
 import { useTranslation } from "react-i18next";
-import { Alert, Linking, StyleSheet, View } from "react-native";
-import { router } from "expo-router";
+import { StyleSheet, View } from "react-native";
 import { Colors } from "../../constants/Colors";
-import { SafeAreaView } from "react-native-safe-area-context";
 import MapView, { PROVIDER_GOOGLE } from "react-native-maps";
 
 export default function Map() {
@@ -35,7 +33,7 @@ export default function Map() {
     }, []);
 
     return (
-        <SafeAreaView style={styles.container}>
+        <View style={styles.container}>
             <MapView 
                 style={styles.map} 
                 provider={PROVIDER_GOOGLE}
@@ -47,7 +45,7 @@ export default function Map() {
                     longitudeDelta: 5
                 }}
             />
-        </SafeAreaView>
+        </View>
     )
 }
 

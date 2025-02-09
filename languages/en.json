@@ -66,6 +66,21 @@
         "requiresLocationPermessionForReport": "You need to accept location permission to send a report.",
         "goBack": "Go back",
         "addPermission": "Change permission",
-        "location": "Location"
+        "location": "Location",
+        "intersection": "Intersection",
+        "section": "Section",
+        "roundAbout": "Round about",
+        "straight": "Straight",
+        "turn": "Turn",
+        "pedestrian": "Pedestrian",
+        "cyclist": "Cyclist",
+        "motocyclist": "Motocylist",
+        "car": "Car",
+        "truck": "Truck",
+        "bus": "Bus",
+        "clickToSelect": "Click to select",
+        "chooseRoadType": "What is the road type ?",
+        "chooseUserType": "Choose the user",
+        "chooseDate": "Select the event date"
     }
 }
