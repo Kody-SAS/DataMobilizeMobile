@@ -1,4 +1,4 @@
-import { Alert, GestureResponderEvent, Image, Linking, StyleSheet, Touchable, TouchableOpacity, View } from "react-native";
+import { Alert, GestureResponderEvent, Image, Linking, ScrollView, StyleSheet, Touchable, TouchableOpacity, View } from "react-native";
 import { TextBlock } from "../../components/TextBlock";
 import { router, useLocalSearchParams, useNavigation } from "expo-router";
 import { Colors } from "../../constants/Colors";
@@ -163,7 +163,7 @@ export default function Report() {
         let result = await ImagePicker.launchImageLibraryAsync({
             mediaTypes: ['images'],
             allowsEditing: false,
-            quality: 1,
+            quality: 0.3,
         });
 
         console.log(result);
@@ -214,20 +214,20 @@ export default function Report() {
 
     // only accept report types
     useEffect(() => {
-        if (Object.values(ReportType).indexOf(type as string) < 0) router.back();
+        if (Object.values(ReportType).indexOf(type as ReportType) < 0) router.back();
     }, [])
 
     return (
+        <PaperProvider>
         <View style={styles.container}>
-            <PaperProvider>
-            {type == ReportType.SafetyPerception.toString() || type == ReportType.Quick.toString() && (
+            {(type == ReportType.SafetyPerception.toString() || type == ReportType.Quick.toString()) && (
                 <>
                     <LocationCard />
                     <Spacer variant="large" />
                     <Spacer variant="medium" />
                 </>
             )}
-            {type == ReportType.SafetyPerception.toString() || type == ReportType.Quick.toString() && (
+            {(type == ReportType.SafetyPerception.toString() || type == ReportType.Quick.toString()) && (
                 <>
                     {/* The road type */}
                     <SelectInput
@@ -241,7 +241,7 @@ export default function Report() {
                     <Spacer variant="medium" />
                 </>
             )}
-            {type == ReportType.SafetyPerception.toString() || type == ReportType.Quick.toString() && (
+            {(type == ReportType.SafetyPerception.toString() || type == ReportType.Quick.toString()) && (
                 <>
                     <DateInput
                         date={date}
@@ -284,8 +284,8 @@ export default function Report() {
 
             {/* Safety reasons */}
             <Portal>
-                <Modal visible={isSafetyModalVisible} dismissable={false} contentContainerStyle={styles.safetyModal}>
-                    <View>
+                <Modal visible={isSafetyModalVisible} dismissable={false}>
+                    <View style={styles.modalContentContainer}>
                         <TextBlock type={TextBlockTypeEnum.title}>
                             {t("whyDidYouChooseThisLevel")}
                         </TextBlock>
@@ -297,22 +297,29 @@ export default function Report() {
                                         {item.data.map((safetyLevel, levelKey) => {
                                             if(safetyLevel.type == safety) {
                                                 return(
-                                                    <View key={levelKey}>
+                                                    <ScrollView key={levelKey}>
                                                         {safetyLevel.reasons.map((level, levelKey) => {
                                                             return (
                                                                 <View key={levelKey}>
+                                                                    <TextBlock type={TextBlockTypeEnum.h4}>{level.type}</TextBlock>
+                                                                    <Spacer variant="medium" />
                                                                     {level.list.map((reason, reasonKey) => (
                                                                         <Checkbox.Item 
                                                                             key={reasonKey}
                                                                             label={reason}
                                                                             labelStyle={{flexWrap: "wrap", marginBottom: 8}}
                                                                             onPress={(e) => handleSafetyReasonPressed(e, reason)}
-                                                                            status="indeterminate" />
+                                                                            status="unchecked" />
                                                                     ))}
+                                                                    <Spacer variant='large' />
+                                                                    <Spacer variant='medium' />
                                                                 </View>
                                                             )
                                                         })}
-                                                    </View>
+                                                        <Spacer variant="large" />
+                                                        <Spacer variant="large" />
+                                                        <Spacer variant="large" />
+                                                    </ScrollView>
                                                 
                                                 )
                                             }
@@ -326,7 +333,7 @@ export default function Report() {
                 </Modal>
             </Portal>
 
-            {type == ReportType.SafetyPerception.toString() || type == ReportType.Quick.toString() && (
+            {(type == ReportType.SafetyPerception.toString() || type == ReportType.Quick.toString()) && (
                 <>
                     {/* Comment section */}
                     <View>
@@ -346,7 +353,7 @@ export default function Report() {
                 </>
             )}
 
-            {type == ReportType.SafetyPerception.toString() || type == ReportType.Quick.toString() && (
+            {(type == ReportType.SafetyPerception.toString() || type == ReportType.Quick.toString()) && (
                 <>
                     {/* Image picker section */}
                     <View>
@@ -358,6 +365,7 @@ export default function Report() {
                             {reportImages.map((image, index) => {
                                 return (
                                     <TouchableOpacity
+                                        key={index}
                                         activeOpacity={0.8}
                                         onPress={() => handleDeleteImage(image)}>
                                         <Image
@@ -394,12 +402,12 @@ export default function Report() {
                 variant={ButtonTypeEnum.primary}
                 onPress={handleAddReport}
                 content={
-                    <TextBlock>{t("addReport")}</TextBlock>
+                    <TextBlock style={{color: Colors.light.background.quaternary}}>{t("addReport")}</TextBlock>
                 }
             />
             <Spacer variant="large" />
-            </PaperProvider>
         </View>
+        </PaperProvider>
     );
 }
 
@@ -419,15 +427,16 @@ const styles = StyleSheet.create({
         justifyContent: "space-between",
         alignItems: "center"
     },
-    safetyModal: {
-        backgroundColor: Colors.light.background.quinary,
-        padding: 16,
-        margin: 16,
-        borderRadius: 8,
-        maxHeight: "80%"
-    },
     imagesContainer: {
         gap: 8,
         flexDirection: 'row',
+    },
+    modalContentContainer: {
+        margin: 16,
+        padding: 16,
+        backgroundColor: Colors.light.background.quinary,
+        borderRadius: 8,
+        maxHeight: "85%",
+        overflow: 'hidden'
     }
 });

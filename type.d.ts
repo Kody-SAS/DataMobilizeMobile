@@ -93,25 +93,25 @@ export type ForgotUser = {
 }
 
 export enum ReportType {
-    SafetyPerception,
-    Quick,
-    Incident,
-    Audit
+    SafetyPerception = "SafetyPerception",
+    Quick = "Quick",
+    Incident = "Incident",
+    Audit = "Audit"
 }
 
 export enum RoadType {
-    Intersection,
-    Section,
-    RoundAbout,
-    Straight,
-    Turn
+    Intersection = "Intersection",
+    Section = "Section",
+    RoundAbout = "RoundAbout",
+    Straight = "Straight",
+    Turn = "Turn"
 }
 
 export enum UserType {
-    Pedestrian,
-    Cyclist,
-    Motocyclist,
-    Car,
-    Truck,
-    Bus
+    Pedestrian = "Pedestrian",
+    Cyclist = "Cyclist",
+    Motocyclist = "Motocyclist",
+    Car = "Car",
+    Truck = "Truck",
+    Bus = "Bus"
 }

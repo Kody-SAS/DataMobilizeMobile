@@ -21,11 +21,11 @@ export const ButtonAction = ({
             activeOpacity={0.7}
             onPress={onPress}
             style={[
-                style,
                 variant == ButtonTypeEnum.primary ? styles.primary : undefined,
                 variant == ButtonTypeEnum.secondary ? styles.secondary : undefined,
                 variant == ButtonTypeEnum.tertiary ? styles.tertiary : undefined,
-                variant == ButtonTypeEnum.quarternary ? styles.quarternary : undefined
+                variant == ButtonTypeEnum.quarternary ? styles.quarternary : undefined,
+                style
             ]}
             {...rest}
         >

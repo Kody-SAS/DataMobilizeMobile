@@ -96,6 +96,10 @@
     "editProfile": "Edit profile",
     "requireAccountDelete": "Are you sure you want to delete your account ? This is irreversible.",
     "requireLogout": "Are you sure you want to log out ?",
-    "save": "Save"
+    "save": "Save",
+    "codeSentToEmail": "Code sent to your mail",
+    "additionalComment": "Add an optional comment",
+    "commentPlaceholder": "Say something...",
+    "addImages": "Add one or more images to the report"
   }
 }

@@ -102,16 +102,17 @@ export default function Profile() {
     }
 
     return (
+        <PaperProvider>
         <SafeAreaView style={styles.container}>
-            <PaperProvider>
             <Spacer variant="large"/>
             <TextBlock type={TextBlockTypeEnum.h3}>{user.username}</TextBlock>
             <TextBlock type={TextBlockTypeEnum.caption}>{user.email}</TextBlock>
             <Spacer variant="large"/>
             <Spacer variant="large"/>
             <ButtonAction
-                variant={ButtonTypeEnum.tertiary}
+                variant={ButtonTypeEnum.quarternary}
                 onPress={handleEditProfile}
+                style={{alignItems: 'flex-start'}}
                 content={
                     <View style={styles.buttonContainer}>
                         <MaterialCommunityIcons name="account-edit-outline" size={24} color="black" />
@@ -120,10 +121,11 @@ export default function Profile() {
                     </View>
                 }/>
             <Spacer variant="large" />
+            <Spacer variant="medium" />
 
             <Portal>
-                <Modal visible={isEditModalVisible} dismissable={true} contentContainerStyle={styles.editModal}>
-                    <View>
+                <Modal visible={isEditModalVisible} dismissable={true}>
+                    <View style={styles.modalContentContainer}>
                         <TextBlock type={TextBlockTypeEnum.body} style={{ textAlign: "center" }}>
                             {t("editProfile")}
                         </TextBlock>
@@ -170,8 +172,9 @@ export default function Profile() {
                 </Modal>
             </Portal>
             <ButtonAction
-                variant={ButtonTypeEnum.tertiary}
+                variant={ButtonTypeEnum.quarternary}
                 onPress={handleLogoutPress}
+                style={{alignItems: 'flex-start'}}
                 content={
                     <View style={styles.buttonContainer}>
                         <MaterialIcons name="logout" size={24} color="black" />
@@ -180,9 +183,11 @@ export default function Profile() {
                     </View>
                 }/>
             <Spacer variant="large" />
+            <Spacer variant="medium" />
             <ButtonAction
-                variant={ButtonTypeEnum.tertiary}
+                variant={ButtonTypeEnum.quarternary}
                 onPress={handleAccountDelete}
+                style={{alignItems: 'flex-start'}}
                 content={
                     <View style={styles.buttonContainer}>
                         <MaterialCommunityIcons name="account-cancel-outline" size={24} color="black" />
@@ -191,14 +196,14 @@ export default function Profile() {
                     </View>
                 }/>
             <Spacer variant="large" />
-            </PaperProvider>
         </SafeAreaView>
+        </PaperProvider>
     )
 }
 
 const styles = StyleSheet.create({
     container: {
-        backgroundColor: Colors.light.background.quaternary,
+        backgroundColor: Colors.light.background.quinary,
         flex: 1,
         padding: 16
     },
@@ -206,12 +211,12 @@ const styles = StyleSheet.create({
         flexDirection: 'row',
         alignItems: 'center'
     },
-    editModal: {
-        backgroundColor: Colors.light.background.quinary,
-        padding: 16,
+    modalContentContainer: {
         margin: 16,
+        padding: 16,
+        backgroundColor: Colors.light.background.quinary,
         borderRadius: 8,
-        maxHeight: "80%"
+        maxHeight: "85%",
     },
     actionContainer: {
         flexDirection: 'row',

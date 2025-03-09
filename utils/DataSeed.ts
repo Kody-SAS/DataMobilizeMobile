@@ -323,7 +323,205 @@ export const safetyLevelReasons : {userType: UserType, data: {type: SafetyLevel,
         ]
     },
     {
-        userType: UserType.Car | UserType.Bus | UserType.Truck,
+        userType: UserType.Car,
+        data: [
+            {
+                type: SafetyLevel.Safe,
+                reasons: [
+                    {
+                        type: ReasonType.infrastructure,
+                        list: [
+                            "Roads are smooth, wide, and well-maintained.",
+                            "Lane markings are clear and road signs are visible.",
+                            "Street lighting is bright and ensures good visibility at night.",
+                            "Properly marked parking areas and safe stopping zones.",
+                            "Traffic volume at intersections is low, allowing for smooth flow."
+                        ]
+                    },
+                    {
+                        type: ReasonType.userBehaviour,
+                        list: [
+                            "Drivers consistently follow speed limits and traffic rules.",
+                            "Drivers yield when required and do not engage in aggressive behavior.",
+                            "Vehicle speed is low and appropriate for the environment."
+                        ]
+                    },
+                    {
+                        type: ReasonType.vehicle,
+                        list: [
+                            "Vehicles are well-maintained, with no visible defects.",
+                            "Tires are in good condition, brakes are responsive.",
+                            "Vehicle noise levels are low.",
+                            "Minimal emissions from vehicles, meeting environmental standards."
+                        ]
+                    }
+                ]
+            },
+            {
+                type: SafetyLevel.unSafe,
+                reasons: [
+                    {
+                        type: ReasonType.infrastructure,
+                        list: [
+                            "Roads are moderately uneven with some cracks or minor obstacles.",
+                            "Lane markings and road signs are somewhat unclear or worn.",
+                            "Street lighting is inconsistent, especially in some areas.",
+                            "Traffic volume at intersections is moderate, leading to occasional delays.",
+                            "Parking areas are limited or improperly located."
+                        ]
+                    },
+                    {
+                        type: ReasonType.userBehaviour,
+                        list: [
+                            "Drivers occasionally exceed speed limits or engage in unsafe driving behaviors.",
+                            "Drivers fail to yield at intersections or pedestrian crossings.",
+                            "Vehicle speed is moderate but could be safer in residential or pedestrian zones."
+                        ]
+                    },
+                    {
+                        type: ReasonType.vehicle,
+                        list: [
+                            "Minor maintenance issues with the vehicle (e.g., worn-out tires or lights).",
+                            "Moderate noise from engine or exhaust.",
+                            "Vehicle emissions slightly exceed environmental limits."
+                        ]
+                    }
+                ]
+            },
+            {
+                type: SafetyLevel.veryUnsafe,
+                reasons: [
+                    {
+                        type: ReasonType.infrastructure,
+                        list: [
+                            "Roads are heavily degraded with large potholes and obstacles.",
+                            "Lane markings and road signs are not visible or completely absent.",
+                            "No street lighting or broken street lighting.",
+                            "Traffic volume at intersections is high, causing significant delays and congestion.",
+                            "Parking areas are scarce or poorly marked."
+                        ]
+                    },
+                    {
+                        type: ReasonType.userBehaviour,
+                        list: [
+                            "Aggressive driving, including speeding, tailgating, or cutting off others.",
+                            "Drivers frequently fail to yield to pedestrians or cyclists.",
+                            "Vehicles often travel at excessive speeds."
+                        ]
+                    },
+                    {
+                        type: ReasonType.vehicle,
+                        list: [
+                            "Vehicle defects, such as broken lights, bald tires, or faulty brakes.",
+                            "Major noise issues from engine or exhaust.",
+                            "Excessive emissions or visible exhaust smoke."
+                        ]
+                    }
+                ]
+            }
+        ]
+    },
+    {
+        userType: UserType.Bus,
+        data: [
+            {
+                type: SafetyLevel.Safe,
+                reasons: [
+                    {
+                        type: ReasonType.infrastructure,
+                        list: [
+                            "Roads are smooth, wide, and well-maintained.",
+                            "Lane markings are clear and road signs are visible.",
+                            "Street lighting is bright and ensures good visibility at night.",
+                            "Properly marked parking areas and safe stopping zones.",
+                            "Traffic volume at intersections is low, allowing for smooth flow."
+                        ]
+                    },
+                    {
+                        type: ReasonType.userBehaviour,
+                        list: [
+                            "Drivers consistently follow speed limits and traffic rules.",
+                            "Drivers yield when required and do not engage in aggressive behavior.",
+                            "Vehicle speed is low and appropriate for the environment."
+                        ]
+                    },
+                    {
+                        type: ReasonType.vehicle,
+                        list: [
+                            "Vehicles are well-maintained, with no visible defects.",
+                            "Tires are in good condition, brakes are responsive.",
+                            "Vehicle noise levels are low.",
+                            "Minimal emissions from vehicles, meeting environmental standards."
+                        ]
+                    }
+                ]
+            },
+            {
+                type: SafetyLevel.unSafe,
+                reasons: [
+                    {
+                        type: ReasonType.infrastructure,
+                        list: [
+                            "Roads are moderately uneven with some cracks or minor obstacles.",
+                            "Lane markings and road signs are somewhat unclear or worn.",
+                            "Street lighting is inconsistent, especially in some areas.",
+                            "Traffic volume at intersections is moderate, leading to occasional delays.",
+                            "Parking areas are limited or improperly located."
+                        ]
+                    },
+                    {
+                        type: ReasonType.userBehaviour,
+                        list: [
+                            "Drivers occasionally exceed speed limits or engage in unsafe driving behaviors.",
+                            "Drivers fail to yield at intersections or pedestrian crossings.",
+                            "Vehicle speed is moderate but could be safer in residential or pedestrian zones."
+                        ]
+                    },
+                    {
+                        type: ReasonType.vehicle,
+                        list: [
+                            "Minor maintenance issues with the vehicle (e.g., worn-out tires or lights).",
+                            "Moderate noise from engine or exhaust.",
+                            "Vehicle emissions slightly exceed environmental limits."
+                        ]
+                    }
+                ]
+            },
+            {
+                type: SafetyLevel.veryUnsafe,
+                reasons: [
+                    {
+                        type: ReasonType.infrastructure,
+                        list: [
+                            "Roads are heavily degraded with large potholes and obstacles.",
+                            "Lane markings and road signs are not visible or completely absent.",
+                            "No street lighting or broken street lighting.",
+                            "Traffic volume at intersections is high, causing significant delays and congestion.",
+                            "Parking areas are scarce or poorly marked."
+                        ]
+                    },
+                    {
+                        type: ReasonType.userBehaviour,
+                        list: [
+                            "Aggressive driving, including speeding, tailgating, or cutting off others.",
+                            "Drivers frequently fail to yield to pedestrians or cyclists.",
+                            "Vehicles often travel at excessive speeds."
+                        ]
+                    },
+                    {
+                        type: ReasonType.vehicle,
+                        list: [
+                            "Vehicle defects, such as broken lights, bald tires, or faulty brakes.",
+                            "Major noise issues from engine or exhaust.",
+                            "Excessive emissions or visible exhaust smoke."
+                        ]
+                    }
+                ]
+            }
+        ]
+    },
+    {
+        userType: UserType.Truck,
         data: [
             {
                 type: SafetyLevel.Safe,
