@@ -43,7 +43,8 @@ export default {
       "expo-router",
       "expo-font",
       "expo-localization",
-      "expo-location"
+      "expo-location",
+      "expo-image-picker"
     ],
     experiments: {
       typedRoutes: false

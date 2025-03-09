@@ -18,6 +18,7 @@ export type SelectInputProps = {
     selectionList: SelectedOption[];
     selectedInput: SelectedOption | undefined;
     setSelectedInput: React.Dispatch<SetStateAction<SelectedOption | undefined>>;
+    onInputSelect?: () => void;
 }
 
 export const SelectInput = ({
@@ -25,12 +26,14 @@ export const SelectInput = ({
     buttonText,
     selectionList,
     selectedInput,
-    setSelectedInput
+    setSelectedInput,
+    onInputSelect
 }: SelectInputProps) => {
     const [isOptionChange, setIsOptionChange] = useState<boolean>(false);
     const {t} = useTranslation();
 
     const handleOptionChange = (item: SelectedOption) => {
+        if (onInputSelect) onInputSelect();
         setSelectedInput(item);
         setIsOptionChange(false);
     }

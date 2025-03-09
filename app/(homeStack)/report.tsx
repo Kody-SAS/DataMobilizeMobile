@@ -1,20 +1,28 @@
-import { Alert, Linking, StyleSheet, View } from "react-native";
+import { Alert, GestureResponderEvent, Image, Linking, StyleSheet, Touchable, TouchableOpacity, View } from "react-native";
 import { TextBlock } from "../../components/TextBlock";
 import { router, useLocalSearchParams, useNavigation } from "expo-router";
 import { Colors } from "../../constants/Colors";
 import { useEffect, useState } from "react";
 import { requestForegroundPermissionsAsync } from "expo-location";
 import { useTranslation } from "react-i18next";
-import { ReportType, RoadType, UserType } from "../../type.d";
+import { ButtonTypeEnum, ReportType, RoadType, TextBlockTypeEnum, UserType } from "../../type.d";
 import { LocationCard } from "../../components/LocationCard";
 import { Spacer } from "../../components/Spacer";
 import { SelectedOption, SelectInput } from "../../components/SelectInput";
 import { DateInput } from "../../components/DateInput";
+import { Checkbox, Modal, PaperProvider, Portal, RadioButton, TextInput } from "react-native-paper";
+import { SafetyLevel, safetyLevelReasons } from "../../utils/DataSeed";
+import * as ImagePicker from 'expo-image-picker';
+import { ButtonAction } from "../../components/ButtonAction";
 
 export default function Report() {
     const [roadType, setRoadType] = useState<SelectedOption>();
     const [userType, setUserType] = useState<SelectedOption>();
     const [date, setDate] = useState<Date>(new Date(Date.now()));
+    const [safety, setSafety] = useState<string>();
+    const [safetyReasons, setSafetyReasons] = useState<string[]>([]);
+    const [isSafetyModalVisible, setIsSafetyModalVisible] = useState<boolean>(false);
+    const [reportImages, setReportImages] = useState<string[]>([]);
 
     const {type} = useLocalSearchParams();
     const {t} = useTranslation();
@@ -25,7 +33,7 @@ export default function Report() {
 
         if (request == null) {
             Alert.alert(
-                "error",
+                t("error"),
                 t("requiresLocationPermessionForReport"),
                 [
                     {
@@ -139,6 +147,61 @@ export default function Report() {
         },
     ]
 
+    const handleSafetyLevelSelection = (value: string) => {
+        setIsSafetyModalVisible(true);
+        setSafety(value);
+    }
+
+    const handleSafetyReasonPressed = (e: GestureResponderEvent, selectedReason: string) => {
+        if(!safetyReasons.includes(selectedReason)) {
+            setSafetyReasons([...safetyReasons, selectedReason]);
+        }
+    }
+
+    const handleAddImage = async () => {
+        // No permissions request is necessary for launching the image library
+        let result = await ImagePicker.launchImageLibraryAsync({
+            mediaTypes: ['images'],
+            allowsEditing: false,
+            quality: 1,
+        });
+
+        console.log(result);
+
+        if (!result.canceled) {
+            if(!reportImages.includes(result.assets[0].uri)) setReportImages([...reportImages, result.assets[0].uri]);
+        }
+    };
+
+    const handleDeleteImage = (selectedImage: string) => {
+        Alert.alert(
+            t("warning"),
+            t("deleteImageRequest"),
+            [
+                {
+                    text: t("cancel"),
+                    onPress: () => {},
+                    style: 'cancel'
+                },
+                {
+                    text: t("delete"),
+                    onPress: () => {
+                        const newList = reportImages.filter(item => item != selectedImage);
+                        setReportImages(newList);
+                    },
+                    style: 'destructive',
+                }
+            ],
+            {
+                cancelable: true
+            }
+        )
+    };
+
+    const handleAddReport = () => {
+
+    };
+
     // change screen title
     useEffect(() => {
         changeScreenTitle();
@@ -148,33 +211,194 @@ export default function Report() {
     useEffect(() => {
         canUserReport();
     }, [])
+
+    // only accept report types
+    useEffect(() => {
+        if (Object.values(ReportType).indexOf(type as string) < 0) router.back();
+    }, [])
+
     return (
         <View style={styles.container}>
-            <LocationCard />
-            <Spacer variant="large" />
-            <Spacer variant="medium" />
-            <SelectInput
-                title={t("chooseRoadType")}
-                selectedInput={roadType}
-                setSelectedInput={setRoadType}
-                selectionList={roadTypeData}
-                buttonText={t("change")}
+            <PaperProvider>
+            {type == ReportType.SafetyPerception.toString() || type == ReportType.Quick.toString() && (
+                <>
+                    <LocationCard />
+                    <Spacer variant="large" />
+                    <Spacer variant="medium" />
+                </>
+            )}
+            {type == ReportType.SafetyPerception.toString() || type == ReportType.Quick.toString() && (
+                <>
+                    {/* The road type */}
+                    <SelectInput
+                        title={t("chooseRoadType")}
+                        selectedInput={roadType}
+                        setSelectedInput={setRoadType}
+                        selectionList={roadTypeData}
+                        buttonText={t("change")}
+                    />
+                    <Spacer variant="large" />
+                    <Spacer variant="medium" />
+                </>
+            )}
+            {type == ReportType.SafetyPerception.toString() || type == ReportType.Quick.toString() && (
+                <>
+                    <DateInput
+                        date={date}
+                        setDate={setDate}
+                    />
+                    <Spacer variant="large" />
+                    <Spacer variant="medium" />
+                </>
+            )}
+            {type == ReportType.SafetyPerception.toString() && (
+                <>
+                    {/* Choosing the user type */}
+                    <SelectInput
+                        title={t("chooseUserType")}
+                        selectedInput={userType}
+                        setSelectedInput={setUserType}
+                        selectionList={userTypeData}
+                        buttonText={t("change")}
+                    />
+                    <Spacer variant="large" />
+                    <Spacer variant="medium" />
+                </>
+            )}
+            {type == ReportType.SafetyPerception.toString() && (
+                <>
+                    {/* Choosing the safety level */}
+                    <RadioButton.Group 
+                        onValueChange={handleSafetyLevelSelection} 
+                        value={safety?.toString() ?? ""}>
+                        <View style={styles.safetyLevelContainer}>
+                            <RadioButton.Item label={t("safe")} value={SafetyLevel.Safe} />
+                            <RadioButton.Item label={t("unsafe")} value={SafetyLevel.unSafe} />
+                            <RadioButton.Item label={t("veryUnsafe")} value={SafetyLevel.veryUnsafe} />
+                        </View>
+                    </RadioButton.Group>
+                    <Spacer variant="large" />
+                    <Spacer variant="medium" />
+                </>
+            )}
+
+            {/* Safety reasons */}
+            <Portal>
+                <Modal visible={isSafetyModalVisible} dismissable={false} contentContainerStyle={styles.safetyModal}>
+                    <View>
+                        <TextBlock type={TextBlockTypeEnum.title}>
+                            {t("whyDidYouChooseThisLevel")}
+                        </TextBlock>
+                        <Spacer variant="large" />
+                        {safetyLevelReasons.map((item, index) => {
+                            if(item.userType == userType?.data.type) {
+                                return (
+                                    <View key={index}>
+                                        {item.data.map((safetyLevel, levelKey) => {
+                                            if(safetyLevel.type == safety) {
+                                                return(
+                                                    <View key={levelKey}>
+                                                        {safetyLevel.reasons.map((level, levelKey) => {
+                                                            return (
+                                                                <View key={levelKey}>
+                                                                    {level.list.map((reason, reasonKey) => (
+                                                                        <Checkbox.Item 
+                                                                            key={reasonKey}
+                                                                            label={reason}
+                                                                            labelStyle={{flexWrap: "wrap", marginBottom: 8}}
+                                                                            onPress={(e) => handleSafetyReasonPressed(e, reason)}
+                                                                            status="indeterminate" />
+                                                                    ))}
+                                                                </View>
+                                                            )
+                                                        })}
+                                                    </View>
+                                                
+                                                )
+                                            }
+                                        })}
+                                        <Spacer variant="medium" />
+                                    </View>
+                                )
+                            }
+                        })}
+                    </View>
+                </Modal>
+            </Portal>
+
+            {type == ReportType.SafetyPerception.toString() || type == ReportType.Quick.toString() && (
+                <>
+                    {/* Comment section */}
+                    <View>
+                        <TextBlock type={TextBlockTypeEnum.title}>
+                            {t("additionalComment")}
+                        </TextBlock>
+                        <Spacer variant="medium" />
+                        <TextInput
+                            multiline
+                            maxLength={250}
+                            style={{backgroundColor: Colors.light.background.secondary, padding: 8, borderRadius: 8}}
+                            placeholder={t("commentPlaceholder")}
+                        />
+                    </View>
+                    <Spacer variant="large" />
+                    <Spacer variant="medium" />
+                </>
+            )}
+
+            {type == ReportType.SafetyPerception.toString() || type == ReportType.Quick.toString() && (
+                <>
+                    {/* Image picker section */}
+                    <View>
+                        <TextBlock type={TextBlockTypeEnum.title}>
+                            {t("addImages")}
+                        </TextBlock>
+                        <Spacer variant="medium" />
+                        <View style={styles.imagesContainer}>
+                            {reportImages.map((image, index) => {
+                                return (
+                                    <TouchableOpacity
+                                        activeOpacity={0.8}
+                                        onPress={() => handleDeleteImage(image)}>
+                                        <Image
+                                            key={index}
+                                            source={{uri: image}}
+                                            width={74}
+                                            height={60}
+                                            resizeMode="contain"
+                                            style={{borderRadius: 8}}
+                                        />
+                                    </TouchableOpacity>
+                                )
+                            })}
+                            {
+                                reportImages.length < 2 && (
+                                    <TouchableOpacity
+                                        activeOpacity={0.8}
+                                        onPress={handleAddImage}
+                                        style={{width: 74, height: 60, borderRadius: 8, backgroundColor: Colors.light.background.tertiary, justifyContent: 'center', alignItems: 'center'}}>
+                                        <TextBlock type={TextBlockTypeEnum.title}>
+                                            +
+                                        </TextBlock>
+                                    </TouchableOpacity>
+                                )
+                            }
+                        </View>
+                    </View>
+                    <Spacer variant="large" />
+                    <Spacer variant="medium" />
+                </>
+            )}
+
+            <ButtonAction 
+                variant={ButtonTypeEnum.primary}
+                onPress={handleAddReport}
+                content={
+                    <TextBlock>{t("addReport")}</TextBlock>
+                }
             />
             <Spacer variant="large" />
-            <Spacer variant="medium" />
-            <DateInput
-                date={date}
-                setDate={setDate}
-            />
-            <Spacer variant="large" />
-            <Spacer variant="medium" />
-            <SelectInput
-                title={t("chooseUserType")}
-                selectedInput={userType}
-                setSelectedInput={setUserType}
-                selectionList={userTypeData}
-                buttonText={t("change")}
-            />
+            </PaperProvider>
         </View>
     );
 }
@@ -189,5 +413,21 @@ const styles = StyleSheet.create({
         flexDirection: "row",
         justifyContent: "space-between",
         alignItems: "center"
+    },
+    safetyLevelContainer: {
+        flexDirection: "row",
+        justifyContent: "space-between",
+        alignItems: "center"
+    },
+    safetyModal: {
+        backgroundColor: Colors.light.background.quinary,
+        padding: 16,
+        margin: 16,
+        borderRadius: 8,
+        maxHeight: "80%"
+    },
+    imagesContainer: {
+        gap: 8,
+        flexDirection: 'row',
     }
 });

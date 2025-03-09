@@ -271,6 +271,9 @@ export const accountSlice = createSlice({
         },
         setIsGuess: (state, action) => {
             state.isGuess = action.payload as boolean;
+        },
+        setIsAccountVerified: (state, action) => {
+            state.isAccountVerified = action.payload;
         }
     },
     extraReducers: (builder) => {
@@ -379,7 +382,7 @@ export const accountSlice = createSlice({
     },
 });
 
-export const {setCreateUser, setUser, setIsGuess} = accountSlice.actions;
+export const {setCreateUser, setUser, setIsGuess, setIsAccountVerified} = accountSlice.actions;
 
 //selectors
 export const selectCreateUser = (state: any) => state.account.createUser as CreateUser;
