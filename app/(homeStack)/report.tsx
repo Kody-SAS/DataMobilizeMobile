@@ -156,6 +156,10 @@ export default function Report() {
         if(!safetyReasons.includes(selectedReason)) {
             setSafetyReasons([...safetyReasons, selectedReason]);
         }
+        else {
+            const newList = [...safetyReasons].filter(item => item != selectedReason);
+            setSafetyReasons(newList);
+        }
     }
 
     const handleAddImage = async () => {
@@ -219,15 +223,15 @@ export default function Report() {
 
     return (
         <PaperProvider>
-        <View style={styles.container}>
-            {(type == ReportType.SafetyPerception.toString() || type == ReportType.Quick.toString()) && (
+        <ScrollView style={styles.container}>
+            {(type == ReportType.SafetyPerception.toString() || type == ReportType.Quick.toString() || type == ReportType.Incident.toString()) && (
                 <>
                     <LocationCard />
                     <Spacer variant="large" />
                     <Spacer variant="medium" />
                 </>
             )}
-            {(type == ReportType.SafetyPerception.toString() || type == ReportType.Quick.toString()) && (
+            {(type == ReportType.SafetyPerception.toString() || type == ReportType.Quick.toString() || type == ReportType.Incident.toString()) && (
                 <>
                     {/* The road type */}
                     <SelectInput
@@ -241,7 +245,7 @@ export default function Report() {
                     <Spacer variant="medium" />
                 </>
             )}
-            {(type == ReportType.SafetyPerception.toString() || type == ReportType.Quick.toString()) && (
+            {(type == ReportType.SafetyPerception.toString() || type == ReportType.Quick.toString() || type == ReportType.Incident.toString()) && (
                 <>
                     <DateInput
                         date={date}
@@ -284,11 +288,20 @@ export default function Report() {
 
             {/* Safety reasons */}
             <Portal>
-                <Modal visible={isSafetyModalVisible} dismissable={false}>
+                <Modal visible={isSafetyModalVisible} dismissable={true}>
                     <View style={styles.modalContentContainer}>
-                        <TextBlock type={TextBlockTypeEnum.title}>
-                            {t("whyDidYouChooseThisLevel")}
-                        </TextBlock>
+                        <View style={{flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center'}}>
+                            <TextBlock type={TextBlockTypeEnum.title}>
+                                {t("whyDidYouChooseThisLevel")}
+                            </TextBlock>
+
+                            <ButtonAction
+                                variant={ButtonTypeEnum.tertiary}
+                                onPress={() => setIsSafetyModalVisible(false)}
+                                content={
+                                    <TextBlock type={TextBlockTypeEnum.h5}>X</TextBlock>
+                                }/>
+                        </View>
                         <Spacer variant="large" />
                         {safetyLevelReasons.map((item, index) => {
                             if(item.userType == userType?.data.type) {
@@ -309,13 +322,21 @@ export default function Report() {
                                                                             label={reason}
                                                                             labelStyle={{flexWrap: "wrap", marginBottom: 8}}
                                                                             onPress={(e) => handleSafetyReasonPressed(e, reason)}
-                                                                            status="unchecked" />
+                                                                            status={safetyReasons.includes(reason) ? "checked" : "unchecked"} />
                                                                     ))}
                                                                     <Spacer variant='large' />
                                                                     <Spacer variant='medium' />
                                                                 </View>
                                                             )
                                                         })}
+                                                        <Spacer variant="large" />
+                                                        <ButtonAction
+                                                            variant={ButtonTypeEnum.primary}
+                                                            onPress={() => setIsSafetyModalVisible(false)}
+                                                            content={
+                                                                <TextBlock style={{color: "white"}}>OK</TextBlock>
+                                                            }/>
+                                                        <Spacer variant="large" />
                                                         <Spacer variant="large" />
                                                         <Spacer variant="large" />
                                                         <Spacer variant="large" />
@@ -333,7 +354,7 @@ export default function Report() {
                 </Modal>
             </Portal>
 
-            {(type == ReportType.SafetyPerception.toString() || type == ReportType.Quick.toString()) && (
+            {(type == ReportType.SafetyPerception.toString() || type == ReportType.Quick.toString() || type == ReportType.Incident.toString()) && (
                 <>
                     {/* Comment section */}
                     <View>
@@ -353,7 +374,7 @@ export default function Report() {
                 </>
             )}
 
-            {(type == ReportType.SafetyPerception.toString() || type == ReportType.Quick.toString()) && (
+            {(type == ReportType.SafetyPerception.toString() || type == ReportType.Quick.toString() || type == ReportType.Incident.toString()) && (
                 <>
                     {/* Image picker section */}
                     <View>
@@ -406,7 +427,10 @@ export default function Report() {
                 }
             />
             <Spacer variant="large" />
-        </View>
+            <Spacer variant="large" />
+            <Spacer variant="large" />
+            <Spacer variant="large" />
+        </ScrollView>
         </PaperProvider>
     );
 }

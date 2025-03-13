@@ -47,8 +47,9 @@ export default function Profile() {
             return;
         }
 
-        user.username = username;
-        dispatch(updateUser(user));
+        const newUser: User = {...user, username: username}
+        dispatch(updateUser(newUser));
+        setIsEditModalVisible(false);
     }
 
     const handleLogoutPress = () => {
