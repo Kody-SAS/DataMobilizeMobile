@@ -5,7 +5,7 @@ import { Colors } from "../../constants/Colors";
 import { useEffect, useState } from "react";
 import { requestForegroundPermissionsAsync } from "expo-location";
 import { useTranslation } from "react-i18next";
-import { ButtonTypeEnum, ReportType, RoadType, SafetyLevel, TextBlockTypeEnum, UserType } from "../../type.d";
+import { ButtonTypeEnum, ConditionType, QuickReport, ReportType, RoadType, SafetyLevel, SafetyPerceptionReport, SeverityLevel, TextBlockTypeEnum, UserType } from "../../type.d";
 import { LocationCard } from "../../components/LocationCard";
 import { Spacer } from "../../components/Spacer";
 import { SelectedOption, SelectInput } from "../../components/SelectInput";
@@ -14,6 +14,11 @@ import { Checkbox, Modal, PaperProvider, Portal, RadioButton, TextInput } from "
 import { safetyLevelReasons } from "../../utils/DataSeed";
 import * as ImagePicker from 'expo-image-picker';
 import { ButtonAction } from "../../components/ButtonAction";
+import * as Location from 'expo-location';
+import { useDispatch, useSelector } from "react-redux";
+import { selectUser } from "../../redux/slices/accountSlice";
+import { ThunkDispatch } from "@reduxjs/toolkit";
+import { addSafetyPerceptionReport } from "../../redux/slices/mapSlice";
 
 export default function Report() {
     const [roadType, setRoadType] = useState<SelectedOption>();
@@ -27,6 +32,8 @@ export default function Report() {
     const {type} = useLocalSearchParams();
     const {t} = useTranslation();
     const navigation = useNavigation();
+    const user = useSelector(selectUser);
+    const dispatch = useDispatch<ThunkDispatch<any, any, any>>();
 
     const canUserReport = async() => {
         const request = await requestForegroundPermissionsAsync();
@@ -222,7 +229,62 @@ export default function Report() {
         )
     };
 
-    const handleAddReport = () => {
+    const locateUser = async() => {
+        const location = await Location.getCurrentPositionAsync({accuracy: Location.Accuracy.Balanced});
+        return location ?? null;
+    }
+
+    const handleAddReport = async () => {
+        switch(type) {
+            case ReportType.SafetyPerception.toString() : {
+                const location = await locateUser();
+                if(location != null) {
+                    const report : SafetyPerceptionReport = {
+                        id: user.id,
+                        userId: user.id!,
+                        latitude: location.coords.latitude,
+                        longitude: location.coords.longitude,
+                        createdAt: date,
+                        roadType: roadType?.data.type as RoadType,
+                        userType: userType?.data.type as UserType,
+                        reportType: ReportType.SafetyPerception,
+                        reasons: [],
+                        images: reportImages
+                    }
+
+                    dispatch(addSafetyPerceptionReport(report));
+                }
+                break;
+            }
+            case ReportType.Quick.toString() : {
+                const location = await locateUser();
+                if(location != null) {
+                    const report : QuickReport = {
+                        id: user.id,
+                        userId: user.id!,
+                        latitude: location.coords.latitude,
+                        longitude: location.coords.longitude,
+                        createdAt: date,
+                        roadType: RoadType.UrbanRoad,
+                        conditionType: ConditionType.PavementCondition,
+                        conditionDescription: "",
+                        severityLevel: SeverityLevel.NoRisky,
+                        reportType: ReportType.SafetyPerception,
+                        images: []
+                    }
+                }
+                break;
+            }
+            case ReportType.Incident.toString() : {
+                break;
+            }
+            case ReportType.Audit.toString() : {
+                router.back();
+                break;
+            }
+            default: 
+                break;
+        }
 
     };
 

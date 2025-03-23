@@ -41,7 +41,7 @@ export const DateInput = ({
             </TouchableOpacity>
             {showDatePicker && (
                 <RNDateTimePicker
-                    mode="date"
+                    mode="datetime"
                     value={date}
                     onChange={handleDateChanged}
                  />
