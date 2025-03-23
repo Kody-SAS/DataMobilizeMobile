@@ -22,6 +22,7 @@ import { addSafetyPerceptionReport, addQuickReport } from "../../redux/slices/ma
 
 export default function Report() {
     const [roadType, setRoadType] = useState<SelectedOption>();
+    const [conditionType, setConditionType] = useState<SelectedOption>();
     const [userType, setUserType] = useState<SelectedOption>();
     const [date, setDate] = useState<Date>(new Date(Date.now()));
     const [safety, setSafety] = useState<string>();
@@ -174,6 +175,57 @@ export default function Report() {
         },
     ]
 
+    const conditionTypeData : SelectedOption[] = [
+        {
+            content: ConditionType.BusStopAndStation.toString(),
+            data: {type: ConditionType.BusStopAndStation}
+        },
+        {
+            content: ConditionType.CrosswalksAndPedestrian.toString(),
+            data: {type: ConditionType.CrosswalksAndPedestrian}
+        },
+        {
+            content: ConditionType.DrainageIssues.toString(),
+            data: {type: ConditionType.DrainageIssues}
+        },
+        {
+            content: ConditionType.ParkingAreas.toString(),
+            data: {type: ConditionType.ParkingAreas}
+        },
+        {
+            content: ConditionType.PavementCondition.toString(),
+            data: {type: ConditionType.PavementCondition}
+        },
+        {
+            content: ConditionType.RoadGeometry.toString(),
+            data: {type: ConditionType.RoadGeometry}
+        },
+        {
+            content: ConditionType.RoadSignage.toString(),
+            data: {type: ConditionType.RoadSignage}
+        },
+        {
+            content: ConditionType.RoadsideObstacles.toString(),
+            data: {type: ConditionType.RoadsideObstacles}
+        },
+        {
+            content: ConditionType.SidewalkCondition.toString(),
+            data: {type: ConditionType.SidewalkCondition}
+        },
+        {
+            content: ConditionType.StreetLighting.toString(),
+            data: {type: ConditionType.StreetLighting}
+        },
+        {
+            content: ConditionType.TrafficControlDevices.toString(),
+            data: {type: ConditionType.TrafficControlDevices}
+        },
+        {
+            content: ConditionType.TrafficSigns.toString(),
+            data: {type: ConditionType.TrafficSigns}
+        }
+    ]
+
     const handleSafetyLevelSelection = (value: string) => {
         setIsSafetyModalVisible(true);
         setSafety(value);
@@ -276,8 +328,8 @@ export default function Report() {
                         latitude: location.coords.latitude,
                         longitude: location.coords.longitude,
                         createdAt: date,
-                        roadType: RoadType.UrbanRoad,
-                        conditionType: ConditionType.PavementCondition,
+                        roadType: roadType?.data.type as RoadType,
+                        conditionType: conditionType?.data.type as ConditionType,
                         conditionDescription: "",
                         severityLevel: SeverityLevel.NoRisky,
                         reportType: ReportType.SafetyPerception,
@@ -345,6 +397,20 @@ export default function Report() {
                     <DateInput
                         date={date}
                         setDate={setDate}
+                    />
+                    <Spacer variant="large" />
+                    <Spacer variant="medium" />
+                </>
+            )}
+            {type == ReportType.Quick.toString() && (
+                <>
+                    {/* Choosing the condition type */}
+                    <SelectInput
+                        title={t("chooseConditionType")}
+                        selectedInput={conditionType}
+                        setSelectedInput={setConditionType}
+                        selectionList={conditionTypeData}
+                        buttonText={t("change")}
                     />
                     <Spacer variant="large" />
                     <Spacer variant="medium" />

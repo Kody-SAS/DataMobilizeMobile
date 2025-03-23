@@ -8,7 +8,7 @@ import { SetStateAction, useState } from "react";
 import { Spacer } from "./Spacer";
 
 export type SelectedOption = {
-    imageUrl: any;
+    imageUrl?: any;
     content: string;
     data: any;
 }
@@ -19,6 +19,7 @@ export type SelectInputProps = {
     selectedInput: SelectedOption | undefined;
     setSelectedInput: React.Dispatch<SetStateAction<SelectedOption | undefined>>;
     onInputSelect?: () => void;
+    horizontal?: boolean;
 }
 
 export const SelectInput = ({
@@ -27,15 +28,16 @@ export const SelectInput = ({
     selectionList,
     selectedInput,
     setSelectedInput,
-    onInputSelect
+    onInputSelect,
+    horizontal = true
 }: SelectInputProps) => {
     const [isOptionChange, setIsOptionChange] = useState<boolean>(false);
     const {t} = useTranslation();
 
     const handleOptionChange = (item: SelectedOption) => {
-        if (onInputSelect) onInputSelect();
         setSelectedInput(item);
         setIsOptionChange(false);
+        if (onInputSelect) onInputSelect();
     }
 
     const handleActivateChange = () => {
@@ -66,18 +68,22 @@ export const SelectInput = ({
                                 onPress={() => handleOptionChange(item)}
                                 style={styles.listItemContainer}
                                 >
-                                <Image
-                                    source={item.imageUrl}
-                                    style={{width: 60, height: 60}}
-                                    resizeMode="contain"
-                                />
-                                <Spacer variant="medium" />
-                                <TextBlock type={TextBlockTypeEnum.caption} style={{textAlign: 'center'}}>{item.content}</TextBlock>
+                                {item.imageUrl && (
+                                    <>
+                                        <Image
+                                            source={item.imageUrl}
+                                            style={{width: 60, height: 60}}
+                                            resizeMode="contain"
+                                        />
+                                        <Spacer variant="medium" />
+                                    </>
+                                )}
+                                <TextBlock type={TextBlockTypeEnum.caption} style={{textAlign: 'center', paddingHorizontal: !horizontal ? 16 : undefined, paddingVertical: !horizontal ? 8 : undefined}}>{item.content}</TextBlock>
                             </TouchableOpacity>
                         )
                     }}
                     showsHorizontalScrollIndicator={true}
-                    horizontal={true}
+                    horizontal={horizontal}
                     keyExtractor={item => item.imageUrl}
                 />
             ): (
@@ -86,11 +92,13 @@ export const SelectInput = ({
                     style={styles.content}>
                         {selectedInput ? (
                                 <>
-                                    <Image
-                                        source={selectedInput?.imageUrl}
-                                        style={{width: 35, height: 35, marginRight: 8}}
-                                        resizeMode="contain"
-                                    />
+                                    {selectedInput?.imageUrl && (
+                                        <Image
+                                            source={selectedInput?.imageUrl}
+                                            style={{width: 35, height: 35, marginRight: 8}}
+                                            resizeMode="contain"
+                                        />
+                                    )}
                                     <TextBlock type={TextBlockTypeEnum.body}>{selectedInput?.content}</TextBlock>
                                 </>
                             )
