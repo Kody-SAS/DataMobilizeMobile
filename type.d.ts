@@ -100,11 +100,15 @@ export enum ReportType {
 }
 
 export enum RoadType {
-    Intersection = "Intersection",
-    Section = "Section",
-    RoundAbout = "RoundAbout",
-    Straight = "Straight",
-    Turn = "Turn"
+    UrbanRoad = "Urban Road",
+    RuralRoad = "Rural Road",
+    Highway = "Highway",
+    SignalizedIntersection = "Signalized Intersection",
+    UnsignalizedIntersection = "Unsignalized Intersection",
+    RoundAbout = "Roundabout",
+    ParkingLot = "Parking Lot",
+    BusStop = "Bus stop",
+    BusStation = "Bus station"
 }
 
 export enum UserType {
@@ -114,4 +118,69 @@ export enum UserType {
     Car = "Car",
     Truck = "Truck",
     Bus = "Bus"
+}
+
+export enum SafetyLevel {
+    Safe = 'Safe',
+    unSafe = 'Unsafe',
+    veryUnsafe = 'Very Unsafe'
+}
+
+export enum ReasonType {
+    infrastructure = 'Infrastructure',
+    userBehaviour = 'User Behaviour',
+    vehicle = 'Vehicle',
+}
+
+export enum ConditionType {
+    PavementCondition = "Pavement Condition",
+    TrafficSigns = "Traffic Signs Condition",
+    SidewalkCondition = "Sidewalk Condition",
+    DrainageIssues = "Drainage Issues",
+    StreetLighting = "Street Lighting Condition",
+    CrosswalksAndPedestrian = "Crosswalks and Pedestrian Facilities",
+    RoadSignage = "Road Signage for Cyclists",
+    TrafficControlDevices = "Traffic Control Devices",
+    BusStopAndStation = "Bus Stops and Stations",
+    RoadsideObstacles = "Roadside Obstacles",
+    ParkingAreas = "Parking Areas",
+    RoadGeometry = "Road Geometry Issues"
+}
+
+export enum SeverityLevel {
+    NoRisky = "No Risk",
+    Risky = "Risky",
+    UrgentRist = "Urgent Risk"
+}
+
+export type SafetyPerceptionReport =  {
+    id?: string;
+    userId: string;
+    latitude: number;
+    longitude: number;
+    createdAt: Date;
+    roadType: RoadType;
+    userType: UserType;
+    reportType: ReportType;
+    reasons: {
+        type: ReasonType;
+        list: string[];
+    }[];
+    comment?: string;
+    images: string[];
+}
+
+export type QuickReport = {
+    id?: string;
+    userId: string;
+    latitude: number;
+    longitude: number;
+    createdAt: Date;
+    roadType: RoadType;
+    conditionType: ConditionType;
+    conditionDescription: string;
+    severityLevel: SeverityLevel;
+    reportType: ReportType;
+    comment?: string;
+    images: string[];
 }

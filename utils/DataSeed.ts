@@ -1,16 +1,4 @@
-import { UserType } from "../type.d";
-
-export enum SafetyLevel {
-    Safe = 'Safe',
-    unSafe = 'Unsafe',
-    veryUnsafe = 'Very Unsafe'
-}
-
-export enum ReasonType {
-    infrastructure = 'Infrastructure',
-    userBehaviour = 'User Behaviour',
-    vehicle = 'Vehicle',
-}
+import { ReasonType, SafetyLevel, UserType } from "../type.d";
 
 export const safetyLevelReasons : {userType: UserType, data: {type: SafetyLevel, reasons: {type: ReasonType, list: string[]}[]}[]}[] = [
     {
