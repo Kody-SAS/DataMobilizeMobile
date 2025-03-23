@@ -153,6 +153,12 @@ export enum SeverityLevel {
     UrgentRist = "Urgent Risk"
 }
 
+export enum IncidentType {
+    Crash = "Crash",
+    Infrastructure = "Infrastructure",
+    Equipment = "Equipment",
+}
+
 export type SafetyPerceptionReport =  {
     id?: string;
     userId: string;
@@ -182,5 +188,18 @@ export type QuickReport = {
     severityLevel: SeverityLevel;
     reportType: ReportType;
     comment?: string;
+    images: string[];
+}
+
+export type IncidentReport = {
+    id?: string;
+    userId: string;
+    latitude: number;
+    longitude: number;
+    createdAt: Date;
+    roadType: RoadType;
+    incidentType: IncidentType;
+    reportType: ReportType;
+    description: string;
     images: string[];
 }

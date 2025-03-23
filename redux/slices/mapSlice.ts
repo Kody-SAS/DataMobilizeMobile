@@ -18,27 +18,18 @@ export const mapSlice = createSlice({
     initialState,
     reducers: {
         addSafetyPerceptionReport: (state, action) => {
-            state.safetyPerceptionReports.push(action.payload as never)
+            state.safetyPerceptionReports.push(action.payload as never);
         },
         addIncidentReport: (state, action) => {
-            state.incidentReports.push(action.payload as never)
+            state.incidentReports.push(action.payload as never);
         },
         addQuickReport: (state, action) => {
-            state.quickReports.push(action.payload as never)
+            state.quickReports.push(action.payload as never);
         },
         addAuditReport: (state, action) => {
-            state.auditReports.push(action.payload as never
-        )
-    },
-    extraReducers: (builder) => {
-        builder
-        .addCase(getAllReports.fulfilled, (state, action) => {
-
-        })
-        .addCase(getAllReports.rejected, (state, action) => {
-
-        })
-    },
+            state.auditReports.push(action.payload as never);
+        }
+    }
 });
 
 export const {

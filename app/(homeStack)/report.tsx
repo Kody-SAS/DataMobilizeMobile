@@ -5,13 +5,13 @@ import { Colors } from "../../constants/Colors";
 import { useEffect, useState } from "react";
 import { requestForegroundPermissionsAsync } from "expo-location";
 import { useTranslation } from "react-i18next";
-import { ButtonTypeEnum, ReportType, RoadType, TextBlockTypeEnum, UserType } from "../../type.d";
+import { ButtonTypeEnum, ReportType, RoadType, SafetyLevel, TextBlockTypeEnum, UserType } from "../../type.d";
 import { LocationCard } from "../../components/LocationCard";
 import { Spacer } from "../../components/Spacer";
 import { SelectedOption, SelectInput } from "../../components/SelectInput";
 import { DateInput } from "../../components/DateInput";
 import { Checkbox, Modal, PaperProvider, Portal, RadioButton, TextInput } from "react-native-paper";
-import { SafetyLevel, safetyLevelReasons } from "../../utils/DataSeed";
+import { safetyLevelReasons } from "../../utils/DataSeed";
 import * as ImagePicker from 'expo-image-picker';
 import { ButtonAction } from "../../components/ButtonAction";
 
@@ -88,29 +88,49 @@ export default function Report() {
 
     const roadTypeData : SelectedOption[] = [
         {
-            content: t("intersection"),
+            content: t("busStation"),
             imageUrl: require("../../assets/images/intersection.png"),
-            data: {type: RoadType.Intersection}
+            data: {type: RoadType.BusStation}
         },
         {
-            content: t("section"),
+            content: t("busStop"),
             imageUrl: require("../../assets/images/section.png"),
-            data: {type: RoadType.Section}
+            data: {type: RoadType.BusStop}
+        },
+        {
+            content: t("highway"),
+            imageUrl: require("../../assets/images/roundabout.png"),
+            data: {type: RoadType.Highway}
+        },
+        {
+            content: t("parkingLot"),
+            imageUrl: require("../../assets/images/straight.png"),
+            data: {type: RoadType.ParkingLot}
         },
         {
             content: t("roundAbout"),
-            imageUrl: require("../../assets/images/roundabout.png"),
+            imageUrl: require("../../assets/images/turn.png"),
             data: {type: RoadType.RoundAbout}
         },
         {
-            content: t("straight"),
-            imageUrl: require("../../assets/images/straight.png"),
-            data: {type: RoadType.Straight}
+            content: t("ruralRoad"),
+            imageUrl: require("../../assets/images/turn.png"),
+            data: {type: RoadType.RuralRoad}
         },
         {
-            content: t("turn"),
+            content: t("signalizedIntersection"),
             imageUrl: require("../../assets/images/turn.png"),
-            data: {type: RoadType.Turn}
+            data: {type: RoadType.SignalizedIntersection}
+        },
+        {
+            content: t("unsignalizedIntersection"),
+            imageUrl: require("../../assets/images/turn.png"),
+            data: {type: RoadType.UnsignalizedIntersection}
+        },
+        {
+            content: t("urbanRoad"),
+            imageUrl: require("../../assets/images/turn.png"),
+            data: {type: RoadType.UrbanRoad}
         },
     ]
 
