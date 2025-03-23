@@ -5,7 +5,7 @@ import { Colors } from "../../constants/Colors";
 import { useEffect, useState } from "react";
 import { requestForegroundPermissionsAsync } from "expo-location";
 import { useTranslation } from "react-i18next";
-import { ButtonTypeEnum, ConditionType, QuickReport, ReportType, RoadType, SafetyLevel, SafetyPerceptionReport, SeverityLevel, TextBlockTypeEnum, UserType } from "../../type.d";
+import { ButtonTypeEnum, ConditionType, QuickReport, ReasonType, ReportType, RoadType, SafetyLevel, SafetyPerceptionReport, SeverityLevel, TextBlockTypeEnum, UserType } from "../../type.d";
 import { LocationCard } from "../../components/LocationCard";
 import { Spacer } from "../../components/Spacer";
 import { SelectedOption, SelectInput } from "../../components/SelectInput";
@@ -18,14 +18,14 @@ import * as Location from 'expo-location';
 import { useDispatch, useSelector } from "react-redux";
 import { selectUser } from "../../redux/slices/accountSlice";
 import { ThunkDispatch } from "@reduxjs/toolkit";
-import { addSafetyPerceptionReport } from "../../redux/slices/mapSlice";
+import { addSafetyPerceptionReport, addQuickReport } from "../../redux/slices/mapSlice";
 
 export default function Report() {
     const [roadType, setRoadType] = useState<SelectedOption>();
     const [userType, setUserType] = useState<SelectedOption>();
     const [date, setDate] = useState<Date>(new Date(Date.now()));
     const [safety, setSafety] = useState<string>();
-    const [safetyReasons, setSafetyReasons] = useState<string[]>([]);
+    const [safetyReasons, setSafetyReasons] = useState<{type: ReasonType, list: string[]}[]>([]);
     const [isSafetyModalVisible, setIsSafetyModalVisible] = useState<boolean>(false);
     const [reportImages, setReportImages] = useState<string[]>([]);
 
@@ -179,13 +179,24 @@ export default function Report() {
         setSafety(value);
     }
 
-    const handleSafetyReasonPressed = (e: GestureResponderEvent, selectedReason: string) => {
-        if(!safetyReasons.includes(selectedReason)) {
-            setSafetyReasons([...safetyReasons, selectedReason]);
-        }
-        else {
-            const newList = [...safetyReasons].filter(item => item != selectedReason);
-            setSafetyReasons(newList);
+    const handleSafetyReasonPressed = (e: GestureResponderEvent, type: ReasonType, selectedReason: string) => {
+        safetyReasons.forEach((item) => {
+            if (item.type == type) {
+                if (!item.list.includes(selectedReason)) {
+                    const newList = [...item.list, selectedReason];
+                    setSafetyReasons([...safetyReasons, {type: type, list: newList}]);
+                }
+                else {
+                    const newList = item.list.filter(item => item != selectedReason);
+                    setSafetyReasons([...safetyReasons, {type: type, list: newList}]);
+                }
+            }
+        })
+
+        const notFoundReasons = safetyReasons.filter(item => item.type == type);
+
+        if (notFoundReasons.length == 0) {
+            setSafetyReasons([...safetyReasons, {type: type, list: [selectedReason]}]);
         }
     }
 
@@ -272,6 +283,8 @@ export default function Report() {
                         reportType: ReportType.SafetyPerception,
                         images: []
                     }
+
+                    dispatch(addQuickReport(report));
                 }
                 break;
             }
@@ -403,8 +416,8 @@ export default function Report() {
                                                                             key={reasonKey}
                                                                             label={reason}
                                                                             labelStyle={{flexWrap: "wrap", marginBottom: 8}}
-                                                                            onPress={(e) => handleSafetyReasonPressed(e, reason)}
-                                                                            status={safetyReasons.includes(reason) ? "checked" : "unchecked"} />
+                                                                            onPress={(e) => handleSafetyReasonPressed(e, level.type, reason)}
+                                                                            status={safetyReasons.find(item => item.type == level.type)?.list.includes(reason) ? "checked" : "unchecked"} />
                                                                     ))}
                                                                     <Spacer variant='large' />
                                                                     <Spacer variant='medium' />

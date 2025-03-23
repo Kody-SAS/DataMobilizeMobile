@@ -1,4 +1,4 @@
-import { ReasonType, SafetyLevel, UserType } from "../type.d";
+import { ConditionType, ReasonType, SafetyLevel, UserType } from "../type.d";
 
 export const safetyLevelReasons : {userType: UserType, data: {type: SafetyLevel, reasons: {type: ReasonType, list: string[]}[]}[]}[] = [
     {
@@ -605,6 +605,110 @@ export const safetyLevelReasons : {userType: UserType, data: {type: SafetyLevel,
                     }
                 ]
             }
+        ]
+    }
+]
+
+export const conditionTypeDate : {type: ConditionType, list: string[]}[]= [
+    {
+        type: ConditionType.PavementCondition,
+        list: [
+            "Cracks",
+            "Potholes",
+            "Uneven surfaces",
+            "Surface wear and tear",
+            "Slippery surfaces"
+        ]
+    },
+    {
+        type: ConditionType.TrafficSigns,
+        list: [
+            "Missing signs",
+            "Broken or damaged signs",
+            "Faded or unclear signs",
+            "Incorrect or confusing signs"
+        ]
+    },
+    {
+        type: ConditionType.SidewalkCondition,
+        list: [
+            "Damaged or uneven pavement",
+            "Obstructions on sidewalks",
+            "Missing sidewalks",
+            "Poor lighting or visibility on sidewalks"
+        ]
+    },
+    {
+        type: ConditionType.DrainageIssues,
+        list: [
+            "Blocked or clogged drains",
+            "Potholes near drainage systems",
+            "Flooded areas due to drainage failure"
+        ]
+    },
+    {
+        type: ConditionType.StreetLighting,
+        list: [
+            "Broken or non-functional streetlights",
+            "Insufficient lighting in certain areas",
+            "Lights causing glare or blindness for drivers"
+        ]
+    },
+    {
+        type: ConditionType.CrosswalksAndPedestrian,
+        list: [
+            "Missing or faded crosswalk markings",
+            "Uneven or broken pedestrian crossings",
+            "Obstructions on crosswalks",
+            "Lack of ramps or accessibility features"
+        ]
+    },
+    {
+        type: ConditionType.RoadSignage,
+        list: [
+            "Missing or damaged bicycle lane signs",
+            "Lack of bike lane signage",
+            "Faded or unclear signs"
+        ]
+    },
+    {
+        type: ConditionType.TrafficControlDevices,
+        list: [
+            "Malfunctioning traffic lights or signals",
+            "Broken traffic barriers or fences",
+            "Unclear or misleading lane markings"
+        ]
+    },
+    {
+        type: ConditionType.BusStopAndStation,
+        list: [
+            "Poorly located or missing bus stops",
+            "Damaged or insufficient shelter at bus stops",
+            "Missing or damaged bus stop signs"
+        ]
+    },
+    {
+        type: ConditionType.RoadsideObstacles,
+        list: [
+            "Trees or bushes blocking visibility",
+            "Unmarked roadwork or construction zones",
+            "Fallen debris or branches"
+        ]
+    },
+    {
+        type: ConditionType.ParkingAreas,
+        list: [
+            "Poorly marked or unclear parking spaces",
+            "Obstructed parking areas",
+            "Unsafe parking locations"
+        ]
+    },
+    {
+        type: ConditionType.RoadGeometry,
+        list: [
+            "Sharp bends or dangerous curves without proper signage",
+            "Insufficient visibility at turns or intersections",
+            "Narrow lanes or inadequate shoulders"
         ]
     }
 ]
