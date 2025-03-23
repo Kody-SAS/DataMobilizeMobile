@@ -11,7 +11,7 @@ import { Spacer } from "../../components/Spacer";
 import { SelectedOption, SelectInput } from "../../components/SelectInput";
 import { DateInput } from "../../components/DateInput";
 import { Checkbox, Modal, PaperProvider, Portal, RadioButton, TextInput } from "react-native-paper";
-import { safetyLevelReasons } from "../../utils/DataSeed";
+import { conditionListDate, safetyLevelReasons } from "../../utils/DataSeed";
 import * as ImagePicker from 'expo-image-picker';
 import { ButtonAction } from "../../components/ButtonAction";
 import * as Location from 'expo-location';
@@ -28,6 +28,8 @@ export default function Report() {
     const [safety, setSafety] = useState<string>();
     const [safetyReasons, setSafetyReasons] = useState<{type: ReasonType, list: string[]}[]>([]);
     const [isSafetyModalVisible, setIsSafetyModalVisible] = useState<boolean>(false);
+    const [isConditionListModalVisible, setIsConditionListModalVisible] = useState<boolean>(false);
+    const [conditionItem, setConditionItem] = useState<string>("");
     const [reportImages, setReportImages] = useState<string[]>([]);
 
     const {type} = useLocalSearchParams();
@@ -231,6 +233,15 @@ export default function Report() {
         setSafety(value);
     }
 
+    const handleConditionTypeSelection = () => {
+        setIsConditionListModalVisible(true);
+    }
+
+    const handleConditionItemSelection = (value: string) => {
+        setConditionItem(value);
+        setIsConditionListModalVisible(false);
+    }
+
     const handleSafetyReasonPressed = (e: GestureResponderEvent, type: ReasonType, selectedReason: string) => {
         safetyReasons.forEach((item) => {
             if (item.type == type) {
@@ -411,6 +422,7 @@ export default function Report() {
                         setSelectedInput={setConditionType}
                         selectionList={conditionTypeData}
                         buttonText={t("change")}
+                        onInputSelect={handleConditionTypeSelection}
                     />
                     <Spacer variant="large" />
                     <Spacer variant="medium" />
@@ -511,6 +523,27 @@ export default function Report() {
                                 )
                             }
                         })}
+                    </View>
+                </Modal>
+                <Modal visible={isConditionListModalVisible} dismissable={true}>
+                    <View style={styles.modalContentContainer}>
+                        <RadioButton.Group onValueChange={handleConditionItemSelection} value={conditionItem}>
+                            {conditionListDate.map((item, index) => {
+                                if (item.type == conditionType?.data.type) {
+                                    return (
+                                        <View key={index}>
+                                            {item.list.map((condition, conditionKey) => (
+                                                <RadioButton.Item 
+                                                    key={conditionKey}
+                                                    label={condition}
+                                                    value={condition}
+                                                />
+                                            ))}
+                                        </View>
+                                    )
+                                }
+                            })}
+                        </RadioButton.Group>
                     </View>
                 </Modal>
             </Portal>
