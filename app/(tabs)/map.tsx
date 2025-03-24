@@ -6,15 +6,16 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { Colors } from '../../constants/Colors';
 import { useNetInfo } from '@react-native-community/netinfo';
 import { useTranslation } from 'react-i18next';
-import { useDispatch } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import { ThunkDispatch } from '@reduxjs/toolkit';
-import { TextBlockTypeEnum } from '../../type.d';
+import { SafetyPerceptionReport, TextBlockTypeEnum } from '../../type.d';
 import { FAB, Searchbar } from 'react-native-paper';
 import MapView, { Marker, PROVIDER_GOOGLE } from 'react-native-maps';
 import { Spacer } from '../../components/Spacer';
 import { registerForForegroundLocationPermissionAsync } from '../../utils/Permissions';
 import * as Location from 'expo-location';
 import ToastMessage from '../../utils/Toast';
+import { selectSafetyReports } from '../../redux/slices/mapSlice';
 
 export default function Map() {
   const [searchQuery, setSearchQuery] = useState<string>('');
@@ -24,6 +25,7 @@ export default function Map() {
   const {isConnected} = useNetInfo();
   const {t} = useTranslation();
   const dispatch = useDispatch<ThunkDispatch<any, any, any>>();
+  const safetyReports: SafetyPerceptionReport[] = useSelector(selectSafetyReports);
 
   const locateUser = async() => {
     const foregroundPermissionStatus = await registerForForegroundLocationPermissionAsync();
@@ -89,6 +91,22 @@ export default function Map() {
             description="Your current location"
           />
         )} */}
+        {safetyReports.map((report, index) => (
+          <Marker
+            key={index}
+            coordinate={{
+              latitude: report.latitude,
+              longitude: report.longitude
+            }}
+            title={"Safety Report"}
+            description={report.comment}
+          >
+            <Image
+              source={require('../../assets/images/safetymarker.png')}
+              style={{ width: 40, height: 40 }}
+            />
+          </Marker>
+        ))}
       </MapView>
     </SafeAreaView>
   );

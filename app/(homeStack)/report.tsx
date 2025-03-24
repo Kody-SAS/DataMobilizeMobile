@@ -314,7 +314,7 @@ export default function Report() {
                 const location = await locateUser();
                 if(location != null) {
                     const report : SafetyPerceptionReport = {
-                        id: user.id,
+                        id: user.id + Math.random().toString(),
                         userId: user.id!,
                         latitude: location.coords.latitude,
                         longitude: location.coords.longitude,
@@ -322,7 +322,7 @@ export default function Report() {
                         roadType: roadType?.data.type as RoadType,
                         userType: userType?.data.type as UserType,
                         reportType: ReportType.SafetyPerception,
-                        reasons: [],
+                        reasons: safetyReasons,
                         images: reportImages
                     }
 
@@ -341,7 +341,7 @@ export default function Report() {
                         createdAt: date,
                         roadType: roadType?.data.type as RoadType,
                         conditionType: conditionType?.data.type as ConditionType,
-                        conditionDescription: "",
+                        conditionDescription: conditionItem,
                         severityLevel: SeverityLevel.NoRisky,
                         reportType: ReportType.SafetyPerception,
                         images: []
@@ -423,6 +423,7 @@ export default function Report() {
                         selectionList={conditionTypeData}
                         buttonText={t("change")}
                         onInputSelect={handleConditionTypeSelection}
+                        horizontal={false}
                     />
                     <Spacer variant="large" />
                     <Spacer variant="medium" />

@@ -86,6 +86,7 @@
     "chooseRoadType": "What is the road type ?",
     "chooseUserType": "Choose the user",
     "chooseDate": "Select the event date",
+    "chooseConditionType": "Select the condition to report",
     "safe": "Safe",
     "unsafe": "Unsafe",
     "veryUnsafe": "Very unsafe",
