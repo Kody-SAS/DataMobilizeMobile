@@ -351,6 +351,7 @@ export const accountSlice = createSlice({
         })
         .addCase(loginUser.fulfilled, (state, action) => {
             state.user = {... action.payload as any};
+            state.isAccountVerified = true;
             router.push("/(tabs)/");
         })
         .addCase(loginUser.rejected, (state, action) => {

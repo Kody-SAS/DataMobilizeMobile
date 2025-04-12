@@ -8,13 +8,17 @@ import { Colors } from "../constants/Colors";
 import RNDateTimePicker, { DateTimePickerEvent } from "@react-native-community/datetimepicker";
 
 export type DateInputProps = {
+    placeholder?: string;
     date: Date;
     setDate: React.Dispatch<SetStateAction<Date>>;
+    mode?: "date" | "time" | "datetime";
 }
 
 export const DateInput = ({
+    placeholder = "",
     date,
-    setDate
+    setDate,
+    mode = "datetime"
 }: DateInputProps) => {
     const [showDatePicker, setShowDatePicker] = useState<boolean>(false);
     const {t} = useTranslation();
@@ -30,7 +34,7 @@ export const DateInput = ({
 
     return (
         <View>
-            <TextBlock type={TextBlockTypeEnum.title}>{t("chooseDate")}</TextBlock>
+            <TextBlock type={TextBlockTypeEnum.title}>{placeholder ?? t("chooseDate")}</TextBlock>
             <Spacer variant="medium" />
             <TouchableOpacity
                 activeOpacity={0.8}
@@ -41,7 +45,7 @@ export const DateInput = ({
             </TouchableOpacity>
             {showDatePicker && (
                 <RNDateTimePicker
-                    mode="datetime"
+                    mode={mode}
                     value={date}
                     onChange={handleDateChanged}
                  />

@@ -1,12 +1,12 @@
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import {createAsyncThunk, createSlice} from "@reduxjs/toolkit";
-import { SafetyPerceptionReport } from "../../type.d";
+import { IncidentReport, QuickReport, SafetyPerceptionReport } from "../../type.d";
 
 
 const initialState = {
     safetyPerceptionReports: [] as SafetyPerceptionReport[],
-    incidentReports: [],
-    quickReports: [],
+    incidentReports: [] as IncidentReport[],
+    quickReports: [] as QuickReport[],
     auditReports: [],
 }
 
