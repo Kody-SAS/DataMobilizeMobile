@@ -13,6 +13,7 @@ export const ButtonAction = ({
     variant,
     content,
     onPress,
+    disabled,
     ...rest
 }: ButtonActionProps) => {
     //const theme = useColorScheme() ?? 'light';
@@ -25,6 +26,7 @@ export const ButtonAction = ({
                 variant == ButtonTypeEnum.secondary ? styles.secondary : undefined,
                 variant == ButtonTypeEnum.tertiary ? styles.tertiary : undefined,
                 variant == ButtonTypeEnum.quarternary ? styles.quarternary : undefined,
+                disabled ? { opacity: 0.6 } : undefined,
                 style
             ]}
             {...rest}

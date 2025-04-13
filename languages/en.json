@@ -105,6 +105,15 @@
     "codeSentToEmail": "Code sent to your mail",
     "additionalComment": "Add an optional comment",
     "commentPlaceholder": "Say something...",
-    "addImages": "Add one or more images to the report"
+    "addImages": "Add one or more images to the report",
+    "selectReportToDisplay": "Select the report to display",
+    "defineFilter": "Define a filter",
+    "selectUserType": "Select the road user type",
+    "selectDateInterval": "Select the date interval",
+    "startDate": "Start date",
+    "endDate": "End date",
+    "selectSafetyLevel": "Choose the road safety level",
+    "apply": "Apply",
+    "close": "Close"
   }
 }

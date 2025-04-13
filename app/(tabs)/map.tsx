@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { StyleSheet, Image, Platform, View, TouchableOpacity } from 'react-native';
+import { StyleSheet, Image, Platform, View, TouchableOpacity, ScrollView } from 'react-native';
 
 import { TextBlock } from '../../components/TextBlock';
 import { SafeAreaView } from 'react-native-safe-area-context';
@@ -10,7 +10,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import { ThunkDispatch } from '@reduxjs/toolkit';
 import { ButtonTypeEnum, IncidentReport, QuickReport, SafetyPerceptionReport, TextBlockTypeEnum } from '../../type.d';
 import { Checkbox, FAB, Searchbar } from 'react-native-paper';
-import MapView, { Marker, PROVIDER_GOOGLE } from 'react-native-maps';
+import MapView, { MAP_TYPES, Marker, PROVIDER_GOOGLE } from 'react-native-maps';
 import { Spacer } from '../../components/Spacer';
 import { registerForForegroundLocationPermissionAsync } from '../../utils/Permissions';
 import * as Location from 'expo-location';
@@ -25,15 +25,30 @@ export default function Map() {
   const [currentLocation, setCurrentLocation] = useState<Location.LocationObject | null>(null);
   const [isSearchFocused, setIsSearchFocused] = useState<boolean>(false);
   const [isFullMap, setIsFullMap] = useState<boolean>(false);
-  const [isSafetyChecked, setIsSafetyChecked] = useState<boolean>(false);
-  const [isQuickChecked, setIsQuickChecked] = useState<boolean>(false);
-  const [isIncidentChecked, setIsIncidentChecked] = useState<boolean>(false);
+  const [isSafetyChecked, setIsSafetyChecked] = useState<boolean>(true);
+  const [isQuickChecked, setIsQuickChecked] = useState<boolean>(true);
+  const [isIncidentChecked, setIsIncidentChecked] = useState<boolean>(true);
+  const [isAuditChecked, setIsAuditChecked] = useState<boolean>(true);
   const [isReportSelectVisible, setIsReportSelectVisible] = useState<boolean>(false);
   const [isSafetyFilterVisible, setIsSafetyFilterVisible] = useState<boolean>(false);
   const [isQuickFilterVisible, setIsQuickFilterVisible] = useState<boolean>(false);
   const [isIncidentFilterVisible, setIsIncidentFilterVisible] = useState<boolean>(false);
+  const [isAuditFilterVisible, setIsAuditFilterVisible] = useState<boolean>(false);
   const [safetyStartDate, setSafetyStartDate] = useState<Date>(new Date(Date.now()));
   const [safetyEndDate, setSafetyEndDate] = useState<Date>(new Date(Date.now()));
+  const [isPedestrianSafetyChecked, setIsPedestrianSafetyChecked] = useState<boolean>(false);
+  const [isCyclistSafetyChecked, setIsCyclistSafetyChecked] = useState<boolean>(false);
+  const [isMotorcyclistSafetyChecked, setIsMotorcyclistSafetyChecked] = useState<boolean>(false);
+  const [isCarSafetyChecked, setIsCarSafetyChecked] = useState<boolean>(false);
+  const [isBusSafetyChecked, setIsBusSafetyChecked] = useState<boolean>(false);
+  const [isTruckSafetyChecked, setIsTruckSafetyChecked] = useState<boolean>(false);
+  const [isSafeSafetyChecked, setIsSafeSafetyChecked] = useState<boolean>(false);
+  const [isUnsafeSafetyChecked, setIsUnsafeSafetyChecked] = useState<boolean>(false);
+  const [isVeryUnsafeSafetyChecked, setIsVeryUnsafeSafetyChecked] = useState<boolean>(false);
+  const [isSafetyFilterModified, setIsSafetyFilterModified] = useState<boolean>(false);
+  const [isQuickFilterModified, setIsQuickFilterModified] = useState<boolean>(false);
+  const [isIncidentFilterModified, setIsIncidentFilterModified] = useState<boolean>(false);
+  const [isAuditFilterModified, setIsAuditFilterModified] = useState<boolean>(false);
 
   const {isConnected} = useNetInfo();
   const {t} = useTranslation();
@@ -59,17 +74,87 @@ export default function Map() {
   }
 
   const handleToggleReportSelectView = () => {
+    setIsFullMap(true);
     setIsReportSelectVisible((old: boolean) => !old);
+    setIsSafetyFilterVisible(false);
+    setIsQuickFilterVisible(false);
+    setIsIncidentFilterVisible(false);
+    setIsAuditFilterVisible(false);
   }
   const handleToggleSafetyFilter = () => {
+    setIsFullMap(true);
     setIsSafetyFilterVisible((old: boolean) => !old);
+    setIsQuickFilterVisible(false);
+    setIsIncidentFilterVisible(false);
+    setIsAuditFilterVisible(false);
+    setIsReportSelectVisible(false);
   }
   const handleToggleQuickFilter = () => {
+    setIsFullMap(true);
     setIsQuickFilterVisible((old: boolean) => !old);
+    setIsSafetyFilterVisible(false);
+    setIsIncidentFilterVisible(false);
+    setIsAuditFilterVisible(false);
+    setIsReportSelectVisible(false);
   }
   const handleToggleIncidentFilter = () => {
+    setIsFullMap(true);
     setIsIncidentFilterVisible((old: boolean) => !old);
+    setIsSafetyFilterVisible(false);
+    setIsQuickFilterVisible(false);
+    setIsAuditFilterVisible(false);
+    setIsReportSelectVisible(false);
   }
+
+  const handleToggleAuditFilter = () => {
+    setIsFullMap(true);
+    setIsAuditFilterVisible((old: boolean) => !old);
+    setIsSafetyFilterVisible(false);
+    setIsQuickFilterVisible(false);
+    setIsIncidentFilterVisible(false);
+    setIsReportSelectVisible(false);
+  }
+
+  const handleTogglePedestrianSafety = () => {
+    setIsPedestrianSafetyChecked((old: boolean) => !old);
+    setIsSafetyFilterModified(true);
+  }
+
+  const handleToggleCyclistSafety = () => {
+    setIsCyclistSafetyChecked((old: boolean) => !old);
+    setIsSafetyFilterModified(true);
+  }
+
+  const handleToggleMotocyclistSafety = () => {
+    setIsMotorcyclistSafetyChecked((old: boolean) => !old);
+  }
+
+  const handleToggleCarSafety = () => {
+    setIsCarSafetyChecked((old: boolean) => !old);
+    setIsSafetyFilterModified(true);
+  }
+
+  const handleToggleBusSafety = () => {
+    setIsBusSafetyChecked((old: boolean) => !old);
+    setIsSafetyFilterModified(true);
+  }
+
+  const handleToggleTruckSafety = () => {
+    setIsTruckSafetyChecked((old: boolean) => !old);
+    setIsSafetyFilterModified(true);
+  }
+
+  const handleSafetyFilter = () => {
+    setIsFullMap(true);
+    setIsSafetyFilterVisible(false);
+    setIsQuickFilterVisible(false);
+    setIsIncidentFilterVisible(false);
+    setIsAuditFilterVisible(false);
+    setIsReportSelectVisible(false);
+    setIsSafetyFilterModified(false);
+
+  }
+
 
   useEffect(() => {
     locateUser();
@@ -77,7 +162,7 @@ export default function Map() {
   
   return (
     <SafeAreaView style={styles.container}>
-      {isFullMap && (
+      {!isFullMap && (
         <View style={styles.introContainer}>
           {!isSearchFocused && (
             <>
@@ -104,24 +189,25 @@ export default function Map() {
         style={styles.mapContainer}>
          {/* Full screen map button */}
          <TouchableOpacity
-          style={{ position: "relative", top: 16, right: 16, backgroundColor: isFullMap ? Colors.light.background.primary : Colors.light.background.quinary, borderRadius: 8, padding: 8 }}
+          style={{ position: "absolute", top: 12, right: 72, backgroundColor: isFullMap ? Colors.light.background.primary : Colors.light.background.quinary, borderRadius: 8, padding: 8, zIndex: 99 }}
           onPress={() => setIsFullMap(!isFullMap)}>
-          <MaterialIcons name={isFullMap ? "zoom-in-map" : "zoom-out-map"} size={20} color={isFullMap ? "black" : "white"} />
+          <MaterialIcons name={isFullMap ? "zoom-in-map" : "zoom-out-map"} size={24} color={isFullMap ? "white" : "black"} />
         </TouchableOpacity>
 
         {/* Select the type of report to display */}
-        <View style={{ position: "relative", top: 16, left: 16, flexDirection: "row", gap: 8 }}>
+        <View style={{ position: "absolute", top: 12, left: 16, flexDirection: "row", gap: 8, zIndex: 99 }}>
           <TouchableOpacity
-            style={{backgroundColor: Colors.light.background.quinary, borderRadius: 8, padding: 8 }}
+            style={{backgroundColor: isReportSelectVisible ? Colors.light.background.primary : Colors.light.background.quinary, borderRadius: 8, padding: 8, height: 40 }}
             onPress={handleToggleReportSelectView}>
-            <Octicons name="multi-select" size={24} color="black" />
+            <Octicons name="multi-select" size={24} color={isReportSelectVisible ? "white" : "black"} />
           </TouchableOpacity>
           {isReportSelectVisible && ( 
-            <View style={{ backgroundColor: Colors.light.background.quinary, borderRadius: 8, padding: 12, gap: 8, justifyContent: "flex-start", width: "auto", height: "auto" }}>
+            <ScrollView style={{ backgroundColor: Colors.light.background.quinary, borderRadius: 8, padding: 12, gap: 8, width: "auto", height: "auto", zIndex: 99, maxWidth: 250 }}
+            contentContainerStyle={{ justifyContent: "flex-start"}}>
               {/* List of reports */}
-              <TextBlock type={TextBlockTypeEnum.title}>{t('selectReportToDisplay')}</TextBlock>
+              <TextBlock type={TextBlockTypeEnum.title} style={{fontWeight: '700'}}>{t('selectReportToDisplay')}</TextBlock>
               <Checkbox.Item
-                label={t("safetyReport")}
+                label={t("safetyPerceptionReport")}
                 status={isSafetyChecked ? 'checked' : 'unchecked'}
                 onPress={() => setIsSafetyChecked(!isSafetyChecked)}/>
               <Checkbox.Item
@@ -132,55 +218,69 @@ export default function Map() {
                 label={t("incidentReport")}
                 status={isIncidentChecked ? 'checked' : 'unchecked'}
                 onPress={() => setIsIncidentChecked(!isIncidentChecked)}/> 
+              <Checkbox.Item
+                label={t("auditReport")}
+                status={isAuditChecked ? 'checked' : 'unchecked'}
+                onPress={() => setIsAuditChecked(!isAuditChecked)}/> 
               <ButtonAction
                 variant={ButtonTypeEnum.secondary}
                 content={<TextBlock type={TextBlockTypeEnum.body}>{t("close")}</TextBlock>}
                 onPress={handleToggleReportSelectView}/>
-            </View>
+            </ScrollView>
           )}
         </View>
 
         {/* Filter the safety reports */}
         {isSafetyChecked && (
-          <View style={{ position: "relative", top: 64, left: 16, flexDirection: "row", gap: 8, justifyContent: "flex-start", width: "auto", height: "auto" }}>
+          <View style={{ position: "absolute", top: 64, left: 16, flexDirection: "row", gap: 8, justifyContent: "flex-start", width: "auto", height: "auto", zIndex: 99}}>
             <TouchableOpacity
-              style={{backgroundColor: Colors.light.background.quinary, borderRadius: 8, padding: 8 }}
+              style={{backgroundColor: isSafetyFilterVisible ? Colors.light.background.primary : Colors.light.background.quinary, borderRadius: 8, padding: 8, height: 40 }}
               onPress={handleToggleSafetyFilter}>
-              <Octicons name="multi-select" size={24} color="black" />
+              <MaterialIcons name="safety-check" size={24} color={isSafetyFilterVisible ? "white" : "black"} />
             </TouchableOpacity>
             {isSafetyFilterVisible && ( 
-              <View style={{ backgroundColor: Colors.light.background.quinary, borderRadius: 8, padding: 12, justifyContent: "flex-start", width: "auto", height: "auto" }}>
-                <TextBlock type={TextBlockTypeEnum.title}>{t('defineFilter')}</TextBlock>
-                <TextBlock type={TextBlockTypeEnum.body}>{t('selectUserType')}</TextBlock>
-                <View style={{ flexDirection: "row", gap: 8, justifyContent: "flex-start", width: "auto", height: "auto" }}>
+              <ScrollView style={{ backgroundColor: Colors.light.background.quinary, borderRadius: 8, padding: 12, width: "auto", height: "auto", maxWidth: 300 }}
+              contentContainerStyle={{ justifyContent: "flex-start" }}>
+                <TextBlock type={TextBlockTypeEnum.title} style={{fontWeight: '700'}}>{t('defineFilter')}</TextBlock>
+                <Spacer variant="large" />
+                <TextBlock type={TextBlockTypeEnum.title}>{t('selectUserType')}</TextBlock>
+                <View style={{ flexDirection: 'row', gap: 4, justifyContent: "space-between", width: "auto", height: "auto" }}>
                   <Checkbox.Item
-                    label={"🧍🏽‍♂️"}
-                    status={'unchecked'}
-                    onPress={() => {}}/>
+                    label={t("pedestrian")}
+                    position='leading'
+                    status={isPedestrianSafetyChecked ? "checked" : 'unchecked'}
+                    onPress={handleTogglePedestrianSafety}/>
                   <Checkbox.Item
-                    label={"🚴🏽"}
-                    status={'unchecked'}
-                    onPress={() => {}}/>
+                    label={t("cyclist")}
+                    status={isCyclistSafetyChecked ? "checked" : 'unchecked'}
+                    onPress={handleToggleCyclistSafety}/>
+                </View>
+                <View style={{ flexDirection: 'row', gap: 4, justifyContent: "space-between", width: "auto", height: "auto" }}>
                   <Checkbox.Item
-                    label={"🏍️"}
-                    status={'unchecked'}
-                    onPress={() => {}}/>
+                    label={t("motorcyclist")}
+                    position='leading'
+                    status={isMotorcyclistSafetyChecked ? "checked" : 'unchecked'}
+                    onPress={handleToggleMotocyclistSafety}/>
                   <Checkbox.Item
-                    label={"🚗"}
-                    status={'unchecked'}
-                    onPress={() => {}}/>
+                    label={t("car")}
+                    status={isCarSafetyChecked ? "checked" : 'unchecked'}
+                    onPress={handleToggleCarSafety}/>
+                </View>
+                <View style={{ flexDirection: 'row', gap: 4, justifyContent: "space-between", width: "auto", height: "auto" }}>
                   <Checkbox.Item
-                    label={"🚌"}
-                    status={'unchecked'}
-                    onPress={() => {}}/>
+                    label={t("bus")}
+                    position='leading'
+                    status={isBusSafetyChecked ? "checked" : 'unchecked'}
+                    onPress={handleToggleBusSafety}/>
                   <Checkbox.Item
-                    label={"🚚"}
-                    status={'unchecked'}
-                    onPress={() => {}}/>
+                    label={t("truck")}
+                    status={isTruckSafetyChecked ? "checked" : 'unchecked'}
+                    onPress={handleToggleTruckSafety}/>
                 </View>
                 <Spacer variant="large" />
-                <TextBlock type={TextBlockTypeEnum.body}>{t('selectDateInterval')}</TextBlock>
-                <View style={{ flexDirection: "row", gap: 8, justifyContent: "flex-start", width: "auto", height: "auto" }}>
+                <TextBlock type={TextBlockTypeEnum.title}>{t('selectDateInterval')}</TextBlock>
+                <Spacer variant="medium" />
+                <View style={{ flexDirection: "row", gap: 64, justifyContent: "flex-start", width: "auto", height: "auto" }}>
                   <DateInput
                     placeholder={t("startDate")}
                     date={safetyStartDate}
@@ -195,40 +295,49 @@ export default function Map() {
                   />
                 </View>
                 <Spacer variant="large" />
-                <TextBlock type={TextBlockTypeEnum.body}>{t('selectSafetyLevel')}</TextBlock>
-                <View style={{ gap: 8, justifyContent: "flex-start", width: "auto", height: "auto" }}>
+                <TextBlock type={TextBlockTypeEnum.title}>{t('selectSafetyLevel')}</TextBlock>
+                <View style={{ justifyContent: "flex-start", width: "auto", height: "auto" }}>
                   <Checkbox.Item
                     label={t("safe")}
-                    status={'unchecked'}
+                    status={isSafeSafetyChecked ? "checked" : 'unchecked'}
                     onPress={() => {}}/>
                   <Checkbox.Item
                     label={t("unSafe")}
-                    status={'unchecked'}
+                    status={isUnsafeSafetyChecked ? "checked" : 'unchecked'}
                     onPress={() => {}}/>
                   <Checkbox.Item
                     label={t("veryUnsafe")}
-                    status={'unchecked'}
+                    status={isVeryUnsafeSafetyChecked ? "checked" : 'unchecked'}
                     onPress={() => {}}/>
                 </View>
-                <ButtonAction
-                  variant={ButtonTypeEnum.secondary}
-                  content={<TextBlock type={TextBlockTypeEnum.body}>{t("close")}</TextBlock>}
-                  onPress={handleToggleSafetyFilter}/>
-              </View>
+                <Spacer variant="large" />
+                <View style={{ flexDirection: "row", justifyContent: "space-between" }}>
+                  <ButtonAction
+                    variant={ButtonTypeEnum.secondary}
+                    content={<TextBlock type={TextBlockTypeEnum.body} style={{paddingHorizontal: 30, paddingVertical: 4}}>{t("close")}</TextBlock>}
+                    onPress={handleToggleSafetyFilter}/>
+                  <ButtonAction
+                    variant={ButtonTypeEnum.primary}
+                    content={<TextBlock type={TextBlockTypeEnum.body} style={{color: "white", paddingHorizontal: 30, paddingVertical: 4}}>{t("apply")}</TextBlock>}
+                    disabled={!isSafetyFilterModified}
+                    onPress={handleSafetyFilter}/>
+                </View>
+              </ScrollView>
             )}
           </View>
         )}
 
         {/* Filter the quick reports */}
         {isQuickChecked && (
-          <View style={{ position: "relative", top: 112, left: 16, flexDirection: "row", gap: 8, justifyContent: "flex-start", width: "auto", height: "auto" }}>
+          <View style={{ position: "absolute", top: 112, left: 16, flexDirection: "row", gap: 8, justifyContent: "flex-start", width: "auto", height: "auto", zIndex: 99 }}>
             <TouchableOpacity
-              style={{backgroundColor: Colors.light.background.quinary, borderRadius: 8, padding: 8 }}
+              style={{backgroundColor: isQuickFilterVisible ? Colors.light.background.primary : Colors.light.background.quinary, borderRadius: 8, padding: 8, height: 40 }}
               onPress={handleToggleQuickFilter}>
-              <MaterialCommunityIcons name="clock-fast" size={24} color="black" />
+              <MaterialCommunityIcons name="clock-fast" size={24} color={isQuickFilterVisible ? "white" : "black"} />
             </TouchableOpacity>
             {isQuickFilterVisible && ( 
-              <View style={{ backgroundColor: Colors.light.background.quinary, borderRadius: 8, padding: 12, justifyContent: "flex-start", width: "auto", height: "auto" }}>
+              <ScrollView style={{ backgroundColor: Colors.light.background.quinary, borderRadius: 8, padding: 12, width: "auto", height: "auto", maxWidth: 300 }}
+              contentContainerStyle={{ justifyContent: "flex-start"}}>
                 <TextBlock type={TextBlockTypeEnum.title}>{t('defineFilter')}</TextBlock>
                 <TextBlock type={TextBlockTypeEnum.body}>{t('selectUserType')}</TextBlock>
                 <View style={{ flexDirection: "row", gap: 8, justifyContent: "flex-start", width: "auto", height: "auto" }}>
@@ -240,21 +349,22 @@ export default function Map() {
                   variant={ButtonTypeEnum.secondary}
                   content={<TextBlock type={TextBlockTypeEnum.body}>{t("close")}</TextBlock>}
                   onPress={handleToggleQuickFilter}/>
-              </View>
+              </ScrollView>
             )}
           </View>
         )}
 
         {/* Filter the incident reports */}
         {isIncidentChecked && (
-          <View style={{ position: "absolute", top: 160, left: 16, flexDirection: "row", gap: 8, justifyContent: "flex-start", width: "auto", height: "auto" }}>
+          <View style={{ position: "absolute", top: 160, left: 16, flexDirection: "row", gap: 8, justifyContent: "flex-start", width: "auto", height: "auto", zIndex: 99 }}>
             <TouchableOpacity
-              style={{backgroundColor: Colors.light.background.quinary, borderRadius: 8, padding: 8 }}
+              style={{backgroundColor: isIncidentFilterVisible ? Colors.light.background.primary : Colors.light.background.quinary, borderRadius: 8, padding: 8, height: 40 }}
               onPress={handleToggleIncidentFilter}>
-              <MaterialIcons name="error-outline" size={24} color="black" />
+              <MaterialIcons name="error-outline" size={24} color={isIncidentFilterVisible ? "white" : "black"} />
             </TouchableOpacity>
             {isIncidentFilterVisible && ( 
-              <View style={{ backgroundColor: Colors.light.background.quinary, borderRadius: 8, padding: 12, justifyContent: "flex-start", width: "auto", height: "auto" }}>
+              <ScrollView style={{ backgroundColor: Colors.light.background.quinary, borderRadius: 8, padding: 12, width: "auto", height: "auto", maxWidth: 300 }}
+              contentContainerStyle={{ justifyContent: "flex-start"}}>
                 <TextBlock type={TextBlockTypeEnum.title}>{t('defineFilter')}</TextBlock>
                 <TextBlock type={TextBlockTypeEnum.body}>{t('selectUserType')}</TextBlock>
                 <View style={{ flexDirection: "row", gap: 8, justifyContent: "flex-start", width: "auto", height: "auto" }}>
@@ -266,12 +376,40 @@ export default function Map() {
                   variant={ButtonTypeEnum.secondary}
                   content={<TextBlock type={TextBlockTypeEnum.body}>{t("close")}</TextBlock>}
                   onPress={handleToggleIncidentFilter}/>
-              </View>
+              </ScrollView>
+            )}
+          </View>
+        )}
+
+        {/* Filter the audit reports */}
+        {isAuditChecked && (
+          <View style={{ position: "absolute", top: 208, left: 16, flexDirection: "row", gap: 8, justifyContent: "flex-start", width: "auto", height: "auto", zIndex: 99 }}>
+            <TouchableOpacity
+              style={{backgroundColor: isAuditFilterVisible ? Colors.light.background.primary : Colors.light.background.quinary, borderRadius: 8, padding: 8, height: 40 }}
+              onPress={handleToggleAuditFilter}>
+              <MaterialIcons name="receipt-long" size={24} color={isAuditFilterVisible ? "white" : "black"} />
+            </TouchableOpacity>
+            {isAuditFilterVisible && ( 
+              <ScrollView style={{ backgroundColor: Colors.light.background.quinary, borderRadius: 8, padding: 12, width: "auto", height: "auto", maxWidth: 300 }}
+              contentContainerStyle={{ justifyContent: "flex-start"}}>
+                <TextBlock type={TextBlockTypeEnum.title}>{t('defineFilter')}</TextBlock>
+                <TextBlock type={TextBlockTypeEnum.body}>{t('selectUserType')}</TextBlock>
+                <View style={{ flexDirection: "row", gap: 8, justifyContent: "flex-start", width: "auto", height: "auto" }}>
+
+                </View>
+                  
+                <Spacer variant="large" />
+                <ButtonAction
+                  variant={ButtonTypeEnum.secondary}
+                  content={<TextBlock type={TextBlockTypeEnum.body}>{t("close")}</TextBlock>}
+                  onPress={handleToggleAuditFilter}/>
+              </ScrollView>
             )}
           </View>
         )}
 
       <MapView 
+        style={styles.mapView}
         initialRegion={{
           latitude: currentLocation?.coords.latitude ?? 6,
           longitude: currentLocation?.coords.longitude ?? 12,
@@ -335,8 +473,13 @@ const styles = StyleSheet.create({
   },
   mapContainer: {
     flex: 1,
+    backgroundColor: '#F5FCFF',
+  },
+  mapView: {
+    width: '100%',
+    height: '100%',
+    flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
-    backgroundColor: '#F5FCFF',
   }
 });
