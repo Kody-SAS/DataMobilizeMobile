@@ -321,6 +321,7 @@ export default function Report() {
                         createdAt: date,
                         roadType: roadType?.data.type as RoadType,
                         userType: userType?.data.type as UserType,
+                        safetyLevel: safety as SafetyLevel,
                         reportType: ReportType.SafetyPerception,
                         reasons: safetyReasons,
                         images: reportImages
@@ -443,7 +444,7 @@ export default function Report() {
                     <Spacer variant="medium" />
                 </>
             )}
-            {type == ReportType.SafetyPerception.toString() && (
+            {type == ReportType.SafetyPerception.toString() && userType && (
                 <>
                     {/* Choosing the safety level */}
                     <RadioButton.Group 

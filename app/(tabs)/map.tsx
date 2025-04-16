@@ -8,8 +8,8 @@ import { useNetInfo } from '@react-native-community/netinfo';
 import { useTranslation } from 'react-i18next';
 import { useDispatch, useSelector } from 'react-redux';
 import { ThunkDispatch } from '@reduxjs/toolkit';
-import { ButtonTypeEnum, IncidentReport, QuickReport, SafetyPerceptionReport, TextBlockTypeEnum } from '../../type.d';
-import { Checkbox, FAB, Searchbar } from 'react-native-paper';
+import { ButtonTypeEnum, IncidentReport, QuickReport, SafetyLevel, SafetyPerceptionReport, TextBlockTypeEnum, UserType } from '../../type.d';
+import { Checkbox, FAB, RadioButton, Searchbar } from 'react-native-paper';
 import MapView, { MAP_TYPES, Marker, PROVIDER_GOOGLE } from 'react-native-maps';
 import { Spacer } from '../../components/Spacer';
 import { registerForForegroundLocationPermissionAsync } from '../../utils/Permissions';
@@ -42,10 +42,10 @@ export default function Map() {
   const [isCarSafetyChecked, setIsCarSafetyChecked] = useState<boolean>(false);
   const [isBusSafetyChecked, setIsBusSafetyChecked] = useState<boolean>(false);
   const [isTruckSafetyChecked, setIsTruckSafetyChecked] = useState<boolean>(false);
-  const [isSafeSafetyChecked, setIsSafeSafetyChecked] = useState<boolean>(false);
-  const [isUnsafeSafetyChecked, setIsUnsafeSafetyChecked] = useState<boolean>(false);
-  const [isVeryUnsafeSafetyChecked, setIsVeryUnsafeSafetyChecked] = useState<boolean>(false);
+  const [isSafetyDateError, setIsSafetyDateError] = useState<boolean>(false);
+  const [safetyLevel, setSafetyLevel] = useState<string | undefined>(SafetyLevel.Safe.toString());
   const [isSafetyFilterModified, setIsSafetyFilterModified] = useState<boolean>(false);
+  const [filteredSafetyReports, setFilteredSafetyReports] = useState<SafetyPerceptionReport[]>([]);
   const [isQuickFilterModified, setIsQuickFilterModified] = useState<boolean>(false);
   const [isIncidentFilterModified, setIsIncidentFilterModified] = useState<boolean>(false);
   const [isAuditFilterModified, setIsAuditFilterModified] = useState<boolean>(false);
@@ -144,7 +144,38 @@ export default function Map() {
     setIsSafetyFilterModified(true);
   }
 
+  const handleSafetyLevelSelection = (value: string) => {
+    setSafetyLevel(value);
+    setIsSafetyFilterModified(true);
+  }
+
   const handleSafetyFilter = () => {
+    // Check if the start date is after the end date
+    if (safetyStartDate > safetyEndDate) {
+      setIsSafetyDateError(true);
+      return;
+    } else {
+      setIsSafetyDateError(false);
+    }
+    // Filter the safety reports based on the selected filters
+    const filteredReports = safetyReports.filter((report) => {
+      const reportDate = new Date(report.createdAt);
+      const isDateInRange = reportDate >= safetyStartDate && reportDate <= safetyEndDate;
+      const isPedestrian = isPedestrianSafetyChecked ? report.userType === UserType.Pedestrian : false;
+      const isCyclist = isCyclistSafetyChecked ? report.userType === UserType.Cyclist : false;
+      const isMotorcyclist = isMotorcyclistSafetyChecked ? report.userType === UserType.Motocyclist : false;
+      const isCar = isCarSafetyChecked ? report.userType === UserType.Car : false;
+      const isBus = isBusSafetyChecked ? report.userType === UserType.Bus : false;
+      const isTruck = isTruckSafetyChecked ? report.userType === UserType.Truck : false;
+      const isValidSafetyLevel = report.safetyLevel === safetyLevel as SafetyLevel;
+      return (
+        isDateInRange &&
+        (isPedestrian || isCyclist || isMotorcyclist || isCar || isBus || isTruck) &&
+        (isValidSafetyLevel)
+      );
+    });
+
+    // Update the state with the filtered reports
     setIsFullMap(true);
     setIsSafetyFilterVisible(false);
     setIsQuickFilterVisible(false);
@@ -152,7 +183,9 @@ export default function Map() {
     setIsAuditFilterVisible(false);
     setIsReportSelectVisible(false);
     setIsSafetyFilterModified(false);
-
+    console.log("Filtered reports: ", filteredReports);
+    console.log("Safety reports: ", safetyReports);
+    setFilteredSafetyReports(filteredReports);
   }
 
 
@@ -294,21 +327,19 @@ export default function Map() {
                     mode={"date"}
                   />
                 </View>
+                {isSafetyDateError && <TextBlock type={TextBlockTypeEnum.body} style={{color: "red"}}>{t("safetyDateError")}</TextBlock>}
                 <Spacer variant="large" />
                 <TextBlock type={TextBlockTypeEnum.title}>{t('selectSafetyLevel')}</TextBlock>
                 <View style={{ justifyContent: "flex-start", width: "auto", height: "auto" }}>
-                  <Checkbox.Item
-                    label={t("safe")}
-                    status={isSafeSafetyChecked ? "checked" : 'unchecked'}
-                    onPress={() => {}}/>
-                  <Checkbox.Item
-                    label={t("unSafe")}
-                    status={isUnsafeSafetyChecked ? "checked" : 'unchecked'}
-                    onPress={() => {}}/>
-                  <Checkbox.Item
-                    label={t("veryUnsafe")}
-                    status={isVeryUnsafeSafetyChecked ? "checked" : 'unchecked'}
-                    onPress={() => {}}/>
+                  <RadioButton.Group 
+                    onValueChange={handleSafetyLevelSelection} 
+                    value={safetyLevel?.toString() ?? ""}>
+                    <View style={styles.safetyLevelContainer}>
+                        <RadioButton.Item label={t("safe")} value={SafetyLevel.Safe} />
+                        <RadioButton.Item label={t("unsafe")} value={SafetyLevel.unSafe} />
+                        <RadioButton.Item label={t("veryUnsafe")} value={SafetyLevel.veryUnsafe} />
+                    </View>
+                  </RadioButton.Group>
                 </View>
                 <Spacer variant="large" />
                 <View style={{ flexDirection: "row", justifyContent: "space-between" }}>
@@ -430,7 +461,7 @@ export default function Map() {
             description="Your current location"
           />
         )}
-        {isSafetyChecked && safetyReports.map((report, index) => (
+        {isSafetyChecked && filteredSafetyReports.map((report, index) => (
           <Marker
             key={index}
             coordinate={{
@@ -469,6 +500,11 @@ const styles = StyleSheet.create({
     paddingHorizontal: 32,
     paddingVertical: 4,
     justifyContent: "center",
+    alignItems: "center"
+  },
+  safetyLevelContainer: {
+    flexDirection: "row",
+    justifyContent: "space-between",
     alignItems: "center"
   },
   mapContainer: {

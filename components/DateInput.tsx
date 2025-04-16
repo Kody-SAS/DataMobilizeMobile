@@ -1,4 +1,4 @@
-import { StyleSheet, TouchableOpacity, View } from "react-native"
+import { StyleSheet, TouchableOpacity, View, Platform } from "react-native"
 import { TextBlock } from "./TextBlock"
 import { useTranslation } from "react-i18next"
 import { TextBlockTypeEnum } from "../type.d";
@@ -20,11 +20,33 @@ export const DateInput = ({
     setDate,
     mode = "datetime"
 }: DateInputProps) => {
-    const [showDatePicker, setShowDatePicker] = useState<boolean>(false);
     const {t} = useTranslation();
+    const [showDatePicker, setShowDatePicker] = useState<boolean>(false);
+    const [showFirstDatePicker, setShowFirstDatePicker] = useState<boolean>(false);
+    const [showSecondDatePicker, setShowSecondDatePicker] = useState<boolean>(false);
+    const [selectedDate, setSelectedDate] = useState(new Date(Date.now()));
+    const [selectedTime, setSelectedTime] = useState(new Date(Date.now()));
+
+    // When both are selected, combine them:
+    const getCombinedDateTime = () => {
+        const combineDate = new Date(selectedDate);
+        const combineTime = new Date(selectedTime);
+
+        const combined = new Date(
+            combineDate.getFullYear(),
+            combineDate.getMonth(),
+            combineDate.getDate(),
+            combineTime.getHours(),
+            combineTime.getMinutes(),
+            combineTime.getSeconds()
+        );
+
+        setDate(combined);
+    };
 
     const handleShowDatePicker = () => {
         setShowDatePicker(true);
+        setShowFirstDatePicker(true);
     }
 
     const handleDateChanged = (event: DateTimePickerEvent, date?: Date) => {
@@ -32,23 +54,77 @@ export const DateInput = ({
         setShowDatePicker(false);
     }
 
+    const handleSelectedDateChange = (event: DateTimePickerEvent, date?: Date) => {
+        if (event.type === "dismissed") {
+            setShowFirstDatePicker(false);
+            setShowSecondDatePicker(false);
+            return;
+        }
+        setSelectedDate(date!);
+        setShowFirstDatePicker(false);
+        setShowSecondDatePicker(true);
+    }
+
+    const handleSelectedTimeChange = (event: DateTimePickerEvent, date?: Date) => {
+        if (event.type === "dismissed") {
+            setShowFirstDatePicker(true);
+            setShowSecondDatePicker(false);
+            return;
+        }
+        setSelectedTime(date!);
+        setShowFirstDatePicker(false);
+        setShowSecondDatePicker(false);
+        getCombinedDateTime();
+    }
+
     return (
         <View>
-            <TextBlock type={TextBlockTypeEnum.title}>{placeholder ?? t("chooseDate")}</TextBlock>
+            <TextBlock type={TextBlockTypeEnum.title}>{placeholder.length > 0 ? placeholder : t("chooseDate")}</TextBlock>
             <Spacer variant="medium" />
             <TouchableOpacity
                 activeOpacity={0.8}
                 onPress={handleShowDatePicker}
                 style={styles.dateContainer}
             >
-                <TextBlock type={TextBlockTypeEnum.body}>{date.toLocaleDateString()}</TextBlock>
+                <TextBlock type={TextBlockTypeEnum.body}>{date.toLocaleDateString()}{mode == 'datetime' ? ", " + date.toLocaleTimeString() : ""}</TextBlock>
             </TouchableOpacity>
             {showDatePicker && (
-                <RNDateTimePicker
-                    mode={mode}
-                    value={date}
-                    onChange={handleDateChanged}
-                 />
+                <>
+                    {Platform.OS == "ios" ? (
+                        <RNDateTimePicker
+                            mode={mode}
+                            value={date}
+                            onChange={handleDateChanged}
+                        />
+                    ) : (
+                        <>
+                            {mode === "datetime" ? (
+                                <>
+                                    {showFirstDatePicker && (
+                                        <RNDateTimePicker
+                                            mode={"date"}
+                                            value={selectedDate}
+                                            onChange={handleSelectedDateChange}
+                                        />
+                                    )}
+                                    {showSecondDatePicker && (
+                                        <RNDateTimePicker
+                                            mode={"time"}
+                                            value={selectedTime}
+                                            onChange={handleSelectedTimeChange}
+                                        />
+                                    )}
+                                </>
+                            ) : (
+                                <RNDateTimePicker
+                                    mode={mode}
+                                    value={date}
+                                    onChange={handleDateChanged}
+                                />
+                            )}
+                        </>
+                    )}
+                </>
             )}
         </View>
     )

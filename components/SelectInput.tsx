@@ -65,6 +65,7 @@ export const SelectInput = ({
                         return (
                             <TouchableOpacity 
                                 id={index.toString()}
+                                key={index}
                                 onPress={() => handleOptionChange(item)}
                                 style={styles.listItemContainer}
                                 >
@@ -84,7 +85,7 @@ export const SelectInput = ({
                     }}
                     showsHorizontalScrollIndicator={true}
                     horizontal={horizontal}
-                    keyExtractor={item => item.imageUrl}
+                    keyExtractor={item => item.imageUrl + item.content}
                 />
             ): (
                 <TouchableOpacity

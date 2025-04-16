@@ -167,6 +167,7 @@ export type SafetyPerceptionReport =  {
     createdAt: Date;
     roadType: RoadType;
     userType: UserType;
+    safetyLevel: SafetyLevel;
     reportType: ReportType;
     reasons: {
         type: ReasonType;

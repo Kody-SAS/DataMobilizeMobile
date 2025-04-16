@@ -114,6 +114,7 @@
     "endDate": "End date",
     "selectSafetyLevel": "Choose the road safety level",
     "apply": "Apply",
-    "close": "Close"
+    "close": "Close",
+    "safetyDateError": "The start date must be before the end date"
   }
 }
