@@ -243,23 +243,29 @@ export default function Report() {
     }
 
     const handleSafetyReasonPressed = (e: GestureResponderEvent, type: ReasonType, selectedReason: string) => {
+        let existingReasons = [...safetyReasons];
+
         safetyReasons.forEach((item) => {
             if (item.type == type) {
                 if (!item.list.includes(selectedReason)) {
                     const newList = [...item.list, selectedReason];
-                    setSafetyReasons([...safetyReasons, {type: type, list: newList}]);
+                    const currentIndex = safetyReasons.indexOf(item);
+                    existingReasons.splice(currentIndex, 1, {type: type, list: newList});
                 }
                 else {
                     const newList = item.list.filter(item => item != selectedReason);
-                    setSafetyReasons([...safetyReasons, {type: type, list: newList}]);
+                    const currentIndex = safetyReasons.indexOf(item);
+                    existingReasons.splice(currentIndex, 1, {type: type, list: newList});
                 }
             }
         })
 
-        const notFoundReasons = safetyReasons.filter(item => item.type == type);
+        setSafetyReasons(existingReasons);
+
+        const notFoundReasons = existingReasons.filter(item => item.type == type);
 
         if (notFoundReasons.length == 0) {
-            setSafetyReasons([...safetyReasons, {type: type, list: [selectedReason]}]);
+            setSafetyReasons([...existingReasons, {type: type, list: [selectedReason]}]);
         }
     }
 
@@ -362,7 +368,7 @@ export default function Report() {
             default: 
                 break;
         }
-
+        router.back();
     };
 
     // change screen title

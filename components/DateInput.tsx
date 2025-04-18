@@ -12,13 +12,15 @@ export type DateInputProps = {
     date: Date;
     setDate: React.Dispatch<SetStateAction<Date>>;
     mode?: "date" | "time" | "datetime";
+    onChange?: (date: Date) => void;
 }
 
 export const DateInput = ({
     placeholder = "",
     date,
     setDate,
-    mode = "datetime"
+    mode = "datetime",
+    onChange
 }: DateInputProps) => {
     const {t} = useTranslation();
     const [showDatePicker, setShowDatePicker] = useState<boolean>(false);
@@ -42,6 +44,8 @@ export const DateInput = ({
         );
 
         setDate(combined);
+
+        if (onChange) onChange(combined);
     };
 
     const handleShowDatePicker = () => {
@@ -52,6 +56,8 @@ export const DateInput = ({
     const handleDateChanged = (event: DateTimePickerEvent, date?: Date) => {
         setDate(date!);
         setShowDatePicker(false);
+
+        if (onChange) onChange(date!);
     }
 
     const handleSelectedDateChange = (event: DateTimePickerEvent, date?: Date) => {

@@ -18,6 +18,12 @@ export const mapSlice = createSlice({
     name: 'map',
     initialState,
     reducers: {
+        clearReports: (state, action) => {
+            const length = state.safetyPerceptionReports.length;
+            for(let i = 0; i < length; i++) {
+                state.safetyPerceptionReports.pop();
+            }
+        },
         addSafetyPerceptionReport: (state, action) => {
             state.safetyPerceptionReports.push(action.payload as never);
         },
@@ -34,6 +40,7 @@ export const mapSlice = createSlice({
 });
 
 export const {
+    clearReports,
     addSafetyPerceptionReport,
     addIncidentReport,
     addQuickReport,

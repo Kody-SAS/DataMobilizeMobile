@@ -15,7 +15,7 @@ import { Spacer } from '../../components/Spacer';
 import { registerForForegroundLocationPermissionAsync } from '../../utils/Permissions';
 import * as Location from 'expo-location';
 import ToastMessage from '../../utils/Toast';
-import { selectIncidentReports, selectQuickReports, selectSafetyReports } from '../../redux/slices/mapSlice';
+import { clearReports, selectIncidentReports, selectQuickReports, selectSafetyReports } from '../../redux/slices/mapSlice';
 import { MaterialCommunityIcons, MaterialIcons, Octicons } from '@expo/vector-icons';
 import { ButtonAction } from '../../components/ButtonAction';
 import { DateInput } from '../../components/DateInput';
@@ -43,7 +43,9 @@ export default function Map() {
   const [isBusSafetyChecked, setIsBusSafetyChecked] = useState<boolean>(false);
   const [isTruckSafetyChecked, setIsTruckSafetyChecked] = useState<boolean>(false);
   const [isSafetyDateError, setIsSafetyDateError] = useState<boolean>(false);
-  const [safetyLevel, setSafetyLevel] = useState<string | undefined>(SafetyLevel.Safe.toString());
+  const [isSafeSafetyChecked, setIsSafeSafetyChecked] = useState<boolean>(true);
+  const [isUnsafeSafetyChecked, setIsUnsafeSafetyChecked] = useState<boolean>(true);
+  const [isVeryUnsafeSafetyChecked, setIsVeryUnsafeSafetyChecked] = useState<boolean>(true);
   const [isSafetyFilterModified, setIsSafetyFilterModified] = useState<boolean>(false);
   const [filteredSafetyReports, setFilteredSafetyReports] = useState<SafetyPerceptionReport[]>([]);
   const [isQuickFilterModified, setIsQuickFilterModified] = useState<boolean>(false);
@@ -127,6 +129,7 @@ export default function Map() {
 
   const handleToggleMotocyclistSafety = () => {
     setIsMotorcyclistSafetyChecked((old: boolean) => !old);
+    setIsSafetyFilterModified(true);
   }
 
   const handleToggleCarSafety = () => {
@@ -144,8 +147,18 @@ export default function Map() {
     setIsSafetyFilterModified(true);
   }
 
-  const handleSafetyLevelSelection = (value: string) => {
-    setSafetyLevel(value);
+  const handleToggleSafeSafety = () => {
+    setIsSafeSafetyChecked((old: boolean) => !old);
+    setIsSafetyFilterModified(true);
+  }
+
+  const handleToggleUnsafeSafety = () => {
+    setIsUnsafeSafetyChecked((old: boolean) => !old);
+    setIsSafetyFilterModified(true);
+  }
+
+  const handleToggleVeryUnsafeSafety = () => {
+    setIsVeryUnsafeSafetyChecked((old: boolean) => !old);
     setIsSafetyFilterModified(true);
   }
 
@@ -167,7 +180,9 @@ export default function Map() {
       const isCar = isCarSafetyChecked ? report.userType === UserType.Car : false;
       const isBus = isBusSafetyChecked ? report.userType === UserType.Bus : false;
       const isTruck = isTruckSafetyChecked ? report.userType === UserType.Truck : false;
-      const isValidSafetyLevel = report.safetyLevel === safetyLevel as SafetyLevel;
+      const isValidSafetyLevel = ((report.safetyLevel === SafetyLevel.Safe) && isSafeSafetyChecked) ||
+                                  ((report.safetyLevel === SafetyLevel.unSafe) && isUnsafeSafetyChecked) ||
+                                  ((report.safetyLevel === SafetyLevel.veryUnsafe) && isVeryUnsafeSafetyChecked)
       return (
         isDateInRange &&
         (isPedestrian || isCyclist || isMotorcyclist || isCar || isBus || isTruck) &&
@@ -190,6 +205,7 @@ export default function Map() {
 
 
   useEffect(() => {
+    // dispatch(clearReports(null)); // for development only
     locateUser();
   }, []);
   
@@ -331,15 +347,18 @@ export default function Map() {
                 <Spacer variant="large" />
                 <TextBlock type={TextBlockTypeEnum.title}>{t('selectSafetyLevel')}</TextBlock>
                 <View style={{ justifyContent: "flex-start", width: "auto", height: "auto" }}>
-                  <RadioButton.Group 
-                    onValueChange={handleSafetyLevelSelection} 
-                    value={safetyLevel?.toString() ?? ""}>
-                    <View style={styles.safetyLevelContainer}>
-                        <RadioButton.Item label={t("safe")} value={SafetyLevel.Safe} />
-                        <RadioButton.Item label={t("unsafe")} value={SafetyLevel.unSafe} />
-                        <RadioButton.Item label={t("veryUnsafe")} value={SafetyLevel.veryUnsafe} />
-                    </View>
-                  </RadioButton.Group>
+                  <Checkbox.Item 
+                    label={t("safe")}
+                    status={isSafeSafetyChecked ? "checked" : "unchecked"}
+                    onPress={handleToggleSafeSafety} />
+                  <Checkbox.Item 
+                    label={t("unsafe")} 
+                    status={isUnsafeSafetyChecked ? "checked" : "unchecked"}
+                    onPress={handleToggleUnsafeSafety} />
+                  <Checkbox.Item 
+                    label={t("veryUnsafe")} 
+                    status={isVeryUnsafeSafetyChecked ? "checked" : "unchecked"}
+                    onPress={handleToggleVeryUnsafeSafety} />
                 </View>
                 <Spacer variant="large" />
                 <View style={{ flexDirection: "row", justifyContent: "space-between" }}>
@@ -500,11 +519,6 @@ const styles = StyleSheet.create({
     paddingHorizontal: 32,
     paddingVertical: 4,
     justifyContent: "center",
-    alignItems: "center"
-  },
-  safetyLevelContainer: {
-    flexDirection: "row",
-    justifyContent: "space-between",
     alignItems: "center"
   },
   mapContainer: {
