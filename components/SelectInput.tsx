@@ -67,7 +67,7 @@ export const SelectInput = ({
                                 id={index.toString()}
                                 key={index}
                                 onPress={() => handleOptionChange(item)}
-                                style={styles.listItemContainer}
+                                style={horizontal ? styles.listItemContainer : styles.vertItemContainer}
                                 >
                                 {item.imageUrl && (
                                     <>
@@ -79,7 +79,7 @@ export const SelectInput = ({
                                         <Spacer variant="medium" />
                                     </>
                                 )}
-                                <TextBlock type={TextBlockTypeEnum.caption} style={{textAlign: 'center', paddingHorizontal: !horizontal ? 16 : undefined, paddingVertical: !horizontal ? 8 : undefined}}>{item.content}</TextBlock>
+                                <TextBlock type={!horizontal ? TextBlockTypeEnum.body : TextBlockTypeEnum.caption} style={{textAlign: horizontal ? 'center' : undefined, paddingHorizontal: !horizontal ? 16 : undefined, paddingVertical: !horizontal ? 8 : undefined}}>{item.content}</TextBlock>
                             </TouchableOpacity>
                         )
                     }}
@@ -130,8 +130,12 @@ const styles = StyleSheet.create({
         height: 45
     },
     listItemContainer: {
-        width: 65,
+        width: 75,
         height: 100,
         margin: 4
+    },
+    vertItemContainer: {
+        borderBottomWidth: 1,
+        borderBottomColor: Colors.light.background.tertiary
     }
 })

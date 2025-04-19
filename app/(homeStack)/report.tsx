@@ -19,6 +19,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { selectUser } from "../../redux/slices/accountSlice";
 import { ThunkDispatch } from "@reduxjs/toolkit";
 import { addSafetyPerceptionReport, addQuickReport } from "../../redux/slices/mapSlice";
+import { isValidReport } from "../../utils/Validation";
 
 export default function Report() {
     const [roadType, setRoadType] = useState<SelectedOption>();
@@ -26,11 +27,13 @@ export default function Report() {
     const [userType, setUserType] = useState<SelectedOption>();
     const [date, setDate] = useState<Date>(new Date(Date.now()));
     const [safety, setSafety] = useState<string>();
+    const [severity, setSeverity] = useState<string>();
     const [safetyReasons, setSafetyReasons] = useState<{type: ReasonType, list: string[]}[]>([]);
     const [isSafetyModalVisible, setIsSafetyModalVisible] = useState<boolean>(false);
     const [isConditionListModalVisible, setIsConditionListModalVisible] = useState<boolean>(false);
     const [conditionItem, setConditionItem] = useState<string>("");
     const [reportImages, setReportImages] = useState<string[]>([]);
+    const [reportError, setReportError] = useState<string>("");
 
     const {type} = useLocalSearchParams();
     const {t} = useTranslation();
@@ -233,6 +236,10 @@ export default function Report() {
         setSafety(value);
     }
 
+    const handleSeverityLevelSelection = (value: string) => {
+        setSeverity(value);
+    }
+
     const handleConditionTypeSelection = () => {
         setIsConditionListModalVisible(true);
     }
@@ -333,7 +340,13 @@ export default function Report() {
                         images: reportImages
                     }
 
-                    dispatch(addSafetyPerceptionReport(report));
+                    if(isValidReport(report, ReportType.SafetyPerception)) {
+                        dispatch(addSafetyPerceptionReport(report));
+                        setReportError("");
+                    }
+                    else {
+                        setReportError(t("reportError"));
+                    }
                 }
                 break;
             }
@@ -349,12 +362,18 @@ export default function Report() {
                         roadType: roadType?.data.type as RoadType,
                         conditionType: conditionType?.data.type as ConditionType,
                         conditionDescription: conditionItem,
-                        severityLevel: SeverityLevel.NoRisky,
+                        severityLevel: severity as SeverityLevel,
                         reportType: ReportType.SafetyPerception,
-                        images: []
+                        images: reportImages
                     }
 
-                    dispatch(addQuickReport(report));
+                    if(isValidReport(report, ReportType.Quick)) {
+                        dispatch(addQuickReport(report));
+                        setReportError("");
+                    }
+                    else {
+                        setReportError(t("reportError"));
+                    }
                 }
                 break;
             }
@@ -432,8 +451,9 @@ export default function Report() {
                         onInputSelect={handleConditionTypeSelection}
                         horizontal={false}
                     />
-                    <Spacer variant="large" />
                     <Spacer variant="medium" />
+                    {conditionItem && <TextBlock type={TextBlockTypeEnum.body}>{t("description")}: {conditionItem}</TextBlock>}
+                    <Spacer variant="large" />
                 </>
             )}
             {type == ReportType.SafetyPerception.toString() && (
@@ -460,6 +480,22 @@ export default function Report() {
                             <RadioButton.Item label={t("safe")} value={SafetyLevel.Safe} />
                             <RadioButton.Item label={t("unsafe")} value={SafetyLevel.unSafe} />
                             <RadioButton.Item label={t("veryUnsafe")} value={SafetyLevel.veryUnsafe} />
+                        </View>
+                    </RadioButton.Group>
+                    <Spacer variant="large" />
+                    <Spacer variant="medium" />
+                </>
+            )}
+            {type == ReportType.Quick.toString() && conditionItem && (
+                <>
+                    {/* Choosing the severity level */}
+                    <RadioButton.Group 
+                        onValueChange={handleSeverityLevelSelection} 
+                        value={severity?.toString() ?? ""}>
+                        <View style={styles.safetyLevelContainer}>
+                            <RadioButton.Item label={t("noRisk")} value={SeverityLevel.NoRisky} />
+                            <RadioButton.Item label={t("risky")} value={SeverityLevel.Risky} />
+                            <RadioButton.Item label={t("urgentRisk")} value={SeverityLevel.UrgentRisk} />
                         </View>
                     </RadioButton.Group>
                     <Spacer variant="large" />
@@ -535,6 +571,7 @@ export default function Report() {
                 </Modal>
                 <Modal visible={isConditionListModalVisible} dismissable={true}>
                     <View style={styles.modalContentContainer}>
+                        <TextBlock type={TextBlockTypeEnum.h5}>{t("whyConditionType")}: {conditionType?.content} ?</TextBlock>
                         <RadioButton.Group onValueChange={handleConditionItemSelection} value={conditionItem}>
                             {conditionListDate.map((item, index) => {
                                 if (item.type == conditionType?.data.type) {
@@ -547,6 +584,7 @@ export default function Report() {
                                                     value={condition}
                                                 />
                                             ))}
+                                            <Spacer variant="large" />
                                         </View>
                                     )
                                 }
@@ -629,6 +667,7 @@ export default function Report() {
                 }
             />
             <Spacer variant="large" />
+            {reportError && <TextBlock type={TextBlockTypeEnum.caption} style={{color: 'red'}}>{reportError}</TextBlock>}
             <Spacer variant="large" />
             <Spacer variant="large" />
             <Spacer variant="large" />

@@ -150,7 +150,7 @@ export enum ConditionType {
 export enum SeverityLevel {
     NoRisky = "No Risk",
     Risky = "Risky",
-    UrgentRist = "Urgent Risk"
+    UrgentRisk = "Urgent Risk"
 }
 
 export enum IncidentType {
