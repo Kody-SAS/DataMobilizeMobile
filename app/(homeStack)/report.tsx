@@ -343,6 +343,7 @@ export default function Report() {
                     if(isValidReport(report, ReportType.SafetyPerception)) {
                         dispatch(addSafetyPerceptionReport(report));
                         setReportError("");
+                        router.back();
                     }
                     else {
                         setReportError(t("reportError"));
@@ -370,6 +371,7 @@ export default function Report() {
                     if(isValidReport(report, ReportType.Quick)) {
                         dispatch(addQuickReport(report));
                         setReportError("");
+                        router.back();
                     }
                     else {
                         setReportError(t("reportError"));
@@ -387,7 +389,6 @@ export default function Report() {
             default: 
                 break;
         }
-        router.back();
     };
 
     // change screen title
@@ -659,6 +660,8 @@ export default function Report() {
                 </>
             )}
 
+            {reportError && <TextBlock type={TextBlockTypeEnum.caption} style={{color: 'red'}}>{reportError}</TextBlock>}
+            <Spacer variant="medium" />
             <ButtonAction 
                 variant={ButtonTypeEnum.primary}
                 onPress={handleAddReport}
@@ -667,7 +670,6 @@ export default function Report() {
                 }
             />
             <Spacer variant="large" />
-            {reportError && <TextBlock type={TextBlockTypeEnum.caption} style={{color: 'red'}}>{reportError}</TextBlock>}
             <Spacer variant="large" />
             <Spacer variant="large" />
             <Spacer variant="large" />

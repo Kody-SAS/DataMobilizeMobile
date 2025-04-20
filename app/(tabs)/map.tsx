@@ -8,7 +8,7 @@ import { useNetInfo } from '@react-native-community/netinfo';
 import { useTranslation } from 'react-i18next';
 import { useDispatch, useSelector } from 'react-redux';
 import { ThunkDispatch } from '@reduxjs/toolkit';
-import { ButtonTypeEnum, IncidentReport, QuickReport, SafetyLevel, SafetyPerceptionReport, TextBlockTypeEnum, UserType } from '../../type.d';
+import { ButtonTypeEnum, IncidentReport, QuickReport, ReportType, SafetyLevel, SafetyPerceptionReport, TextBlockTypeEnum, UserType } from '../../type.d';
 import { Checkbox, FAB, RadioButton, Searchbar } from 'react-native-paper';
 import MapView, { MAP_TYPES, Marker, PROVIDER_GOOGLE } from 'react-native-maps';
 import { Spacer } from '../../components/Spacer';
@@ -19,6 +19,8 @@ import { clearReports, selectIncidentReports, selectQuickReports, selectSafetyRe
 import { MaterialCommunityIcons, MaterialIcons, Octicons } from '@expo/vector-icons';
 import { ButtonAction } from '../../components/ButtonAction';
 import { DateInput } from '../../components/DateInput';
+import { GestureHandlerRootView } from 'react-native-gesture-handler';
+import BottomSheet, { BottomSheetModal, BottomSheetModalProvider, BottomSheetView } from '@gorhom/bottom-sheet';
 
 export default function Map() {
   const [searchQuery, setSearchQuery] = useState<string>('');
@@ -34,8 +36,8 @@ export default function Map() {
   const [isQuickFilterVisible, setIsQuickFilterVisible] = useState<boolean>(false);
   const [isIncidentFilterVisible, setIsIncidentFilterVisible] = useState<boolean>(false);
   const [isAuditFilterVisible, setIsAuditFilterVisible] = useState<boolean>(false);
-  const [safetyStartDate, setSafetyStartDate] = useState<Date>(new Date(Date.now()));
-  const [safetyEndDate, setSafetyEndDate] = useState<Date>(new Date(Date.now()));
+  const [safetyStartDate, setSafetyStartDate] = useState<Date>(new Date(Date.now() - 604800000)); // 7 days ago
+  const [safetyEndDate, setSafetyEndDate] = useState<Date>(new Date(Date.now() + 86400000)); // 1 days from now
   const [isPedestrianSafetyChecked, setIsPedestrianSafetyChecked] = useState<boolean>(false);
   const [isCyclistSafetyChecked, setIsCyclistSafetyChecked] = useState<boolean>(false);
   const [isMotorcyclistSafetyChecked, setIsMotorcyclistSafetyChecked] = useState<boolean>(false);
@@ -47,10 +49,14 @@ export default function Map() {
   const [isUnsafeSafetyChecked, setIsUnsafeSafetyChecked] = useState<boolean>(true);
   const [isVeryUnsafeSafetyChecked, setIsVeryUnsafeSafetyChecked] = useState<boolean>(true);
   const [isSafetyFilterModified, setIsSafetyFilterModified] = useState<boolean>(false);
+  const [currentOpenedReport, setCurrentOpenedReport] = useState<SafetyPerceptionReport | QuickReport | IncidentReport | null>(null);
   const [filteredSafetyReports, setFilteredSafetyReports] = useState<SafetyPerceptionReport[]>([]);
   const [isQuickFilterModified, setIsQuickFilterModified] = useState<boolean>(false);
   const [isIncidentFilterModified, setIsIncidentFilterModified] = useState<boolean>(false);
   const [isAuditFilterModified, setIsAuditFilterModified] = useState<boolean>(false);
+
+  const bottomSheetModalRef = React.useRef<BottomSheetModal>(null);
+  const snapPoints = React.useMemo(() => ['50%', '85%'], []);
 
   const {isConnected} = useNetInfo();
   const {t} = useTranslation();
@@ -203,6 +209,23 @@ export default function Map() {
     setFilteredSafetyReports(filteredReports);
   }
 
+  const determineSafetyStyle = (safetyLevel: SafetyLevel) => {
+    switch (safetyLevel) {
+      case SafetyLevel.Safe:
+        return "green";
+      case SafetyLevel.unSafe:
+        return "yellow";
+      case SafetyLevel.veryUnsafe:
+        return "red";   
+      default:
+        return "gray";
+    }
+  }
+
+  const handleMarkerSafetyPress = (report: SafetyPerceptionReport | QuickReport | IncidentReport) => {
+    setCurrentOpenedReport(report);
+    bottomSheetModalRef.current?.present();
+  }
 
   useEffect(() => {
     // dispatch(clearReports(null)); // for development only
@@ -211,6 +234,8 @@ export default function Map() {
   
   return (
     <SafeAreaView style={styles.container}>
+      <GestureHandlerRootView style={styles.container}>
+      <BottomSheetModalProvider>
       {!isFullMap && (
         <View style={styles.introContainer}>
           {!isSearchFocused && (
@@ -335,12 +360,14 @@ export default function Map() {
                     date={safetyStartDate}
                     setDate={setSafetyStartDate}
                     mode={"date"}
+                    onChange={() => setIsSafetyFilterModified(true)}
                   />
                   <DateInput
                     placeholder={t("endDate")}
                     date={safetyEndDate}
                     setDate={setSafetyEndDate}
                     mode={"date"}
+                    onChange={() => setIsSafetyFilterModified(true)}
                   />
                 </View>
                 {isSafetyDateError && <TextBlock type={TextBlockTypeEnum.body} style={{color: "red"}}>{t("safetyDateError")}</TextBlock>}
@@ -489,16 +516,61 @@ export default function Map() {
             }}
             title={"Safety Report"}
             description={report.comment}
+            onPress={() => handleMarkerSafetyPress(report)}
           >
             <View style={{justifyContent: "center", alignItems: "center"}}>
-              <TextBlock type={TextBlockTypeEnum.h3}>🧍🏽‍♂️</TextBlock>
-              <Spacer variant="small" />
-              <View style={{backgroundColor: Colors.light.background.primary, width: 32, height: 8 }} />
+              {report.userType == UserType.Pedestrian && <MaterialCommunityIcons name="human" size={30} color={determineSafetyStyle(report.safetyLevel)} />}
+              {report.userType == UserType.Cyclist && <MaterialCommunityIcons name="bike" size={30} color={determineSafetyStyle(report.safetyLevel)} />}
+              {report.userType == UserType.Motocyclist && <MaterialCommunityIcons name="motorbike" size={24} color={determineSafetyStyle(report.safetyLevel)} />}
+              {report.userType == UserType.Car && <MaterialCommunityIcons name="car" size={30} color={determineSafetyStyle(report.safetyLevel)} />}
+              {report.userType == UserType.Bus && <MaterialCommunityIcons name="bus" size={30} color={determineSafetyStyle(report.safetyLevel)} />}
+              {report.userType == UserType.Truck && <MaterialCommunityIcons name="truck" size={30} color={determineSafetyStyle(report.safetyLevel)} />}
             </View>
           </Marker>
         ))}
       </MapView>
       </View>
+      <BottomSheetModal
+        ref={bottomSheetModalRef} 
+        snapPoints={snapPoints}
+        >
+        <BottomSheetView style={{ flex: 1, padding: 16 }}>
+          {currentOpenedReport && (
+            <>
+              {currentOpenedReport.reportType === ReportType.SafetyPerception && (
+                <View>
+                  <TextBlock type={TextBlockTypeEnum.title} style={{fontWeight: '700'}}>{t("safetyPerceptionReport")}</TextBlock>
+                  <Spacer variant="large" />
+                  <TextBlock type={TextBlockTypeEnum.body}>{t("userType")}: {(currentOpenedReport as SafetyPerceptionReport).userType}</TextBlock>
+                  <Spacer variant="medium" />
+                  <TextBlock type={TextBlockTypeEnum.body}>{t("safetyLevel")}: {(currentOpenedReport as SafetyPerceptionReport).safetyLevel}</TextBlock>
+                  <Spacer variant="medium" />
+                  <TextBlock type={TextBlockTypeEnum.body}>{t("comment")}: {(currentOpenedReport as SafetyPerceptionReport).comment}</TextBlock>
+                  <Spacer variant="medium" />
+                  <TextBlock type={TextBlockTypeEnum.body}>{t("createdAt")}: {(currentOpenedReport as SafetyPerceptionReport).createdAt.toString()}</TextBlock>
+                  <Spacer variant="medium" />
+                  <TextBlock type={TextBlockTypeEnum.body}>{t("roadType")}: {(currentOpenedReport as SafetyPerceptionReport).roadType}</TextBlock>
+                  <Spacer variant="medium" />
+                  <TextBlock type={TextBlockTypeEnum.body}>{t("reportType")}: {(currentOpenedReport as SafetyPerceptionReport).reportType}</TextBlock>
+                  <Spacer variant="medium" />
+                  <Spacer variant="large" />
+                  <View style={{ flexDirection: "row", gap: 8, justifyContent: "flex-start", width: "auto", height: "auto" }}>
+                    {(currentOpenedReport as SafetyPerceptionReport).images.map((image, index) => (
+                      <Image
+                        key={index}
+                        source={{ uri: image }}
+                        style={{ width: 150, height: 150, borderRadius: 8, marginBottom: 8 }}
+                      />
+                    ))}
+                  </View>
+                </View>
+              )}
+            </>
+          )}
+        </BottomSheetView>
+      </BottomSheetModal>
+      </BottomSheetModalProvider>
+      </GestureHandlerRootView>
     </SafeAreaView>
   );
 }
