@@ -28,6 +28,7 @@ export default function Map() {
   const [isSearchFocused, setIsSearchFocused] = useState<boolean>(false);
   const [isFullMap, setIsFullMap] = useState<boolean>(false);
   const [isMapTypeSelectViewVisible, setIsMapTypeSelectViewVisible] = useState<boolean>(false);
+  const [mapType, setMapType] = useState<string>(MAP_TYPES.SATELLITE);
   const [isSafetyChecked, setIsSafetyChecked] = useState<boolean>(true);
   const [isQuickChecked, setIsQuickChecked] = useState<boolean>(true);
   const [isIncidentChecked, setIsIncidentChecked] = useState<boolean>(true);
@@ -80,12 +81,20 @@ export default function Map() {
     )
   }
 
-
   const handleToggleMapTypeSelectView = () => {
     setIsReportSelectVisible(false);
     setIsSafetyFilterVisible(false);
     setIsQuickFilterVisible(false);
     setIsIncidentFilterVisible(false);
+  }
+
+  const handleMapTypeSelection = (value: string) => {
+    setMapType(value);
+    setIsMapTypeSelectViewVisible(false);
+  }
+
+  const stringToMapType = (value: string) => {
+    return Object.values(MAP_TYPES).find(type => type === value) ?? MAP_TYPES.SATELLITE;
   }
 
   const handleToggleReportSelectView = () => {
@@ -94,6 +103,7 @@ export default function Map() {
     setIsSafetyFilterVisible(false);
     setIsQuickFilterVisible(false);
     setIsIncidentFilterVisible(false);
+    setIsMapTypeSelectViewVisible(false);
   }
   const handleToggleSafetyFilter = () => {
     setIsFullMap(true);
@@ -101,6 +111,7 @@ export default function Map() {
     setIsQuickFilterVisible(false);
     setIsIncidentFilterVisible(false);
     setIsReportSelectVisible(false);
+    setIsMapTypeSelectViewVisible(false);
   }
   const handleToggleQuickFilter = () => {
     setIsFullMap(true);
@@ -108,6 +119,7 @@ export default function Map() {
     setIsSafetyFilterVisible(false);
     setIsIncidentFilterVisible(false);
     setIsReportSelectVisible(false);
+    setIsMapTypeSelectViewVisible(false);
   }
   const handleToggleIncidentFilter = () => {
     setIsFullMap(true);
@@ -115,6 +127,7 @@ export default function Map() {
     setIsSafetyFilterVisible(false);
     setIsQuickFilterVisible(false);
     setIsReportSelectVisible(false);
+    setIsMapTypeSelectViewVisible(false);
   }
 
   const handleTogglePedestrianSafety = () => {
@@ -263,12 +276,26 @@ export default function Map() {
         </TouchableOpacity>
 
         {/* Select map type button */}
-        <View style={{ position: "absolute", top: 12, left: 16, flexDirection: "row", gap: 8, zIndex: 99 }}>
+        <View style={{ position: "absolute", bottom: 12, left: 16, flexDirection: "row", gap: 8, zIndex: 99 }}>
           <TouchableOpacity
             style={{backgroundColor: isReportSelectVisible ? Colors.light.background.primary : Colors.light.background.quinary, borderRadius: 8, padding: 8, height: 40 }}
             onPress={handleToggleMapTypeSelectView}>
-            <Octicons name="multi-select" size={24} color={isReportSelectVisible ? "white" : "black"} />
+            <Octicons name="book" size={24} color={isReportSelectVisible ? "white" : "black"} />
           </TouchableOpacity>
+
+          {isMapTypeSelectViewVisible && (
+            <View style={{ backgroundColor: Colors.light.background.quinary, borderRadius: 8, padding: 12, gap: 8, width: "auto", height: "auto", zIndex: 99, maxWidth: 250 }}>
+              <RadioButton.Group 
+                  onValueChange={handleMapTypeSelection} 
+                  value={mapType}>
+                  <View>
+                      <RadioButton.Item label={t("satellite")} value={MAP_TYPES.SATELLITE} />
+                      <RadioButton.Item label={t("standard")} value={MAP_TYPES.STANDARD} />
+                      <RadioButton.Item label={t("terrain")} value={MAP_TYPES.TERRAIN} />
+                  </View>
+              </RadioButton.Group>
+            </View>
+          )}
         </View>
 
         {/* Select the type of report to display */}
@@ -459,7 +486,7 @@ export default function Map() {
 
       <MapView 
         style={styles.mapView}
-        mapType={MAP_TYPES.SATELLITE}
+        mapType={stringToMapType(mapType)}
         initialRegion={{
           latitude: currentLocation?.coords.latitude ?? 6,
           longitude: currentLocation?.coords.longitude ?? 12,
