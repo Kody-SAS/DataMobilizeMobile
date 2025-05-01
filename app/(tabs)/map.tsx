@@ -27,15 +27,14 @@ export default function Map() {
   const [currentLocation, setCurrentLocation] = useState<Location.LocationObject | null>(null);
   const [isSearchFocused, setIsSearchFocused] = useState<boolean>(false);
   const [isFullMap, setIsFullMap] = useState<boolean>(false);
+  const [isMapTypeSelectViewVisible, setIsMapTypeSelectViewVisible] = useState<boolean>(false);
   const [isSafetyChecked, setIsSafetyChecked] = useState<boolean>(true);
   const [isQuickChecked, setIsQuickChecked] = useState<boolean>(true);
   const [isIncidentChecked, setIsIncidentChecked] = useState<boolean>(true);
-  const [isAuditChecked, setIsAuditChecked] = useState<boolean>(true);
   const [isReportSelectVisible, setIsReportSelectVisible] = useState<boolean>(false);
   const [isSafetyFilterVisible, setIsSafetyFilterVisible] = useState<boolean>(false);
   const [isQuickFilterVisible, setIsQuickFilterVisible] = useState<boolean>(false);
   const [isIncidentFilterVisible, setIsIncidentFilterVisible] = useState<boolean>(false);
-  const [isAuditFilterVisible, setIsAuditFilterVisible] = useState<boolean>(false);
   const [safetyStartDate, setSafetyStartDate] = useState<Date>(new Date(Date.now() - 604800000)); // 7 days ago
   const [safetyEndDate, setSafetyEndDate] = useState<Date>(new Date(Date.now() + 86400000)); // 1 days from now
   const [isPedestrianSafetyChecked, setIsPedestrianSafetyChecked] = useState<boolean>(false);
@@ -53,7 +52,7 @@ export default function Map() {
   const [filteredSafetyReports, setFilteredSafetyReports] = useState<SafetyPerceptionReport[]>([]);
   const [isQuickFilterModified, setIsQuickFilterModified] = useState<boolean>(false);
   const [isIncidentFilterModified, setIsIncidentFilterModified] = useState<boolean>(false);
-  const [isAuditFilterModified, setIsAuditFilterModified] = useState<boolean>(false);
+  const [isStatisticsBtnVisible, setIsStatisticsBtnVisible] = useState<boolean>(true);
 
   const bottomSheetModalRef = React.useRef<BottomSheetModal>(null);
   const snapPoints = React.useMemo(() => ['50%', '85%'], []);
@@ -81,20 +80,26 @@ export default function Map() {
     )
   }
 
+
+  const handleToggleMapTypeSelectView = () => {
+    setIsReportSelectVisible(false);
+    setIsSafetyFilterVisible(false);
+    setIsQuickFilterVisible(false);
+    setIsIncidentFilterVisible(false);
+  }
+
   const handleToggleReportSelectView = () => {
     setIsFullMap(true);
     setIsReportSelectVisible((old: boolean) => !old);
     setIsSafetyFilterVisible(false);
     setIsQuickFilterVisible(false);
     setIsIncidentFilterVisible(false);
-    setIsAuditFilterVisible(false);
   }
   const handleToggleSafetyFilter = () => {
     setIsFullMap(true);
     setIsSafetyFilterVisible((old: boolean) => !old);
     setIsQuickFilterVisible(false);
     setIsIncidentFilterVisible(false);
-    setIsAuditFilterVisible(false);
     setIsReportSelectVisible(false);
   }
   const handleToggleQuickFilter = () => {
@@ -102,7 +107,6 @@ export default function Map() {
     setIsQuickFilterVisible((old: boolean) => !old);
     setIsSafetyFilterVisible(false);
     setIsIncidentFilterVisible(false);
-    setIsAuditFilterVisible(false);
     setIsReportSelectVisible(false);
   }
   const handleToggleIncidentFilter = () => {
@@ -110,16 +114,6 @@ export default function Map() {
     setIsIncidentFilterVisible((old: boolean) => !old);
     setIsSafetyFilterVisible(false);
     setIsQuickFilterVisible(false);
-    setIsAuditFilterVisible(false);
-    setIsReportSelectVisible(false);
-  }
-
-  const handleToggleAuditFilter = () => {
-    setIsFullMap(true);
-    setIsAuditFilterVisible((old: boolean) => !old);
-    setIsSafetyFilterVisible(false);
-    setIsQuickFilterVisible(false);
-    setIsIncidentFilterVisible(false);
     setIsReportSelectVisible(false);
   }
 
@@ -201,7 +195,6 @@ export default function Map() {
     setIsSafetyFilterVisible(false);
     setIsQuickFilterVisible(false);
     setIsIncidentFilterVisible(false);
-    setIsAuditFilterVisible(false);
     setIsReportSelectVisible(false);
     setIsSafetyFilterModified(false);
     console.log("Filtered reports: ", filteredReports);
@@ -226,6 +219,7 @@ export default function Map() {
     setCurrentOpenedReport(report);
     bottomSheetModalRef.current?.present();
   }
+
 
   useEffect(() => {
     // dispatch(clearReports(null)); // for development only
@@ -268,6 +262,15 @@ export default function Map() {
           <MaterialIcons name={isFullMap ? "zoom-in-map" : "zoom-out-map"} size={24} color={isFullMap ? "white" : "black"} />
         </TouchableOpacity>
 
+        {/* Select map type button */}
+        <View style={{ position: "absolute", top: 12, left: 16, flexDirection: "row", gap: 8, zIndex: 99 }}>
+          <TouchableOpacity
+            style={{backgroundColor: isReportSelectVisible ? Colors.light.background.primary : Colors.light.background.quinary, borderRadius: 8, padding: 8, height: 40 }}
+            onPress={handleToggleMapTypeSelectView}>
+            <Octicons name="multi-select" size={24} color={isReportSelectVisible ? "white" : "black"} />
+          </TouchableOpacity>
+        </View>
+
         {/* Select the type of report to display */}
         <View style={{ position: "absolute", top: 12, left: 16, flexDirection: "row", gap: 8, zIndex: 99 }}>
           <TouchableOpacity
@@ -292,10 +295,6 @@ export default function Map() {
                 label={t("incidentReport")}
                 status={isIncidentChecked ? 'checked' : 'unchecked'}
                 onPress={() => setIsIncidentChecked(!isIncidentChecked)}/> 
-              <Checkbox.Item
-                label={t("auditReport")}
-                status={isAuditChecked ? 'checked' : 'unchecked'}
-                onPress={() => setIsAuditChecked(!isAuditChecked)}/> 
               <ButtonAction
                 variant={ButtonTypeEnum.secondary}
                 content={<TextBlock type={TextBlockTypeEnum.body}>{t("close")}</TextBlock>}
@@ -458,35 +457,9 @@ export default function Map() {
           </View>
         )}
 
-        {/* Filter the audit reports */}
-        {isAuditChecked && (
-          <View style={{ position: "absolute", top: 208, left: 16, flexDirection: "row", gap: 8, justifyContent: "flex-start", width: "auto", height: "auto", zIndex: 99 }}>
-            <TouchableOpacity
-              style={{backgroundColor: isAuditFilterVisible ? Colors.light.background.primary : Colors.light.background.quinary, borderRadius: 8, padding: 8, height: 40 }}
-              onPress={handleToggleAuditFilter}>
-              <MaterialIcons name="receipt-long" size={24} color={isAuditFilterVisible ? "white" : "black"} />
-            </TouchableOpacity>
-            {isAuditFilterVisible && ( 
-              <ScrollView style={{ backgroundColor: Colors.light.background.quinary, borderRadius: 8, padding: 12, width: "auto", height: "auto", maxWidth: 300 }}
-              contentContainerStyle={{ justifyContent: "flex-start"}}>
-                <TextBlock type={TextBlockTypeEnum.title}>{t('defineFilter')}</TextBlock>
-                <TextBlock type={TextBlockTypeEnum.body}>{t('selectUserType')}</TextBlock>
-                <View style={{ flexDirection: "row", gap: 8, justifyContent: "flex-start", width: "auto", height: "auto" }}>
-
-                </View>
-                  
-                <Spacer variant="large" />
-                <ButtonAction
-                  variant={ButtonTypeEnum.secondary}
-                  content={<TextBlock type={TextBlockTypeEnum.body}>{t("close")}</TextBlock>}
-                  onPress={handleToggleAuditFilter}/>
-              </ScrollView>
-            )}
-          </View>
-        )}
-
       <MapView 
         style={styles.mapView}
+        mapType={MAP_TYPES.SATELLITE}
         initialRegion={{
           latitude: currentLocation?.coords.latitude ?? 6,
           longitude: currentLocation?.coords.longitude ?? 12,
@@ -518,7 +491,7 @@ export default function Map() {
             description={report.comment}
             onPress={() => handleMarkerSafetyPress(report)}
           >
-            <View style={{justifyContent: "center", alignItems: "center"}}>
+            <View style={{justifyContent: "center", alignItems: "center", backgroundColor: "white", borderRadius: 8}}>
               {report.userType == UserType.Pedestrian && <MaterialCommunityIcons name="human" size={30} color={determineSafetyStyle(report.safetyLevel)} />}
               {report.userType == UserType.Cyclist && <MaterialCommunityIcons name="bike" size={30} color={determineSafetyStyle(report.safetyLevel)} />}
               {report.userType == UserType.Motocyclist && <MaterialCommunityIcons name="motorbike" size={24} color={determineSafetyStyle(report.safetyLevel)} />}
