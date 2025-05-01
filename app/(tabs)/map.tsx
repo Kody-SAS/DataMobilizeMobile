@@ -38,6 +38,8 @@ export default function Map() {
   const [isIncidentFilterVisible, setIsIncidentFilterVisible] = useState<boolean>(false);
   const [safetyStartDate, setSafetyStartDate] = useState<Date>(new Date(Date.now() - 604800000)); // 7 days ago
   const [safetyEndDate, setSafetyEndDate] = useState<Date>(new Date(Date.now() + 86400000)); // 1 days from now
+  const [quickStartDate, setQuickStartDate] = useState<Date>(new Date(Date.now() - 604800000)); // 7 days ago
+  const [quickEndDate, setQuickEndDate] = useState<Date>(new Date(Date.now() + 86400000)); // 1 days from now
   const [isPedestrianSafetyChecked, setIsPedestrianSafetyChecked] = useState<boolean>(false);
   const [isCyclistSafetyChecked, setIsCyclistSafetyChecked] = useState<boolean>(false);
   const [isMotorcyclistSafetyChecked, setIsMotorcyclistSafetyChecked] = useState<boolean>(false);
@@ -45,12 +47,14 @@ export default function Map() {
   const [isBusSafetyChecked, setIsBusSafetyChecked] = useState<boolean>(false);
   const [isTruckSafetyChecked, setIsTruckSafetyChecked] = useState<boolean>(false);
   const [isSafetyDateError, setIsSafetyDateError] = useState<boolean>(false);
+  const [isQuickDateError, setIsQuickDateError] = useState<boolean>(false);
   const [isSafeSafetyChecked, setIsSafeSafetyChecked] = useState<boolean>(true);
   const [isUnsafeSafetyChecked, setIsUnsafeSafetyChecked] = useState<boolean>(true);
   const [isVeryUnsafeSafetyChecked, setIsVeryUnsafeSafetyChecked] = useState<boolean>(true);
   const [isSafetyFilterModified, setIsSafetyFilterModified] = useState<boolean>(false);
   const [currentOpenedReport, setCurrentOpenedReport] = useState<SafetyPerceptionReport | QuickReport | IncidentReport | null>(null);
   const [filteredSafetyReports, setFilteredSafetyReports] = useState<SafetyPerceptionReport[]>([]);
+  const [filteredQuickReports, setFilteredQuickReports] = useState<QuickReport[]>([]);
   const [isQuickFilterModified, setIsQuickFilterModified] = useState<boolean>(false);
   const [isIncidentFilterModified, setIsIncidentFilterModified] = useState<boolean>(false);
   const [isStatisticsBtnVisible, setIsStatisticsBtnVisible] = useState<boolean>(true);
@@ -210,9 +214,37 @@ export default function Map() {
     setIsIncidentFilterVisible(false);
     setIsReportSelectVisible(false);
     setIsSafetyFilterModified(false);
-    console.log("Filtered reports: ", filteredReports);
-    console.log("Safety reports: ", safetyReports);
+    setIsMapTypeSelectViewVisible(false);
     setFilteredSafetyReports(filteredReports);
+  }
+
+  const handleQuickFilter = () => {
+    // Check if the start date is after the end date
+    if (quickStartDate > quickEndDate) {
+      setIsQuickDateError(true);
+      return;
+    } else {
+      setIsQuickDateError(false);
+    }
+
+    const filteredReports = quickReports.filter((report) => {
+      const reportDate = new Date(report.createdAt);
+      const isDateInRange = reportDate >= safetyStartDate && reportDate <= safetyEndDate;
+
+      return (
+        isDateInRange
+      );
+    })
+
+    // Update the state with the filtered reports
+    setIsFullMap(true);
+    setIsSafetyFilterVisible(false);
+    setIsQuickFilterVisible(false);
+    setIsIncidentFilterVisible(false);
+    setIsReportSelectVisible(false);
+    setIsSafetyFilterModified(false);
+    setIsMapTypeSelectViewVisible(false);
+    setFilteredQuickReports(filteredReports);
   }
 
   const determineSafetyStyle = (safetyLevel: SafetyLevel) => {
@@ -278,9 +310,9 @@ export default function Map() {
         {/* Select map type button */}
         <View style={{ position: "absolute", bottom: 12, left: 16, flexDirection: "row", gap: 8, zIndex: 99 }}>
           <TouchableOpacity
-            style={{backgroundColor: isReportSelectVisible ? Colors.light.background.primary : Colors.light.background.quinary, borderRadius: 8, padding: 8, height: 40 }}
+            style={{backgroundColor: isMapTypeSelectViewVisible ? Colors.light.background.primary : Colors.light.background.quinary, borderRadius: 8, padding: 8, height: 40 }}
             onPress={handleToggleMapTypeSelectView}>
-            <Octicons name="book" size={24} color={isReportSelectVisible ? "white" : "black"} />
+            <Octicons name="book" size={24} color={isMapTypeSelectViewVisible ? "white" : "black"} />
           </TouchableOpacity>
 
           {isMapTypeSelectViewVisible && (
@@ -289,9 +321,9 @@ export default function Map() {
                   onValueChange={handleMapTypeSelection} 
                   value={mapType}>
                   <View>
-                      <RadioButton.Item label={t("satellite")} value={MAP_TYPES.SATELLITE} />
-                      <RadioButton.Item label={t("standard")} value={MAP_TYPES.STANDARD} />
-                      <RadioButton.Item label={t("terrain")} value={MAP_TYPES.TERRAIN} />
+                    <RadioButton.Item label={t("satellite")} value={MAP_TYPES.SATELLITE} />
+                    <RadioButton.Item label={t("standard")} value={MAP_TYPES.STANDARD} />
+                    <RadioButton.Item label={t("terrain")} value={MAP_TYPES.TERRAIN} />
                   </View>
               </RadioButton.Group>
             </View>
@@ -396,7 +428,7 @@ export default function Map() {
                     onChange={() => setIsSafetyFilterModified(true)}
                   />
                 </View>
-                {isSafetyDateError && <TextBlock type={TextBlockTypeEnum.body} style={{color: "red"}}>{t("safetyDateError")}</TextBlock>}
+                {isSafetyDateError && <TextBlock type={TextBlockTypeEnum.body} style={{color: "red"}}>{t("dateError")}</TextBlock>}
                 <Spacer variant="large" />
                 <TextBlock type={TextBlockTypeEnum.title}>{t('selectSafetyLevel')}</TextBlock>
                 <View style={{ justifyContent: "flex-start", width: "auto", height: "auto" }}>
@@ -442,16 +474,38 @@ export default function Map() {
               <ScrollView style={{ backgroundColor: Colors.light.background.quinary, borderRadius: 8, padding: 12, width: "auto", height: "auto", maxWidth: 300 }}
               contentContainerStyle={{ justifyContent: "flex-start"}}>
                 <TextBlock type={TextBlockTypeEnum.title}>{t('defineFilter')}</TextBlock>
-                <TextBlock type={TextBlockTypeEnum.body}>{t('selectUserType')}</TextBlock>
-                <View style={{ flexDirection: "row", gap: 8, justifyContent: "flex-start", width: "auto", height: "auto" }}>
-
+                <TextBlock type={TextBlockTypeEnum.title}>{t('selectDateInterval')}</TextBlock>
+                <Spacer variant="medium" />
+                <View style={{ flexDirection: "row", gap: 64, justifyContent: "flex-start", width: "auto", height: "auto" }}>
+                  <DateInput
+                    placeholder={t("startDate")}
+                    date={quickStartDate}
+                    setDate={setQuickStartDate}
+                    mode={"date"}
+                    onChange={() => setIsQuickFilterModified(true)}
+                  />
+                  <DateInput
+                    placeholder={t("endDate")}
+                    date={quickEndDate}
+                    setDate={setQuickEndDate}
+                    mode={"date"}
+                    onChange={() => setIsQuickFilterModified(true)}
+                  />
                 </View>
+                {isSafetyDateError && <TextBlock type={TextBlockTypeEnum.body} style={{color: "red"}}>{t("dateError")}</TextBlock>}
                   
                 <Spacer variant="large" />
-                <ButtonAction
-                  variant={ButtonTypeEnum.secondary}
-                  content={<TextBlock type={TextBlockTypeEnum.body}>{t("close")}</TextBlock>}
-                  onPress={handleToggleQuickFilter}/>
+                <View style={{ flexDirection: "row", justifyContent: "space-between" }}>
+                  <ButtonAction
+                    variant={ButtonTypeEnum.secondary}
+                    content={<TextBlock type={TextBlockTypeEnum.body} style={{paddingHorizontal: 30, paddingVertical: 4}}>{t("close")}</TextBlock>}
+                    onPress={handleToggleQuickFilter}/>
+                  <ButtonAction
+                    variant={ButtonTypeEnum.primary}
+                    content={<TextBlock type={TextBlockTypeEnum.body} style={{color: "white", paddingHorizontal: 30, paddingVertical: 4}}>{t("apply")}</TextBlock>}
+                    disabled={!isQuickFilterModified}
+                    onPress={handleQuickFilter}/>
+                </View>
               </ScrollView>
             )}
           </View>
@@ -539,7 +593,8 @@ export default function Map() {
             <>
               {currentOpenedReport.reportType === ReportType.SafetyPerception && (
                 <View>
-                  <TextBlock type={TextBlockTypeEnum.title} style={{fontWeight: '700'}}>{t("safetyPerceptionReport")}</TextBlock>
+                  <TextBlock type={TextBlockTypeEnum.h4} style={{fontWeight: '700'}}>{t("safetyPerceptionReport")}</TextBlock>
+                  <Spacer variant="medium" />
                   <Spacer variant="large" />
                   <TextBlock type={TextBlockTypeEnum.body}>{t("userType")}: {(currentOpenedReport as SafetyPerceptionReport).userType}</TextBlock>
                   <Spacer variant="medium" />
@@ -547,11 +602,9 @@ export default function Map() {
                   <Spacer variant="medium" />
                   <TextBlock type={TextBlockTypeEnum.body}>{t("comment")}: {(currentOpenedReport as SafetyPerceptionReport).comment}</TextBlock>
                   <Spacer variant="medium" />
-                  <TextBlock type={TextBlockTypeEnum.body}>{t("createdAt")}: {(currentOpenedReport as SafetyPerceptionReport).createdAt.toString()}</TextBlock>
+                  <TextBlock type={TextBlockTypeEnum.body}>{t("createdAt")}: {(currentOpenedReport as SafetyPerceptionReport).createdAt.toLocaleDateString()}</TextBlock>
                   <Spacer variant="medium" />
                   <TextBlock type={TextBlockTypeEnum.body}>{t("roadType")}: {(currentOpenedReport as SafetyPerceptionReport).roadType}</TextBlock>
-                  <Spacer variant="medium" />
-                  <TextBlock type={TextBlockTypeEnum.body}>{t("reportType")}: {(currentOpenedReport as SafetyPerceptionReport).reportType}</TextBlock>
                   <Spacer variant="medium" />
                   <Spacer variant="large" />
                   <View style={{ flexDirection: "row", gap: 8, justifyContent: "flex-start", width: "auto", height: "auto" }}>

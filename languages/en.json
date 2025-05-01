@@ -112,6 +112,9 @@
     "urgentRisk": "Urgent risk",
     "whyConditionType": "What do you want to report for",
     "description": "Description",
+    "satellite": "Satellite",
+    "standard": "Standard",
+    "terrain": "Terrain",
     "selectReportToDisplay": "Select the report to display",
     "defineFilter": "Define a filter",
     "selectUserType": "Select the road user type",
@@ -121,6 +124,11 @@
     "selectSafetyLevel": "Choose the road safety level",
     "apply": "Apply",
     "close": "Close",
-    "safetyDateError": "The start date must be before the end date"
+    "dateError": "The start date must be before the end date",
+    "userType": "Road user",
+    "safetyLevel": "Safety level",
+    "comment": "Additional comment",
+    "createdAt": "Report date",
+    "roadType": "Road type"
   }
 }
