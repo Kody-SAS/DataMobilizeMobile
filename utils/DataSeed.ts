@@ -609,7 +609,7 @@ export const safetyLevelReasons : {userType: UserType, data: {type: SafetyLevel,
     }
 ]
 
-export const conditionListDate : {type: ConditionType, list: string[]}[]= [
+export const conditionListData : {type: ConditionType, list: string[]}[]= [
     {
         type: ConditionType.PavementCondition,
         list: [

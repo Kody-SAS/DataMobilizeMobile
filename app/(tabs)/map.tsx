@@ -21,6 +21,14 @@ import { ButtonAction } from '../../components/ButtonAction';
 import { DateInput } from '../../components/DateInput';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import BottomSheet, { BottomSheetModal, BottomSheetModalProvider, BottomSheetView } from '@gorhom/bottom-sheet';
+import { conditionListData } from '../../utils/DataSeed';
+
+const conditionIssues : {label: string, status: "checked" | "unchecked"}[] = conditionListData.map(
+  (condition) => ({
+    label: condition.type,
+    status: "checked"
+  })
+)
 
 export default function Map() {
   const [searchQuery, setSearchQuery] = useState<string>('');
@@ -55,6 +63,7 @@ export default function Map() {
   const [currentOpenedReport, setCurrentOpenedReport] = useState<SafetyPerceptionReport | QuickReport | IncidentReport | null>(null);
   const [filteredSafetyReports, setFilteredSafetyReports] = useState<SafetyPerceptionReport[]>([]);
   const [filteredQuickReports, setFilteredQuickReports] = useState<QuickReport[]>([]);
+  const [quickConditionIssues, setQuickConditionIssues] = useState<{label: string, status: "checked" | "unchecked"}[]>(conditionIssues);
   const [isQuickFilterModified, setIsQuickFilterModified] = useState<boolean>(false);
   const [isIncidentFilterModified, setIsIncidentFilterModified] = useState<boolean>(false);
   const [isStatisticsBtnVisible, setIsStatisticsBtnVisible] = useState<boolean>(true);
@@ -179,6 +188,13 @@ export default function Map() {
     setIsSafetyFilterModified(true);
   }
 
+  const handleToggleQuickConditionIssue = (index: number) => {
+    const updatedConditionIssues = [...quickConditionIssues];
+    updatedConditionIssues[index].status = updatedConditionIssues[index].status === "checked" ? "unchecked" : "checked";
+    setQuickConditionIssues(updatedConditionIssues);
+    setIsQuickFilterModified(true);
+  }
+
   const handleSafetyFilter = () => {
     // Check if the start date is after the end date
     if (safetyStartDate > safetyEndDate) {
@@ -230,9 +246,13 @@ export default function Map() {
     const filteredReports = quickReports.filter((report) => {
       const reportDate = new Date(report.createdAt);
       const isDateInRange = reportDate >= safetyStartDate && reportDate <= safetyEndDate;
+      const isValidCondition = quickConditionIssues.some((condition, index) => {
+        return condition.status === "checked" && report.conditionType == condition.label;
+      });
 
       return (
-        isDateInRange
+        isDateInRange &&
+        isValidCondition
       );
     })
 
@@ -471,8 +491,7 @@ export default function Map() {
               <MaterialCommunityIcons name="clock-fast" size={24} color={isQuickFilterVisible ? "white" : "black"} />
             </TouchableOpacity>
             {isQuickFilterVisible && ( 
-              <ScrollView style={{ backgroundColor: Colors.light.background.quinary, borderRadius: 8, padding: 12, width: "auto", height: "auto", maxWidth: 300 }}
-              contentContainerStyle={{ justifyContent: "flex-start"}}>
+              <View style={{ backgroundColor: Colors.light.background.quinary, borderRadius: 8, padding: 12, width: "auto", height: "auto", maxWidth: 300 }} >
                 <TextBlock type={TextBlockTypeEnum.title}>{t('defineFilter')}</TextBlock>
                 <TextBlock type={TextBlockTypeEnum.title}>{t('selectDateInterval')}</TextBlock>
                 <Spacer variant="medium" />
@@ -493,7 +512,18 @@ export default function Map() {
                   />
                 </View>
                 {isSafetyDateError && <TextBlock type={TextBlockTypeEnum.body} style={{color: "red"}}>{t("dateError")}</TextBlock>}
-                  
+                <Spacer variant="large" />
+                <TextBlock type={TextBlockTypeEnum.title}>{t('selectDateInterval')}</TextBlock>
+                <ScrollView style={{ maxHeight: 500 }}>
+                  {quickConditionIssues.map((condition, index) => (
+                    <Checkbox.Item
+                      key={index}
+                      label={condition.label}
+                      status={condition.status}
+                      onPress={(e) => handleToggleQuickConditionIssue(index)}
+                    />
+                  ))}
+                </ScrollView>
                 <Spacer variant="large" />
                 <View style={{ flexDirection: "row", justifyContent: "space-between" }}>
                   <ButtonAction
@@ -506,7 +536,7 @@ export default function Map() {
                     disabled={!isQuickFilterModified}
                     onPress={handleQuickFilter}/>
                 </View>
-              </ScrollView>
+              </View>
             )}
           </View>
         )}

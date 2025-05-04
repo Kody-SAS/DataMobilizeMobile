@@ -11,7 +11,7 @@ import { Spacer } from "../../components/Spacer";
 import { SelectedOption, SelectInput } from "../../components/SelectInput";
 import { DateInput } from "../../components/DateInput";
 import { Checkbox, Modal, PaperProvider, Portal, RadioButton, TextInput } from "react-native-paper";
-import { conditionListDate, safetyLevelReasons } from "../../utils/DataSeed";
+import { conditionListData, safetyLevelReasons } from "../../utils/DataSeed";
 import * as ImagePicker from 'expo-image-picker';
 import { ButtonAction } from "../../components/ButtonAction";
 import * as Location from 'expo-location';
@@ -574,7 +574,7 @@ export default function Report() {
                     <View style={styles.modalContentContainer}>
                         <TextBlock type={TextBlockTypeEnum.h5}>{t("whyConditionType")}: {conditionType?.content} ?</TextBlock>
                         <RadioButton.Group onValueChange={handleConditionItemSelection} value={conditionItem}>
-                            {conditionListDate.map((item, index) => {
+                            {conditionListData.map((item, index) => {
                                 if (item.type == conditionType?.data.type) {
                                     return (
                                         <View key={index}>
