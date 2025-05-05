@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { StyleSheet, Image, Platform, View, TouchableOpacity, ScrollView } from 'react-native';
+import { StyleSheet, Image, Platform, View, TouchableOpacity, ScrollView, FlatList } from 'react-native';
 
 import { TextBlock } from '../../components/TextBlock';
 import { SafeAreaView } from 'react-native-safe-area-context';
@@ -22,6 +22,7 @@ import { DateInput } from '../../components/DateInput';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import BottomSheet, { BottomSheetModal, BottomSheetModalProvider, BottomSheetView } from '@gorhom/bottom-sheet';
 import { conditionListData } from '../../utils/DataSeed';
+import { selectUser } from '../../redux/slices/accountSlice';
 
 const conditionIssues : {label: string, status: "checked" | "unchecked"}[] = conditionListData.map(
   (condition) => ({
@@ -30,8 +31,17 @@ const conditionIssues : {label: string, status: "checked" | "unchecked"}[] = con
   })
 )
 
+const dateOptions = {
+  weekday: "short",
+  year: "numeric",
+  month: "long",
+  day: "numeric",
+};
+
 export default function Map() {
   const [searchQuery, setSearchQuery] = useState<string>('');
+  const [locationPredictions, setLocationPredictions] = useState<any[]>([]);
+  const [selectedLocation, setSelectedLocation] = useState<any>(null);
   const [currentLocation, setCurrentLocation] = useState<Location.LocationObject | null>(null);
   const [isSearchFocused, setIsSearchFocused] = useState<boolean>(false);
   const [isFullMap, setIsFullMap] = useState<boolean>(false);
@@ -69,11 +79,13 @@ export default function Map() {
   const [isStatisticsBtnVisible, setIsStatisticsBtnVisible] = useState<boolean>(true);
 
   const bottomSheetModalRef = React.useRef<BottomSheetModal>(null);
+  const mapRef = React.useRef<MapView>(null);
   const snapPoints = React.useMemo(() => ['50%', '85%'], []);
 
   const {isConnected} = useNetInfo();
   const {t} = useTranslation();
   const dispatch = useDispatch<ThunkDispatch<any, any, any>>();
+  const user = useSelector(selectUser);
   const safetyReports: SafetyPerceptionReport[] = useSelector(selectSafetyReports);
   const quickReports: QuickReport[] = useSelector(selectQuickReports);
   const incidentRports: IncidentReport[] = useSelector(selectIncidentReports);
@@ -94,7 +106,36 @@ export default function Map() {
     )
   }
 
+  const handleLocationPrediction = async (query: string) => {
+    setSearchQuery(query);
+    if (query.length > 2) {
+      const response = await fetch(`https://maps.googleapis.com/maps/api/place/autocomplete/json?input=${query}&key=${process.env.EXPO_PUBLIC_GOOGLE_MAPS_API_KEY}`);
+      const data = await response.json();
+      setLocationPredictions(data.predictions.slice(0, 5));
+    } else {
+      setLocationPredictions([]);
+    }
+  }
+
+  const handleSelectLocation = async (placeId: string) => {
+    const response = await fetch(`https://maps.googleapis.com/maps/api/place/details/json?place_id=${placeId}&key=${process.env.EXPO_PUBLIC_GOOGLE_MAPS_API_KEY}`);
+    const data = await response.json();
+    const { lat, lng } = data.result.geometry.location;
+    setSelectedLocation({ latitude: lat, longitude: lng });
+    mapRef.current?.animateToRegion({
+      latitude: lat,
+      longitude: lng,
+      latitudeDelta: 0.1,
+      longitudeDelta: 0.1,
+    });
+    setSearchQuery(data.result.formatted_address);
+    setLocationPredictions([]);
+    setIsSearchFocused(false);
+  }
+
   const handleToggleMapTypeSelectView = () => {
+    setIsMapTypeSelectViewVisible((old: boolean) => !old);
+    setIsFullMap(true);
     setIsReportSelectVisible(false);
     setIsSafetyFilterVisible(false);
     setIsQuickFilterVisible(false);
@@ -308,14 +349,41 @@ export default function Map() {
               </TextBlock>
             </>
           )}
-          <Searchbar
-            placeholder={t("search")}
-            value={searchQuery}
-            onChangeText={setSearchQuery}
-            style={{ marginVertical: 16 }}
-            onFocus={() => setIsSearchFocused((old: boolean) => !old)}
-            onEndEditing={() => setIsSearchFocused((old: boolean) => !old)}
-            />
+          <View style={{ gap: 8, position: "relative" }}>
+            <Searchbar
+              placeholder={t("search")}
+              value={searchQuery}
+              onChangeText={handleLocationPrediction}
+              style={{ marginVertical: 16 }}
+              onFocus={() => setIsSearchFocused((old: boolean) => !old)}
+              onEndEditing={() => setIsSearchFocused((old: boolean) => !old)}
+              />
+            {locationPredictions.length > 0 && (
+              <FlatList
+                data={locationPredictions}
+                keyExtractor={(item) => item.place_id}
+                renderItem={({ item }) => (
+                  <TouchableOpacity 
+                    onPress={() => handleSelectLocation(item.place_id)}>
+                    <View style={{ padding: 12 }}>
+                        <TextBlock type={TextBlockTypeEnum.body}>{item.description}</TextBlock>
+                    </View>
+                    <View style={{ borderBottomWidth: 1.5, borderBottomColor: Colors.light.background.senary }}/>
+                  </TouchableOpacity>
+                )}
+                style={{
+                  position: "absolute",
+                  top: 60,
+                  left: 16,
+                  right: 16,
+                  backgroundColor: Colors.light.background.quinary,
+                  borderRadius: 8,
+                  padding: 8,
+                  zIndex: 99
+                }}
+              />
+            )}
+          </View>
         </View>
       )}
       <View
@@ -328,7 +396,7 @@ export default function Map() {
         </TouchableOpacity>
 
         {/* Select map type button */}
-        <View style={{ position: "absolute", bottom: 12, left: 16, flexDirection: "row", gap: 8, zIndex: 99 }}>
+        <View style={{ position: "absolute", bottom: 12, left: 16, flexDirection: "row", alignItems: "flex-end", gap: 8, zIndex: 99 }}>
           <TouchableOpacity
             style={{backgroundColor: isMapTypeSelectViewVisible ? Colors.light.background.primary : Colors.light.background.quinary, borderRadius: 8, padding: 8, height: 40 }}
             onPress={handleToggleMapTypeSelectView}>
@@ -514,7 +582,7 @@ export default function Map() {
                 {isSafetyDateError && <TextBlock type={TextBlockTypeEnum.body} style={{color: "red"}}>{t("dateError")}</TextBlock>}
                 <Spacer variant="large" />
                 <TextBlock type={TextBlockTypeEnum.title}>{t('selectDateInterval')}</TextBlock>
-                <ScrollView style={{ maxHeight: 500 }}>
+                <ScrollView style={{ maxHeight: 300 }}>
                   {quickConditionIssues.map((condition, index) => (
                     <Checkbox.Item
                       key={index}
@@ -524,6 +592,7 @@ export default function Map() {
                     />
                   ))}
                 </ScrollView>
+                <Spacer variant="large" />
                 <Spacer variant="large" />
                 <View style={{ flexDirection: "row", justifyContent: "space-between" }}>
                   <ButtonAction
@@ -569,6 +638,7 @@ export default function Map() {
         )}
 
       <MapView 
+        ref={mapRef}
         style={styles.mapView}
         mapType={stringToMapType(mapType)}
         initialRegion={{
@@ -632,9 +702,37 @@ export default function Map() {
                   <Spacer variant="medium" />
                   <TextBlock type={TextBlockTypeEnum.body}>{t("comment")}: {(currentOpenedReport as SafetyPerceptionReport).comment}</TextBlock>
                   <Spacer variant="medium" />
-                  <TextBlock type={TextBlockTypeEnum.body}>{t("createdAt")}: {(currentOpenedReport as SafetyPerceptionReport).createdAt.toLocaleDateString()}</TextBlock>
+                  <TextBlock type={TextBlockTypeEnum.body}>{t("createdAt")}: {(currentOpenedReport as SafetyPerceptionReport).createdAt.toLocaleString(user?.localisation, {weekday: "short", year: "numeric", month: "long", day: "numeric",})}</TextBlock>
                   <Spacer variant="medium" />
                   <TextBlock type={TextBlockTypeEnum.body}>{t("roadType")}: {(currentOpenedReport as SafetyPerceptionReport).roadType}</TextBlock>
+                  <Spacer variant="medium" />
+                  <Spacer variant="large" />
+                  <View style={{ flexDirection: "row", gap: 8, justifyContent: "flex-start", width: "auto", height: "auto" }}>
+                    {(currentOpenedReport as SafetyPerceptionReport).images.map((image, index) => (
+                      <Image
+                        key={index}
+                        source={{ uri: image }}
+                        style={{ width: 150, height: 150, borderRadius: 8, marginBottom: 8 }}
+                      />
+                    ))}
+                  </View>
+                </View>
+              )}
+
+              {currentOpenedReport.reportType === ReportType.Quick && (
+                <View>
+                  <TextBlock type={TextBlockTypeEnum.h4} style={{fontWeight: '700'}}>{t("quickReport")}</TextBlock>
+                  <Spacer variant="medium" />
+                  <Spacer variant="large" />
+                  <TextBlock type={TextBlockTypeEnum.body}>{t("roadType")}: {(currentOpenedReport as QuickReport).roadType}</TextBlock>
+                  <Spacer variant="medium" />
+                  <TextBlock type={TextBlockTypeEnum.body}>{t("conditionType")}: {(currentOpenedReport as QuickReport).conditionType}</TextBlock>
+                  <Spacer variant="medium" />
+                  <TextBlock type={TextBlockTypeEnum.body}>{t("conditionDescription")}: {(currentOpenedReport as QuickReport).conditionDescription}</TextBlock>
+                  <Spacer variant="medium" />
+                  <TextBlock type={TextBlockTypeEnum.body}>{t("severityLevel")}: {(currentOpenedReport as QuickReport).severityLevel}</TextBlock>
+                  <Spacer variant="medium" />
+                  <TextBlock type={TextBlockTypeEnum.body}>{t("createdAt")}: {(currentOpenedReport as QuickReport).createdAt.toLocaleString(user?.localisation, {weekday: "short", year: "numeric", month: "long", day: "numeric",})}</TextBlock>
                   <Spacer variant="medium" />
                   <Spacer variant="large" />
                   <View style={{ flexDirection: "row", gap: 8, justifyContent: "flex-start", width: "auto", height: "auto" }}>

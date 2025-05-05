@@ -129,6 +129,10 @@
     "safetyLevel": "Safety level",
     "comment": "Additional comment",
     "createdAt": "Report date",
-    "roadType": "Road type"
+    "roadType": "Road type",
+    "quickReport:": "Quick report",
+    "conditionType": "Condition type",
+    "conditionDescription": "Condition state",
+    "severityLevel": "Level of severity"
   }
 }
