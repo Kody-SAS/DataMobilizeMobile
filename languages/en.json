@@ -131,6 +131,7 @@
     "createdAt": "Report date",
     "roadType": "Road type",
     "quickReport:": "Quick report",
+    "selectConditionType": "Select the reported condition",
     "conditionType": "Condition type",
     "conditionDescription": "Condition state",
     "severityLevel": "Level of severity"

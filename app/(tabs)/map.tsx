@@ -31,6 +31,11 @@ const conditionIssues : {label: string, status: "checked" | "unchecked"}[] = con
   })
 )
 
+const severityOptions : {label: string, status: "checked" | "unchecked"}[] = Object.values(SafetyLevel).map((level, index) => ({
+  label: level,
+  status: "checked"
+}));
+
 const dateOptions = {
   weekday: "short",
   year: "numeric",
@@ -74,6 +79,7 @@ export default function Map() {
   const [filteredSafetyReports, setFilteredSafetyReports] = useState<SafetyPerceptionReport[]>([]);
   const [filteredQuickReports, setFilteredQuickReports] = useState<QuickReport[]>([]);
   const [quickConditionIssues, setQuickConditionIssues] = useState<{label: string, status: "checked" | "unchecked"}[]>(conditionIssues);
+  const [quickSeverityOptions, setQuickSeverityOptions] = useState<{label: string, status: "checked" | "unchecked"}[]>(severityOptions);
   const [isQuickFilterModified, setIsQuickFilterModified] = useState<boolean>(false);
   const [isIncidentFilterModified, setIsIncidentFilterModified] = useState<boolean>(false);
   const [isStatisticsBtnVisible, setIsStatisticsBtnVisible] = useState<boolean>(true);
@@ -236,6 +242,13 @@ export default function Map() {
     setIsQuickFilterModified(true);
   }
 
+  const handleToggleQuickSeverity = (index: number) => {
+    const updatedSeverityOptions = [...quickSeverityOptions];
+    updatedSeverityOptions[index].status = updatedSeverityOptions[index].status === "checked" ? "unchecked" : "checked";
+    setQuickSeverityOptions(updatedSeverityOptions);
+    setIsQuickFilterModified(true);
+  }
+
   const handleSafetyFilter = () => {
     // Check if the start date is after the end date
     if (safetyStartDate > safetyEndDate) {
@@ -290,10 +303,14 @@ export default function Map() {
       const isValidCondition = quickConditionIssues.some((condition, index) => {
         return condition.status === "checked" && report.conditionType == condition.label;
       });
+      const isValidSeverity = quickSeverityOptions.some((severity, index) => {
+        return severity.status === "checked" && report.severityLevel == severity.label;
+      });
 
       return (
         isDateInRange &&
-        isValidCondition
+        isValidCondition &&
+        isValidSeverity
       );
     })
 
@@ -581,8 +598,19 @@ export default function Map() {
                 </View>
                 {isSafetyDateError && <TextBlock type={TextBlockTypeEnum.body} style={{color: "red"}}>{t("dateError")}</TextBlock>}
                 <Spacer variant="large" />
-                <TextBlock type={TextBlockTypeEnum.title}>{t('selectDateInterval')}</TextBlock>
-                <ScrollView style={{ maxHeight: 300 }}>
+                <TextBlock type={TextBlockTypeEnum.title}>{t('selectSeverityLevel')}</TextBlock>
+                <View style={{ justifyContent: "flex-start", width: "auto", height: "auto" }}>
+                  {quickSeverityOptions.map((severity, index) => (
+                    <Checkbox.Item 
+                      key={index}
+                      label={severity.label}
+                      status={severity.status}
+                      onPress={(e) => handleToggleQuickSeverity(index)} />
+                  ))}
+                </View>
+                <Spacer variant="large" />
+                <TextBlock type={TextBlockTypeEnum.title}>{t('selectConditionType')}</TextBlock>
+                <ScrollView style={{ maxHeight: 200 }}>
                   {quickConditionIssues.map((condition, index) => (
                     <Checkbox.Item
                       key={index}
