@@ -610,7 +610,7 @@ export default function Map() {
                 </View>
                 <Spacer variant="large" />
                 <TextBlock type={TextBlockTypeEnum.title}>{t('selectConditionType')}</TextBlock>
-                <ScrollView style={{ maxHeight: 200 }}>
+                <ScrollView style={{ maxHeight: 150 }}>
                   {quickConditionIssues.map((condition, index) => (
                     <Checkbox.Item
                       key={index}
@@ -620,7 +620,6 @@ export default function Map() {
                     />
                   ))}
                 </ScrollView>
-                <Spacer variant="large" />
                 <Spacer variant="large" />
                 <View style={{ flexDirection: "row", justifyContent: "space-between" }}>
                   <ButtonAction

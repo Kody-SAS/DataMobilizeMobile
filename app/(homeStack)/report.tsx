@@ -570,7 +570,7 @@ export default function Report() {
                     <RadioButton.Group 
                         onValueChange={handleIncidentTypeSelection} 
                         value={incidentType?.toString() ?? ""}>
-                        <View style={styles.safetyLevelContainer}>
+                        <View>
                             <RadioButton.Item label={t("crash")} value={IncidentType.Crash} />
                             <RadioButton.Item label={t("equipment")} value={IncidentType.Equipment} />
                             <RadioButton.Item label={t("infastructure")} value={IncidentType.Infrastructure} />
@@ -674,7 +674,7 @@ export default function Report() {
                 </Modal>
 
                 <Modal visible={isIncidentTypeModalVisible} dismissable={true}>
-                    <View style={styles.modalContentContainer}>
+                    <ScrollView style={styles.modalContentContainer}>
                         {incidentType == IncidentType.Crash.toString() && (
                             <>
                                 <TextBlock type={TextBlockTypeEnum.h5} style={{fontWeight: '700'}}>{t("whyIncidentType")}: {incidentType} ?</TextBlock>
@@ -685,9 +685,9 @@ export default function Report() {
                                     </TextBlock>
                                     <TextInput
                                         keyboardType="numeric"
-                                        value={incidentPedestrianNumber.toString()}
-                                        onChangeText={(text) => setIncidentPedestrianNumber(parseInt(text))}
-                                        style={{width: 50, height: 40, borderRadius: 8, backgroundColor: Colors.light.background.secondary, padding: 8}}
+                                        value={incidentPedestrianNumber?.toString() ?? "0"}
+                                        onChangeText={(text) => setIncidentPedestrianNumber(parseInt(text ? text : "0"))}
+                                        style={{width: 90, height: 40, borderRadius: 8, backgroundColor: Colors.light.background.secondary, padding: 8}}
                                     />
                                 </View>
                                 <Spacer variant="large" />
@@ -697,9 +697,9 @@ export default function Report() {
                                     </TextBlock>
                                     <TextInput
                                         keyboardType="numeric"
-                                        value={incidentCyclistNumber.toString()}
-                                        onChangeText={(text) => setIncidentCyclistNumber(parseInt(text))}
-                                        style={{width: 50, height: 40, borderRadius: 8, backgroundColor: Colors.light.background.secondary, padding: 8}}
+                                        value={incidentCyclistNumber?.toString() ?? "0"}
+                                        onChangeText={(text) => setIncidentCyclistNumber(parseInt(text ? text : "0"))}
+                                        style={{width: 90, height: 40, borderRadius: 8, backgroundColor: Colors.light.background.secondary, padding: 8}}
                                     />
                                 </View>
                                 <Spacer variant="large" />
@@ -709,9 +709,9 @@ export default function Report() {
                                     </TextBlock>
                                     <TextInput
                                         keyboardType="numeric"
-                                        value={incidentMotocyclistNumber.toString()}
-                                        onChangeText={(text) => setIncidentMotocyclistNumber(parseInt(text))}
-                                        style={{width: 50, height: 40, borderRadius: 8, backgroundColor: Colors.light.background.secondary, padding: 8}}
+                                        value={incidentMotocyclistNumber?.toString() ?? "0"}
+                                        onChangeText={(text) => setIncidentMotocyclistNumber(parseInt(text ? text : "0"))}
+                                        style={{width: 90, height: 40, borderRadius: 8, backgroundColor: Colors.light.background.secondary, padding: 8}}
                                     />
                                 </View>
                                 <Spacer variant="large" />
@@ -721,9 +721,9 @@ export default function Report() {
                                     </TextBlock>
                                     <TextInput
                                         keyboardType="numeric"
-                                        value={incidentCarNumber.toString()}
-                                        onChangeText={(text) => setIncidentCarNumber(parseInt(text))}
-                                        style={{width: 50, height: 40, borderRadius: 8, backgroundColor: Colors.light.background.secondary, padding: 8}}
+                                        value={incidentCarNumber?.toString() ?? "0"}
+                                        onChangeText={(text) => setIncidentCarNumber(parseInt(text ? text : "0"))}
+                                        style={{width: 90, height: 40, borderRadius: 8, backgroundColor: Colors.light.background.secondary, padding: 8}}
                                     />
                                 </View>
                                 <Spacer variant="large" />
@@ -733,9 +733,9 @@ export default function Report() {
                                     </TextBlock>
                                     <TextInput
                                         keyboardType="numeric"
-                                        value={incidentTruckNumber.toString()}
-                                        onChangeText={(text) => setIncidentTruckNumber(parseInt(text))}
-                                        style={{width: 50, height: 40, borderRadius: 8, backgroundColor: Colors.light.background.secondary, padding: 8}}
+                                        value={incidentTruckNumber?.toString() ?? "0"}
+                                        onChangeText={(text) => setIncidentTruckNumber(parseInt(text ? text : "0"))}
+                                        style={{width: 90, height: 40, borderRadius: 8, backgroundColor: Colors.light.background.secondary, padding: 8}}
                                     />
                                 </View>
                                 <Spacer variant="large" />
@@ -745,9 +745,9 @@ export default function Report() {
                                     </TextBlock>
                                     <TextInput
                                         keyboardType="numeric"
-                                        value={incidentBusNumber.toString()}
-                                        onChangeText={(text) => setIncidentBusNumber(parseInt(text))}
-                                        style={{width: 50, height: 40, borderRadius: 8, backgroundColor: Colors.light.background.secondary, padding: 8}}
+                                        value={incidentBusNumber?.toString() ?? "0"}
+                                        onChangeText={(text) => setIncidentBusNumber(parseInt(text ? text : "0"))}
+                                        style={{width: 90, height: 40, borderRadius: 8, backgroundColor: Colors.light.background.secondary, padding: 8}}
                                     />
                                 </View>
                                 <Spacer variant="large" />
@@ -757,9 +757,9 @@ export default function Report() {
                                     </TextBlock>
                                     <TextInput
                                         keyboardType="numeric"
-                                        value={incidentBusNumber.toString()}
-                                        onChangeText={(text) => setIncidentBusNumber(parseInt(text))}
-                                        style={{width: 50, height: 40, borderRadius: 8, backgroundColor: Colors.light.background.secondary, padding: 8}}
+                                        value={incidentBusNumber?.toString()}
+                                        onChangeText={(text) => setIncidentBusNumber(parseInt(text ? text : "0"))}
+                                        style={{width: 90, height: 40, borderRadius: 8, backgroundColor: Colors.light.background.secondary, padding: 8}}
                                     />
                                 </View>
                                 <Spacer variant="large" />
@@ -767,7 +767,7 @@ export default function Report() {
                                 <RadioButton.Group 
                                     onValueChange={handleIncidentCrashSeveritySelection} 
                                     value={incidentCrashSeverity?.toString() ?? ""}>
-                                    <View style={styles.safetyLevelContainer}>
+                                    <View>
                                         <RadioButton.Item label={t("fatal")} value={IncidentSeverity.Fatal} />
                                         <RadioButton.Item label={t("minorInjury")} value={IncidentSeverity.MinorInjury} />
                                         <RadioButton.Item label={t("seriousInjury")} value={IncidentSeverity.SeriousInjury} />
@@ -778,13 +778,17 @@ export default function Report() {
                             </>
                         )}
                         <TextBlock type={TextBlockTypeEnum.h5}>{t("whyIncidentType")}: {incidentType} ?</TextBlock>
+                        <Spacer variant="large" />
                         <ButtonAction
                             variant={ButtonTypeEnum.primary}
                             onPress={() => setIsIncidentTypeModalVisible(false)}
                             content={
                                 <TextBlock style={{color: "white"}}>OK</TextBlock>
                             }/>
-                    </View>
+                        <Spacer variant="large" />
+                        <Spacer variant="large" />
+                        <Spacer variant="large" />
+                    </ScrollView>
                 </Modal>
             </Portal>
 
@@ -896,7 +900,7 @@ const styles = StyleSheet.create({
         padding: 16,
         backgroundColor: Colors.light.background.quinary,
         borderRadius: 8,
-        maxHeight: "85%",
+        maxHeight: "90%",
         overflow: 'hidden'
     }
 });
