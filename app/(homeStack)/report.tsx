@@ -5,7 +5,7 @@ import { Colors } from "../../constants/Colors";
 import { useEffect, useState } from "react";
 import { requestForegroundPermissionsAsync } from "expo-location";
 import { useTranslation } from "react-i18next";
-import { ButtonTypeEnum, ConditionType, QuickReport, ReasonType, ReportType, RoadType, SafetyLevel, SafetyPerceptionReport, SeverityLevel, TextBlockTypeEnum, UserType } from "../../type.d";
+import { ButtonTypeEnum, ConditionType, IncidentCrashSeverity, IncidentType, QuickReport, ReasonType, ReportType, RoadType, SafetyLevel, SafetyPerceptionReport, SeverityLevel, TextBlockTypeEnum, UserType } from "../../type.d";
 import { LocationCard } from "../../components/LocationCard";
 import { Spacer } from "../../components/Spacer";
 import { SelectedOption, SelectInput } from "../../components/SelectInput";
@@ -27,13 +27,22 @@ export default function Report() {
     const [userType, setUserType] = useState<SelectedOption>();
     const [date, setDate] = useState<Date>(new Date(Date.now()));
     const [safety, setSafety] = useState<string>();
+    const [incidentType, setIncidentType] = useState<string>();
     const [severity, setSeverity] = useState<string>();
     const [safetyReasons, setSafetyReasons] = useState<{type: ReasonType, list: string[]}[]>([]);
     const [isSafetyModalVisible, setIsSafetyModalVisible] = useState<boolean>(false);
+    const [isIncidentTypeModalVisible, setIsIncidentTypeModalVisible] = useState<boolean>(false);
     const [isConditionListModalVisible, setIsConditionListModalVisible] = useState<boolean>(false);
     const [conditionItem, setConditionItem] = useState<string>("");
     const [reportImages, setReportImages] = useState<string[]>([]);
     const [reportError, setReportError] = useState<string>("");
+    const [incidentPedestrianNumber, setIncidentPedestrianNumber] = useState<number>(0);
+    const [incidentCyclistNumber, setIncidentCyclistNumber] = useState<number>(0);
+    const [incidentMotocyclistNumber, setIncidentMotocyclistNumber] = useState<number>(0);
+    const [incidentCarNumber, setIncidentCarNumber] = useState<number>(0);
+    const [incidentTruckNumber, setIncidentTruckNumber] = useState<number>(0);
+    const [incidentBusNumber, setIncidentBusNumber] = useState<number>(0);
+    const [incidentCrashSeverity, setIncidentCrashSeverity] = useState<string>();
 
     const {type} = useLocalSearchParams();
     const {t} = useTranslation();
@@ -234,6 +243,16 @@ export default function Report() {
     const handleSafetyLevelSelection = (value: string) => {
         setIsSafetyModalVisible(true);
         setSafety(value);
+    }
+
+    const handleIncidentTypeSelection = (value: string) => {
+        setIncidentType(value);
+        setIsIncidentTypeModalVisible(true);
+    }
+
+    const handleIncidentCrashSeveritySelection = (value: string) => {
+        setIncidentCrashSeverity(value);
+        setIsIncidentTypeModalVisible(false);
     }
 
     const handleSeverityLevelSelection = (value: string) => {
@@ -504,7 +523,28 @@ export default function Report() {
                 </>
             )}
 
-            {/* Safety reasons */}
+            {type == ReportType.Incident.toString() && (
+                <>
+                    {/* Choosing the incident type */}
+                    <TextBlock type={TextBlockTypeEnum.title}>
+                        {t("chooseIncidentType")}
+                    </TextBlock>
+                    <Spacer variant="medium" />
+                    <RadioButton.Group 
+                        onValueChange={handleIncidentTypeSelection} 
+                        value={incidentType?.toString() ?? ""}>
+                        <View style={styles.safetyLevelContainer}>
+                            <RadioButton.Item label={t("crash")} value={IncidentType.Crash} />
+                            <RadioButton.Item label={t("equipment")} value={IncidentType.Equipment} />
+                            <RadioButton.Item label={t("infastructure")} value={IncidentType.Infrastructure} />
+                        </View>
+                    </RadioButton.Group>
+                    <Spacer variant="large" />
+                    <Spacer variant="medium" />
+                </>
+            )}
+
+            {/* Safety reasons for Safety Report */}
             <Portal>
                 <Modal visible={isSafetyModalVisible} dismissable={true}>
                     <View style={styles.modalContentContainer}>
@@ -570,6 +610,8 @@ export default function Report() {
                         })}
                     </View>
                 </Modal>
+
+                {/* Conditions list modal for Quick Report condition type */}
                 <Modal visible={isConditionListModalVisible} dismissable={true}>
                     <View style={styles.modalContentContainer}>
                         <TextBlock type={TextBlockTypeEnum.h5}>{t("whyConditionType")}: {conditionType?.content} ?</TextBlock>
@@ -591,6 +633,120 @@ export default function Report() {
                                 }
                             })}
                         </RadioButton.Group>
+                    </View>
+                </Modal>
+
+                <Modal visible={isIncidentTypeModalVisible} dismissable={true}>
+                    <View style={styles.modalContentContainer}>
+                        {incidentType == IncidentType.Crash.toString() && (
+                            <>
+                                <TextBlock type={TextBlockTypeEnum.h5} style={{fontWeight: '700'}}>{t("whyIncidentType")}: {incidentType} ?</TextBlock>
+                                <Spacer variant="medium" />
+                                <View style={{flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center'}}>
+                                    <TextBlock type={TextBlockTypeEnum.title}>
+                                        {t("incidentPedestrianNumber")}
+                                    </TextBlock>
+                                    <TextInput
+                                        keyboardType="numeric"
+                                        value={incidentPedestrianNumber.toString()}
+                                        onChangeText={(text) => setIncidentPedestrianNumber(parseInt(text))}
+                                        style={{width: 50, height: 40, borderRadius: 8, backgroundColor: Colors.light.background.secondary, padding: 8}}
+                                    />
+                                </View>
+                                <Spacer variant="large" />
+                                <View style={{flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center'}}>
+                                    <TextBlock type={TextBlockTypeEnum.title}>
+                                        {t("incidentCyclistNumber")}
+                                    </TextBlock>
+                                    <TextInput
+                                        keyboardType="numeric"
+                                        value={incidentCyclistNumber.toString()}
+                                        onChangeText={(text) => setIncidentCyclistNumber(parseInt(text))}
+                                        style={{width: 50, height: 40, borderRadius: 8, backgroundColor: Colors.light.background.secondary, padding: 8}}
+                                    />
+                                </View>
+                                <Spacer variant="large" />
+                                <View style={{flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center'}}>
+                                    <TextBlock type={TextBlockTypeEnum.title}>
+                                        {t("incidentMotocyclistNumber")}
+                                    </TextBlock>
+                                    <TextInput
+                                        keyboardType="numeric"
+                                        value={incidentMotocyclistNumber.toString()}
+                                        onChangeText={(text) => setIncidentMotocyclistNumber(parseInt(text))}
+                                        style={{width: 50, height: 40, borderRadius: 8, backgroundColor: Colors.light.background.secondary, padding: 8}}
+                                    />
+                                </View>
+                                <Spacer variant="large" />
+                                <View style={{flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center'}}>
+                                    <TextBlock type={TextBlockTypeEnum.title}>
+                                        {t("incidentCarNumber")}
+                                    </TextBlock>
+                                    <TextInput
+                                        keyboardType="numeric"
+                                        value={incidentCarNumber.toString()}
+                                        onChangeText={(text) => setIncidentCarNumber(parseInt(text))}
+                                        style={{width: 50, height: 40, borderRadius: 8, backgroundColor: Colors.light.background.secondary, padding: 8}}
+                                    />
+                                </View>
+                                <Spacer variant="large" />
+                                <View style={{flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center'}}>
+                                    <TextBlock type={TextBlockTypeEnum.title}>
+                                        {t("incidentTruckNumber")}
+                                    </TextBlock>
+                                    <TextInput
+                                        keyboardType="numeric"
+                                        value={incidentTruckNumber.toString()}
+                                        onChangeText={(text) => setIncidentTruckNumber(parseInt(text))}
+                                        style={{width: 50, height: 40, borderRadius: 8, backgroundColor: Colors.light.background.secondary, padding: 8}}
+                                    />
+                                </View>
+                                <Spacer variant="large" />
+                                <View style={{flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center'}}>
+                                    <TextBlock type={TextBlockTypeEnum.title}>
+                                        {t("incidentBusNumber")}
+                                    </TextBlock>
+                                    <TextInput
+                                        keyboardType="numeric"
+                                        value={incidentBusNumber.toString()}
+                                        onChangeText={(text) => setIncidentBusNumber(parseInt(text))}
+                                        style={{width: 50, height: 40, borderRadius: 8, backgroundColor: Colors.light.background.secondary, padding: 8}}
+                                    />
+                                </View>
+                                <Spacer variant="large" />
+                                <View style={{flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center'}}>
+                                    <TextBlock type={TextBlockTypeEnum.title}>
+                                        {t("incidentBusNumber")}
+                                    </TextBlock>
+                                    <TextInput
+                                        keyboardType="numeric"
+                                        value={incidentBusNumber.toString()}
+                                        onChangeText={(text) => setIncidentBusNumber(parseInt(text))}
+                                        style={{width: 50, height: 40, borderRadius: 8, backgroundColor: Colors.light.background.secondary, padding: 8}}
+                                    />
+                                </View>
+                                <Spacer variant="large" />
+                                <TextBlock type={TextBlockTypeEnum.title}>{t("selectIncidentCrashSeverity")}</TextBlock>
+                                <RadioButton.Group 
+                                    onValueChange={handleIncidentCrashSeveritySelection} 
+                                    value={incidentCrashSeverity?.toString() ?? ""}>
+                                    <View style={styles.safetyLevelContainer}>
+                                        <RadioButton.Item label={t("fatal")} value={IncidentCrashSeverity.Fatal} />
+                                        <RadioButton.Item label={t("minorInjury")} value={IncidentCrashSeverity.MinorInjury} />
+                                        <RadioButton.Item label={t("seriousInjury")} value={IncidentCrashSeverity.SeriousInjury} />
+                                        <RadioButton.Item label={t("materialDamage")} value={IncidentCrashSeverity.MaterialDamage} />
+                                    </View>
+                                </RadioButton.Group>
+                                <Spacer variant="large" />
+                            </>
+                        )}
+                        <TextBlock type={TextBlockTypeEnum.h5}>{t("whyIncidentType")}: {incidentType} ?</TextBlock>
+                        <ButtonAction
+                            variant={ButtonTypeEnum.primary}
+                            onPress={() => setIsIncidentTypeModalVisible(false)}
+                            content={
+                                <TextBlock style={{color: "white"}}>OK</TextBlock>
+                            }/>
                     </View>
                 </Modal>
             </Portal>

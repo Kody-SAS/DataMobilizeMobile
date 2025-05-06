@@ -713,4 +713,3 @@ export const conditionListData : {type: ConditionType, list: string[]}[]= [
     }
 ]
 
-// export const in

@@ -159,6 +159,13 @@ export enum IncidentType {
     Equipment = "Equipment",
 }
 
+export enum IncidentCrashSeverity {
+    Fatal = "Fatal",
+    MinorInjury = "Minor Injury",
+    SeriousInjury = "Serious Injury",
+    MaterialDamage = "Material Damage",
+}
+
 export type SafetyPerceptionReport =  {
     id?: string;
     userId: string;
