@@ -1,4 +1,4 @@
-import { IncidentReport, QuickReport, ReportType, SafetyPerceptionReport } from "../type.d";
+import { IncidentReport, IncidentType, IncidentCrashData, QuickReport, ReportType, SafetyPerceptionReport, IncidentInfrastructureData, IncidentEquipmentData } from "../type.d";
 
 export const isValidReport = (report: SafetyPerceptionReport | QuickReport | IncidentReport, reportType: ReportType) => {
     switch (reportType) {
@@ -14,8 +14,24 @@ export const isValidReport = (report: SafetyPerceptionReport | QuickReport | Inc
 
         case ReportType.Incident:
             const incidentReport = report as IncidentReport;
+
+            let isValidIncidentTypeData = false;
+            // check the different incidentTypeData having the required properties
+            switch (incidentReport.incidentType) {
+                case IncidentType.Crash:
+                    isValidIncidentTypeData = (incidentReport.incidentTypeData as IncidentCrashData).count.some((item) => item.number > 0);
+                    break;
+                case IncidentType.Infrastructure:
+                    isValidIncidentTypeData = (incidentReport.incidentTypeData as IncidentInfrastructureData).reasons.length > 0;
+                    break;
+                case IncidentType.Equipment:
+                    isValidIncidentTypeData = (incidentReport.incidentTypeData as IncidentEquipmentData).reasons.length > 0;
+                    break;
+                default:
+                    break;
+            }
             
-            return incidentReport.roadType && incidentReport.incidentType && incidentReport.reportType && incidentReport.description && incidentReport.images.length > 0;
+            return incidentReport.roadType && incidentReport.incidentType && isValidIncidentTypeData && incidentReport.reportType && incidentReport.description && incidentReport.images.length > 0;
         default:
             return false;
     }

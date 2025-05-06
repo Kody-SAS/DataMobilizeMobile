@@ -5,7 +5,7 @@ import { Colors } from "../../constants/Colors";
 import { useEffect, useState } from "react";
 import { requestForegroundPermissionsAsync } from "expo-location";
 import { useTranslation } from "react-i18next";
-import { ButtonTypeEnum, ConditionType, IncidentCrashSeverity, IncidentType, QuickReport, ReasonType, ReportType, RoadType, SafetyLevel, SafetyPerceptionReport, SeverityLevel, TextBlockTypeEnum, UserType } from "../../type.d";
+import { ButtonTypeEnum, ConditionType, IncidentSeverity, IncidentReport, IncidentType, QuickReport, ReasonType, ReportType, RoadType, SafetyLevel, SafetyPerceptionReport, SeverityLevel, TextBlockTypeEnum, UserType } from "../../type.d";
 import { LocationCard } from "../../components/LocationCard";
 import { Spacer } from "../../components/Spacer";
 import { SelectedOption, SelectInput } from "../../components/SelectInput";
@@ -399,6 +399,43 @@ export default function Report() {
                 break;
             }
             case ReportType.Incident.toString() : {
+                const location = await locateUser();
+                if(location != null) {
+                    const report : IncidentReport = {
+                        id: user.id,
+                        userId: user.id!,
+                        latitude: location.coords.latitude,
+                        longitude: location.coords.longitude,
+                        createdAt: date,
+                        roadType: roadType?.data.type as RoadType,
+                        incidentType: incidentType as IncidentType,
+                        reportType: ReportType.Incident,
+                        description: "",
+                        images: reportImages
+                    }
+                    if(incidentType == IncidentType.Crash) {
+                        report.incidentTypeData = {
+                            severity: incidentCrashSeverity as IncidentSeverity,
+                            count: [
+                                { type: UserType.Pedestrian, number: incidentPedestrianNumber },
+                                { type: UserType.Cyclist, number: incidentCyclistNumber },
+                                { type: UserType.Motocyclist, number: incidentMotocyclistNumber },
+                                { type: UserType.Car, number: incidentCarNumber },
+                                { type: UserType.Truck, number: incidentTruckNumber },
+                                { type: UserType.Bus, number: incidentBusNumber }
+                            ]
+                        }
+                    }
+
+                    if(isValidReport(report, ReportType.Quick)) {
+                        dispatch(addQuickReport(report));
+                        setReportError("");
+                        router.back();
+                    }
+                    else {
+                        setReportError(t("reportError"));
+                    }
+                }
                 break;
             }
             case ReportType.Audit.toString() : {
@@ -731,10 +768,10 @@ export default function Report() {
                                     onValueChange={handleIncidentCrashSeveritySelection} 
                                     value={incidentCrashSeverity?.toString() ?? ""}>
                                     <View style={styles.safetyLevelContainer}>
-                                        <RadioButton.Item label={t("fatal")} value={IncidentCrashSeverity.Fatal} />
-                                        <RadioButton.Item label={t("minorInjury")} value={IncidentCrashSeverity.MinorInjury} />
-                                        <RadioButton.Item label={t("seriousInjury")} value={IncidentCrashSeverity.SeriousInjury} />
-                                        <RadioButton.Item label={t("materialDamage")} value={IncidentCrashSeverity.MaterialDamage} />
+                                        <RadioButton.Item label={t("fatal")} value={IncidentSeverity.Fatal} />
+                                        <RadioButton.Item label={t("minorInjury")} value={IncidentSeverity.MinorInjury} />
+                                        <RadioButton.Item label={t("seriousInjury")} value={IncidentSeverity.SeriousInjury} />
+                                        <RadioButton.Item label={t("materialDamage")} value={IncidentSeverity.MaterialDamage} />
                                     </View>
                                 </RadioButton.Group>
                                 <Spacer variant="large" />

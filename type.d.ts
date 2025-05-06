@@ -159,11 +159,27 @@ export enum IncidentType {
     Equipment = "Equipment",
 }
 
-export enum IncidentCrashSeverity {
+export enum IncidentSeverity {
     Fatal = "Fatal",
     MinorInjury = "Minor Injury",
     SeriousInjury = "Serious Injury",
     MaterialDamage = "Material Damage",
+}
+
+export type IncidentCrashData = {
+    severity: IncidentSeverity;
+    count: { type: UserType; number: number }[];
+}
+
+export type IncidentInfrastructureData = {
+    severity: IncidentSeverity;
+    reasons: string[];
+}
+
+export type IncidentEquipmentData = {
+    severity: IncidentSeverity;
+    reasons: string[];
+    description?: string;
 }
 
 export type SafetyPerceptionReport =  {
@@ -207,6 +223,7 @@ export type IncidentReport = {
     createdAt: Date;
     roadType: RoadType;
     incidentType: IncidentType;
+    incidentTypeData?: IncidentCrashData | IncidentInfrastructureData | IncidentEquipmentData;
     reportType: ReportType;
     description: string;
     images: string[];
