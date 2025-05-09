@@ -8,7 +8,7 @@ import { useNetInfo } from '@react-native-community/netinfo';
 import { useTranslation } from 'react-i18next';
 import { useDispatch, useSelector } from 'react-redux';
 import { ThunkDispatch } from '@reduxjs/toolkit';
-import { ButtonTypeEnum, IncidentCrashData, IncidentEquipmentData, IncidentInfrastructureData, IncidentReport, IncidentType, QuickReport, ReportType, SafetyLevel, SafetyPerceptionReport, TextBlockTypeEnum, UserType } from '../../type.d';
+import { ButtonTypeEnum, IncidentCrashData, IncidentEquipmentData, IncidentInfrastructureData, IncidentReport, IncidentSeverity, IncidentType, QuickReport, ReportType, SafetyLevel, SafetyPerceptionReport, TextBlockTypeEnum, UserType } from '../../type.d';
 import { Checkbox, FAB, RadioButton, Searchbar } from 'react-native-paper';
 import MapView, { MAP_TYPES, Marker, PROVIDER_GOOGLE } from 'react-native-maps';
 import { Spacer } from '../../components/Spacer';
@@ -36,12 +36,15 @@ const severityOptions : {label: string, status: "checked" | "unchecked"}[] = Obj
   status: "checked"
 }));
 
-const dateOptions = {
-  weekday: "short",
-  year: "numeric",
-  month: "long",
-  day: "numeric",
-};
+const incidentTypeData : {label: string, status: "checked" | "unchecked"}[] = Object.values(IncidentType).map((type, index) => ({
+  label: type,
+  status: "checked"
+}));
+
+const incidentSeverityData : {label: string, status: "checked" | "unchecked"}[] = Object.values(IncidentSeverity).map((type, index) => ({
+  label: type,
+  status: "checked"
+}));
 
 export default function Map() {
   const [searchQuery, setSearchQuery] = useState<string>('');
@@ -80,8 +83,11 @@ export default function Map() {
   const [currentOpenedReport, setCurrentOpenedReport] = useState<SafetyPerceptionReport | QuickReport | IncidentReport | null>(null);
   const [filteredSafetyReports, setFilteredSafetyReports] = useState<SafetyPerceptionReport[]>([]);
   const [filteredQuickReports, setFilteredQuickReports] = useState<QuickReport[]>([]);
+  const [filteredIncidentReports, setFilteredIncidentReports] = useState<IncidentReport[]>([]);
   const [quickConditionIssues, setQuickConditionIssues] = useState<{label: string, status: "checked" | "unchecked"}[]>(conditionIssues);
   const [quickSeverityOptions, setQuickSeverityOptions] = useState<{label: string, status: "checked" | "unchecked"}[]>(severityOptions);
+  const [incidentTypeOptions, setIncidentTypeOptions] = useState<{label: string, status: "checked" | "unchecked"}[]>(incidentTypeData);
+  const [incidentSeverityOptions, setIncidentSeverityOptions] = useState<{label: string, status: "checked" | "unchecked"}[]>(incidentSeverityData);
   const [isQuickFilterModified, setIsQuickFilterModified] = useState<boolean>(false);
   const [isIncidentFilterModified, setIsIncidentFilterModified] = useState<boolean>(false);
   const [isStatisticsBtnVisible, setIsStatisticsBtnVisible] = useState<boolean>(true);
@@ -251,6 +257,20 @@ export default function Map() {
     setIsQuickFilterModified(true);
   }
 
+  const handleToggleIncidentType = (index: number) => {
+    const updatedIncidentTypeOptions = [...incidentTypeOptions];
+    updatedIncidentTypeOptions[index].status = updatedIncidentTypeOptions[index].status === "checked" ? "unchecked" : "checked";
+    setIncidentTypeOptions(updatedIncidentTypeOptions);
+    setIsIncidentFilterModified(true);
+  }
+
+  const handleToggleIncidentSeverity = (index: number) => {
+    const updatedIncidentSeverityOptions = [...incidentSeverityOptions];
+    updatedIncidentSeverityOptions[index].status = updatedIncidentSeverityOptions[index].status === "checked" ? "unchecked" : "checked";
+    setIncidentSeverityOptions(updatedIncidentSeverityOptions);
+    setIsIncidentFilterModified(true);
+  }
+
   const handleSafetyFilter = () => {
     // Check if the start date is after the end date
     if (safetyStartDate > safetyEndDate) {
@@ -325,6 +345,43 @@ export default function Map() {
     setIsSafetyFilterModified(false);
     setIsMapTypeSelectViewVisible(false);
     setFilteredQuickReports(filteredReports);
+  }
+
+  const handleIncidentFilter = () => {
+    // Check if the start date is after the end date
+    if (incidentStartDate > incidentEndDate) {
+      setIsSafetyDateError(true);
+      return;
+    } else {
+      setIsSafetyDateError(false);
+    }
+
+    const filteredReports = incidentRports.filter((report) => {
+      const reportDate = new Date(report.createdAt);
+      const isDateInRange = reportDate >= incidentStartDate && reportDate <= incidentEndDate;
+      const isValidIncidentType = incidentTypeOptions.some((type, index) => {
+        return type.status === "checked" && report.incidentType == type.label;
+      });
+      const isValidIncidentSeverity = incidentSeverityOptions.some((severity, index) => {
+        return severity.status === "checked" && report.incidentTypeData?.severity == severity.label;
+      });
+
+      return (
+        isDateInRange &&
+        isValidIncidentType &&
+        isValidIncidentSeverity
+      );
+    })
+
+    // Update the state with the filtered reports
+    setIsFullMap(true);
+    setIsSafetyFilterVisible(false);
+    setIsQuickFilterVisible(false);
+    setIsIncidentFilterVisible(false);
+    setIsReportSelectVisible(false);
+    setIsSafetyFilterModified(false);
+    setIsMapTypeSelectViewVisible(false);
+    setFilteredIncidentReports(filteredReports);
   }
 
   const determineSafetyStyle = (safetyLevel: SafetyLevel) => {
@@ -668,12 +725,35 @@ export default function Map() {
                     onChange={() => setIsIncidentFilterModified(true)}
                   />
                 </View>
-                  
+                <Spacer variant="large" />
+                <TextBlock type={TextBlockTypeEnum.title}>{t('selectIncidentType')}</TextBlock>
+                <View>
+                  {incidentTypeOptions.map((type, index) => (
+                    <Checkbox.Item
+                      key={index}
+                      label={type.label}
+                      status={type.status}
+                      onPress={(e) => handleToggleIncidentType(index)}
+                    />
+                  ))}
+                </View>
+                <Spacer variant="large" />
+                <TextBlock type={TextBlockTypeEnum.title}>{t('selectIncidentSeverity')}</TextBlock>
+                <View>
+                  {incidentSeverityOptions.map((severity, index) => (
+                    <Checkbox.Item
+                      key={index}
+                      label={severity.label}
+                      status={severity.status}
+                      onPress={(e) => handleToggleIncidentSeverity(index)}
+                    />
+                  ))}
+                </View>
                 <Spacer variant="large" />
                 <ButtonAction
                   variant={ButtonTypeEnum.secondary}
                   content={<TextBlock type={TextBlockTypeEnum.body}>{t("close")}</TextBlock>}
-                  onPress={handleToggleIncidentFilter}/>
+                  onPress={handleIncidentFilter}/>
               </View>
             )}
           </View>

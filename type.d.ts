@@ -223,7 +223,8 @@ export type IncidentReport = {
     roadType: RoadType;
     incidentType: IncidentType;
     incidentTypeData?: IncidentCrashData | IncidentInfrastructureData | IncidentEquipmentData;
-    reportType: ReportType;
     description: string;
+    reportType: ReportType;
+    comment?: string;
     images: string[];
 }
