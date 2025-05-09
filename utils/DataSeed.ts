@@ -713,3 +713,19 @@ export const conditionListData : {type: ConditionType, list: string[]}[]= [
     }
 ]
 
+export const infrastructureIncidentReasonsData : string[] = [
+   "Landslide",
+    "Road collapse",
+    "Flooding",
+    "Debris blocking the road",
+    "Road failure",
+    "Bridge issues"
+]
+
+export const equipmentIncidentReasonsData : string[] = [
+    "Falling pole",
+    "Damaged traffic signals",
+    "Broken road signs",
+    "Broken traffic lights",
+    "Damaged barriers or fences"
+]

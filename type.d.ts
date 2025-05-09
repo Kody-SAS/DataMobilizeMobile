@@ -179,7 +179,6 @@ export type IncidentInfrastructureData = {
 export type IncidentEquipmentData = {
     severity: IncidentSeverity;
     reasons: string[];
-    description?: string;
 }
 
 export type SafetyPerceptionReport =  {

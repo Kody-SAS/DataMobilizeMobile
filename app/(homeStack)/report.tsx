@@ -11,7 +11,7 @@ import { Spacer } from "../../components/Spacer";
 import { SelectedOption, SelectInput } from "../../components/SelectInput";
 import { DateInput } from "../../components/DateInput";
 import { Checkbox, Modal, PaperProvider, Portal, RadioButton, TextInput } from "react-native-paper";
-import { conditionListData, safetyLevelReasons } from "../../utils/DataSeed";
+import { conditionListData, equipmentIncidentReasonsData, infrastructureIncidentReasonsData, safetyLevelReasons } from "../../utils/DataSeed";
 import * as ImagePicker from 'expo-image-picker';
 import { ButtonAction } from "../../components/ButtonAction";
 import * as Location from 'expo-location';
@@ -43,6 +43,8 @@ export default function Report() {
     const [incidentTruckNumber, setIncidentTruckNumber] = useState<number>(0);
     const [incidentBusNumber, setIncidentBusNumber] = useState<number>(0);
     const [incidentCrashSeverity, setIncidentCrashSeverity] = useState<string>();
+    const [infrastructureIncidentReasons, setInfrastructureIncidentReasons] = useState<string[]>([]);
+    const [equipmentIncidentReasons, setEquipmentIncidentReasons] = useState<string[]>([]);
 
     const {type} = useLocalSearchParams();
     const {t} = useTranslation();
@@ -268,6 +270,30 @@ export default function Report() {
         setIsConditionListModalVisible(false);
     }
 
+    const handleIncidentTypeReasonSelection = (value: string) => {
+        const incident = incidentType as IncidentType;
+        if (incident == IncidentType.Infrastructure) {
+            const existingReasons = [...infrastructureIncidentReasons];
+            if (!existingReasons.includes(value)) {
+                setInfrastructureIncidentReasons([...existingReasons, value]);
+            }
+            else {
+                const newList = existingReasons.filter(item => item != value);
+                setInfrastructureIncidentReasons(newList);
+            }
+        }
+        else if (incident == IncidentType.Equipment) {
+            const existingReasons = [...equipmentIncidentReasons];
+            if (!existingReasons.includes(value)) {
+                setEquipmentIncidentReasons([...existingReasons, value]);
+            }
+            else {
+                const newList = existingReasons.filter(item => item != value);
+                setEquipmentIncidentReasons(newList);
+            }
+        }
+    }
+
     const handleSafetyReasonPressed = (e: GestureResponderEvent, type: ReasonType, selectedReason: string) => {
         let existingReasons = [...safetyReasons];
 
@@ -413,18 +439,35 @@ export default function Report() {
                         description: "",
                         images: reportImages
                     }
-                    if(incidentType == IncidentType.Crash) {
-                        report.incidentTypeData = {
-                            severity: incidentCrashSeverity as IncidentSeverity,
-                            count: [
-                                { type: UserType.Pedestrian, number: incidentPedestrianNumber },
-                                { type: UserType.Cyclist, number: incidentCyclistNumber },
-                                { type: UserType.Motocyclist, number: incidentMotocyclistNumber },
-                                { type: UserType.Car, number: incidentCarNumber },
-                                { type: UserType.Truck, number: incidentTruckNumber },
-                                { type: UserType.Bus, number: incidentBusNumber }
-                            ]
-                        }
+
+                    switch (report.incidentType) {
+                        case IncidentType.Crash: 
+                            report.incidentTypeData = {
+                                severity: incidentCrashSeverity as IncidentSeverity,
+                                count: [
+                                    { type: UserType.Pedestrian, number: incidentPedestrianNumber },
+                                    { type: UserType.Cyclist, number: incidentCyclistNumber },
+                                    { type: UserType.Motocyclist, number: incidentMotocyclistNumber },
+                                    { type: UserType.Car, number: incidentCarNumber },
+                                    { type: UserType.Truck, number: incidentTruckNumber },
+                                    { type: UserType.Bus, number: incidentBusNumber }
+                                ]
+                            }
+                            break;
+                        case IncidentType.Infrastructure:
+                            report.incidentTypeData = {
+                                severity: incidentCrashSeverity as IncidentSeverity,
+                                reasons: infrastructureIncidentReasons,
+                            }
+                            break;
+                        case IncidentType.Equipment:
+                            report.incidentTypeData = {
+                                severity: incidentCrashSeverity as IncidentSeverity,
+                                reasons: equipmentIncidentReasons,
+                            }
+                            break;
+                        default:
+                            break;
                     }
 
                     if(isValidReport(report, ReportType.Quick)) {
@@ -673,6 +716,7 @@ export default function Report() {
                     </View>
                 </Modal>
 
+                {/* Incident type modal for Incident Report */}
                 <Modal visible={isIncidentTypeModalVisible} dismissable={true}>
                     <ScrollView style={styles.modalContentContainer}>
                         {incidentType == IncidentType.Crash.toString() && (
@@ -763,21 +807,42 @@ export default function Report() {
                                     />
                                 </View>
                                 <Spacer variant="large" />
-                                <TextBlock type={TextBlockTypeEnum.title}>{t("selectIncidentCrashSeverity")}</TextBlock>
-                                <RadioButton.Group 
-                                    onValueChange={handleIncidentCrashSeveritySelection} 
-                                    value={incidentCrashSeverity?.toString() ?? ""}>
-                                    <View>
-                                        <RadioButton.Item label={t("fatal")} value={IncidentSeverity.Fatal} />
-                                        <RadioButton.Item label={t("minorInjury")} value={IncidentSeverity.MinorInjury} />
-                                        <RadioButton.Item label={t("seriousInjury")} value={IncidentSeverity.SeriousInjury} />
-                                        <RadioButton.Item label={t("materialDamage")} value={IncidentSeverity.MaterialDamage} />
-                                    </View>
-                                </RadioButton.Group>
-                                <Spacer variant="large" />
                             </>
                         )}
-                        <TextBlock type={TextBlockTypeEnum.h5}>{t("whyIncidentType")}: {incidentType} ?</TextBlock>
+                        {incidentType == IncidentType.Infrastructure.toString() && (
+                            <>
+                                {infrastructureIncidentReasonsData.map((item, index) => (
+                                    <Checkbox.Item 
+                                        key={index}
+                                        label={item}
+                                        onPress={() => handleIncidentTypeReasonSelection(item)}
+                                        status={infrastructureIncidentReasons.includes(item) ? "checked" : "unchecked"} />
+                                ))}
+                            </>
+                        )}
+                        {incidentType == IncidentType.Equipment.toString() && (
+                            <>
+                                {equipmentIncidentReasonsData.map((item, index) => (
+                                    <Checkbox.Item 
+                                        key={index}
+                                        label={item}
+                                        onPress={() => handleIncidentTypeReasonSelection(item)}
+                                        status={equipmentIncidentReasons.includes(item) ? "checked" : "unchecked"} />
+                                ))}
+                            </>
+                        )}
+                        <TextBlock type={TextBlockTypeEnum.title}>{t("selectIncidentSeverity")}</TextBlock>
+                        <RadioButton.Group 
+                            onValueChange={handleIncidentCrashSeveritySelection} 
+                            value={incidentCrashSeverity?.toString() ?? ""}>
+                            <View>
+                                <RadioButton.Item label={t("fatal")} value={IncidentSeverity.Fatal} />
+                                <RadioButton.Item label={t("minorInjury")} value={IncidentSeverity.MinorInjury} />
+                                <RadioButton.Item label={t("seriousInjury")} value={IncidentSeverity.SeriousInjury} />
+                                <RadioButton.Item label={t("materialDamage")} value={IncidentSeverity.MaterialDamage} />
+                            </View>
+                        </RadioButton.Group>
+                        <Spacer variant="large" />
                         <Spacer variant="large" />
                         <ButtonAction
                             variant={ButtonTypeEnum.primary}
