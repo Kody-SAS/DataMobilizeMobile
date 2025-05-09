@@ -8,7 +8,7 @@ import { useNetInfo } from '@react-native-community/netinfo';
 import { useTranslation } from 'react-i18next';
 import { useDispatch, useSelector } from 'react-redux';
 import { ThunkDispatch } from '@reduxjs/toolkit';
-import { ButtonTypeEnum, IncidentReport, QuickReport, ReportType, SafetyLevel, SafetyPerceptionReport, TextBlockTypeEnum, UserType } from '../../type.d';
+import { ButtonTypeEnum, IncidentCrashData, IncidentEquipmentData, IncidentInfrastructureData, IncidentReport, IncidentType, QuickReport, ReportType, SafetyLevel, SafetyPerceptionReport, TextBlockTypeEnum, UserType } from '../../type.d';
 import { Checkbox, FAB, RadioButton, Searchbar } from 'react-native-paper';
 import MapView, { MAP_TYPES, Marker, PROVIDER_GOOGLE } from 'react-native-maps';
 import { Spacer } from '../../components/Spacer';
@@ -63,6 +63,8 @@ export default function Map() {
   const [safetyEndDate, setSafetyEndDate] = useState<Date>(new Date(Date.now() + 86400000)); // 1 days from now
   const [quickStartDate, setQuickStartDate] = useState<Date>(new Date(Date.now() - 604800000)); // 7 days ago
   const [quickEndDate, setQuickEndDate] = useState<Date>(new Date(Date.now() + 86400000)); // 1 days from now
+  const [incidentStartDate, setIncidentStartDate] = useState<Date>(new Date(Date.now() - 604800000)); // 7 days ago
+  const [incidentEndDate, setIncidentEndDate] = useState<Date>(new Date(Date.now() + 86400000)); // 1 days from now
   const [isPedestrianSafetyChecked, setIsPedestrianSafetyChecked] = useState<boolean>(false);
   const [isCyclistSafetyChecked, setIsCyclistSafetyChecked] = useState<boolean>(false);
   const [isMotorcyclistSafetyChecked, setIsMotorcyclistSafetyChecked] = useState<boolean>(false);
@@ -646,12 +648,25 @@ export default function Map() {
               <MaterialIcons name="error-outline" size={24} color={isIncidentFilterVisible ? "white" : "black"} />
             </TouchableOpacity>
             {isIncidentFilterVisible && ( 
-              <ScrollView style={{ backgroundColor: Colors.light.background.quinary, borderRadius: 8, padding: 12, width: "auto", height: "auto", maxWidth: 300 }}
-              contentContainerStyle={{ justifyContent: "flex-start"}}>
+              <View style={{ backgroundColor: Colors.light.background.quinary, borderRadius: 8, padding: 12, width: "auto", height: "auto", maxWidth: 300 }}>
                 <TextBlock type={TextBlockTypeEnum.title}>{t('defineFilter')}</TextBlock>
-                <TextBlock type={TextBlockTypeEnum.body}>{t('selectUserType')}</TextBlock>
-                <View style={{ flexDirection: "row", gap: 8, justifyContent: "flex-start", width: "auto", height: "auto" }}>
-
+                <TextBlock type={TextBlockTypeEnum.title}>{t('selectDateInterval')}</TextBlock>
+                <Spacer variant="medium" />
+                <View style={{ flexDirection: "row", gap: 64, justifyContent: "flex-start", width: "auto", height: "auto" }}>
+                  <DateInput
+                    placeholder={t("startDate")}
+                    date={incidentStartDate}
+                    setDate={setIncidentStartDate}
+                    mode={"date"}
+                    onChange={() => setIsIncidentFilterModified(true)}
+                  />
+                  <DateInput
+                    placeholder={t("endDate")}
+                    date={incidentEndDate}
+                    setDate={setIncidentEndDate}
+                    mode={"date"}
+                    onChange={() => setIsIncidentFilterModified(true)}
+                  />
                 </View>
                   
                 <Spacer variant="large" />
@@ -659,7 +674,7 @@ export default function Map() {
                   variant={ButtonTypeEnum.secondary}
                   content={<TextBlock type={TextBlockTypeEnum.body}>{t("close")}</TextBlock>}
                   onPress={handleToggleIncidentFilter}/>
-              </ScrollView>
+              </View>
             )}
           </View>
         )}
@@ -761,6 +776,52 @@ export default function Map() {
                   <Spacer variant="medium" />
                   <TextBlock type={TextBlockTypeEnum.body}>{t("createdAt")}: {(currentOpenedReport as QuickReport).createdAt.toLocaleString(user?.localisation, {weekday: "short", year: "numeric", month: "long", day: "numeric",})}</TextBlock>
                   <Spacer variant="medium" />
+                  <Spacer variant="large" />
+                  <View style={{ flexDirection: "row", gap: 8, justifyContent: "flex-start", width: "auto", height: "auto" }}>
+                    {(currentOpenedReport as SafetyPerceptionReport).images.map((image, index) => (
+                      <Image
+                        key={index}
+                        source={{ uri: image }}
+                        style={{ width: 150, height: 150, borderRadius: 8, marginBottom: 8 }}
+                      />
+                    ))}
+                  </View>
+                </View>
+              )}
+
+              {currentOpenedReport.reportType === ReportType.Incident && (
+                <View>
+                  <TextBlock type={TextBlockTypeEnum.h4} style={{fontWeight: '700'}}>{t("incidentReport")}</TextBlock>
+                  <Spacer variant="medium" />
+                  <Spacer variant="large" />
+                  <TextBlock type={TextBlockTypeEnum.body}>{t("incidentType")}: {(currentOpenedReport as IncidentReport).incidentType}</TextBlock>
+                  <Spacer variant="medium" />
+                  <TextBlock type={TextBlockTypeEnum.body}>{t("createdAt")}: {(currentOpenedReport as IncidentReport).createdAt.toLocaleString(user?.localisation, {weekday: "short", year: "numeric", month: "long", day: "numeric",})}</TextBlock>
+                  <Spacer variant="medium" />
+                  {(currentOpenedReport as IncidentReport).incidentType == IncidentType.Crash && (
+                    <>
+                      <TextBlock type={TextBlockTypeEnum.body}>{t("incidentTypeData")}: {(currentOpenedReport as IncidentReport).incidentTypeData?.severity}</TextBlock>
+                      <Spacer variant="medium" />
+                      <TextBlock type={TextBlockTypeEnum.body}>{t("incidentTypeData")}: {((currentOpenedReport as IncidentReport).incidentTypeData as IncidentCrashData)?.count.map((item) => `${item.type}: ${item.number}`).join(",\n ")}</TextBlock>
+                      <Spacer variant="medium" />
+                    </>
+                  )}
+                  {(currentOpenedReport as IncidentReport).incidentType == IncidentType.Infrastructure && (
+                    <>
+                      <TextBlock type={TextBlockTypeEnum.body}>{t("incidentTypeData")}: {(currentOpenedReport as IncidentReport).incidentTypeData?.severity}</TextBlock>
+                      <Spacer variant="medium" />
+                      <TextBlock type={TextBlockTypeEnum.body}>{t("incidentTypeData")}: {((currentOpenedReport as IncidentReport).incidentTypeData as IncidentInfrastructureData)?.reasons.join(",\n ")}</TextBlock>
+                      <Spacer variant="medium" />
+                    </>
+                  )}
+                  {(currentOpenedReport as IncidentReport).incidentType == IncidentType.Equipment && (
+                    <>
+                      <TextBlock type={TextBlockTypeEnum.body}>{t("incidentTypeData")}: {(currentOpenedReport as IncidentReport).incidentTypeData?.severity}</TextBlock>
+                      <Spacer variant="medium" />
+                      <TextBlock type={TextBlockTypeEnum.body}>{t("incidentTypeData")}: {((currentOpenedReport as IncidentReport).incidentTypeData as IncidentEquipmentData)?.reasons.join(",\n ")}</TextBlock>
+                      <Spacer variant="medium" />
+                    </>
+                  )}
                   <Spacer variant="large" />
                   <View style={{ flexDirection: "row", gap: 8, justifyContent: "flex-start", width: "auto", height: "auto" }}>
                     {(currentOpenedReport as SafetyPerceptionReport).images.map((image, index) => (
