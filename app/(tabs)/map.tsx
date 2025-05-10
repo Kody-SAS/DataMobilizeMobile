@@ -828,6 +828,8 @@ export default function Map() {
                   <Spacer variant="medium" />
                   <TextBlock type={TextBlockTypeEnum.body}>{t("roadType")}: {(currentOpenedReport as SafetyPerceptionReport).roadType}</TextBlock>
                   <Spacer variant="medium" />
+                  <TextBlock type={TextBlockTypeEnum.body}>{t("comment")}: {(currentOpenedReport as SafetyPerceptionReport).comment}</TextBlock>
+                  <Spacer variant="medium" />
                   <Spacer variant="large" />
                   <View style={{ flexDirection: "row", gap: 8, justifyContent: "flex-start", width: "auto", height: "auto" }}>
                     {(currentOpenedReport as SafetyPerceptionReport).images.map((image, index) => (
@@ -855,6 +857,8 @@ export default function Map() {
                   <TextBlock type={TextBlockTypeEnum.body}>{t("severityLevel")}: {(currentOpenedReport as QuickReport).severityLevel}</TextBlock>
                   <Spacer variant="medium" />
                   <TextBlock type={TextBlockTypeEnum.body}>{t("createdAt")}: {(currentOpenedReport as QuickReport).createdAt.toLocaleString(user?.localisation, {weekday: "short", year: "numeric", month: "long", day: "numeric",})}</TextBlock>
+                  <Spacer variant="medium" />
+                  <TextBlock type={TextBlockTypeEnum.body}>{t("comment")}: {(currentOpenedReport as QuickReport).comment}</TextBlock>
                   <Spacer variant="medium" />
                   <Spacer variant="large" />
                   <View style={{ flexDirection: "row", gap: 8, justifyContent: "flex-start", width: "auto", height: "auto" }}>
@@ -902,6 +906,10 @@ export default function Map() {
                       <Spacer variant="medium" />
                     </>
                   )}
+                  <Spacer variant="medium" />
+                  <TextBlock type={TextBlockTypeEnum.body}>{t("incidentDescription")}: {(currentOpenedReport as IncidentReport).description}</TextBlock>
+                  <Spacer variant="medium" />
+                  <TextBlock type={TextBlockTypeEnum.body}>{t("comment")}: {(currentOpenedReport as IncidentReport).comment}</TextBlock>
                   <Spacer variant="large" />
                   <View style={{ flexDirection: "row", gap: 8, justifyContent: "flex-start", width: "auto", height: "auto" }}>
                     {(currentOpenedReport as SafetyPerceptionReport).images.map((image, index) => (

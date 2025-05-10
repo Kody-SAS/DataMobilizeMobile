@@ -91,7 +91,7 @@
     "unsafe": "Unsafe",
     "veryUnsafe": "Very unsafe",
     "whyDidYouChooseThisLevel": "Why did you choose this safety level ?",
-    "additionalComments": "Additional comment",
+    "additionalComments": "Additional comments",
     "deleteMessageRequest": "Are you about to remove the image from the report.",
     "cancel": "Cancel",
     "delete": "Delete",
@@ -134,6 +134,9 @@
     "selectConditionType": "Select the reported condition",
     "conditionType": "Condition type",
     "conditionDescription": "Condition state",
-    "severityLevel": "Level of severity"
+    "severityLevel": "Level of severity",
+    "addIncidentDescription": "Add a description of the incident",
+    "incidentDescription": "Incident description",
+    "descriptionPlaceholder": "Describe the incident"
   }
 }

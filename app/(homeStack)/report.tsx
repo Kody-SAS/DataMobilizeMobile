@@ -867,7 +867,7 @@ export default function Report() {
                     {/* Incident description section */}
                     <View>
                         <TextBlock type={TextBlockTypeEnum.title}>
-                            {t("incidentDescription")}
+                            {t("addIncidentDescription")}
                         </TextBlock>
                         <Spacer variant="medium" />
                         <TextInput
