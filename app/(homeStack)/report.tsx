@@ -45,6 +45,8 @@ export default function Report() {
     const [incidentCrashSeverity, setIncidentCrashSeverity] = useState<string>();
     const [infrastructureIncidentReasons, setInfrastructureIncidentReasons] = useState<string[]>([]);
     const [equipmentIncidentReasons, setEquipmentIncidentReasons] = useState<string[]>([]);
+    const [incidentDescription, setIncidentDescription] = useState<string>("");
+    const [comment, setComment] = useState<string>("");
 
     const {type} = useLocalSearchParams();
     const {t} = useTranslation();
@@ -382,6 +384,7 @@ export default function Report() {
                         safetyLevel: safety as SafetyLevel,
                         reportType: ReportType.SafetyPerception,
                         reasons: safetyReasons,
+                        comment: comment,
                         images: reportImages
                     }
 
@@ -410,6 +413,7 @@ export default function Report() {
                         conditionDescription: conditionItem,
                         severityLevel: severity as SeverityLevel,
                         reportType: ReportType.SafetyPerception,
+                        comment: comment,
                         images: reportImages
                     }
 
@@ -436,7 +440,8 @@ export default function Report() {
                         roadType: roadType?.data.type as RoadType,
                         incidentType: incidentType as IncidentType,
                         reportType: ReportType.Incident,
-                        description: "",
+                        description: incidentDescription,
+                        comment: comment,
                         images: reportImages
                     }
 
@@ -857,6 +862,28 @@ export default function Report() {
                 </Modal>
             </Portal>
 
+            {(type == ReportType.Incident.toString()) && (
+                <>
+                    {/* Incident description section */}
+                    <View>
+                        <TextBlock type={TextBlockTypeEnum.title}>
+                            {t("incidentDescription")}
+                        </TextBlock>
+                        <Spacer variant="medium" />
+                        <TextInput
+                            value={incidentDescription}
+                            onChangeText={setIncidentDescription}
+                            multiline
+                            maxLength={250}
+                            style={{backgroundColor: Colors.light.background.secondary, padding: 8, borderRadius: 8}}
+                            placeholder={t("descriptionPlaceholder")}
+                        />
+                    </View>
+                    <Spacer variant="large" />
+                    <Spacer variant="medium" />
+                </>
+            )}
+
             {(type == ReportType.SafetyPerception.toString() || type == ReportType.Quick.toString() || type == ReportType.Incident.toString()) && (
                 <>
                     {/* Comment section */}
@@ -866,6 +893,8 @@ export default function Report() {
                         </TextBlock>
                         <Spacer variant="medium" />
                         <TextInput
+                            value={comment}
+                            onChangeText={setComment}
                             multiline
                             maxLength={250}
                             style={{backgroundColor: Colors.light.background.secondary, padding: 8, borderRadius: 8}}
