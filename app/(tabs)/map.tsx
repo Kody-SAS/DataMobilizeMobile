@@ -705,7 +705,7 @@ export default function Map() {
               <MaterialIcons name="error-outline" size={24} color={isIncidentFilterVisible ? "white" : "black"} />
             </TouchableOpacity>
             {isIncidentFilterVisible && ( 
-              <View style={{ backgroundColor: Colors.light.background.quinary, borderRadius: 8, padding: 12, width: "auto", height: "auto", maxWidth: 300 }}>
+              <View style={{ backgroundColor: Colors.light.background.quinary, borderRadius: 8, padding: 12, bottom: 100, width: "auto", height: "auto", maxWidth: 300 }}>
                 <TextBlock type={TextBlockTypeEnum.title}>{t('defineFilter')}</TextBlock>
                 <TextBlock type={TextBlockTypeEnum.title}>{t('selectDateInterval')}</TextBlock>
                 <Spacer variant="medium" />
@@ -750,10 +750,17 @@ export default function Map() {
                   ))}
                 </View>
                 <Spacer variant="large" />
-                <ButtonAction
-                  variant={ButtonTypeEnum.secondary}
-                  content={<TextBlock type={TextBlockTypeEnum.body}>{t("close")}</TextBlock>}
-                  onPress={handleIncidentFilter}/>
+                <View style={{ flexDirection: "row", justifyContent: "space-between" }}>
+                  <ButtonAction
+                    variant={ButtonTypeEnum.secondary}
+                    content={<TextBlock type={TextBlockTypeEnum.body} style={{paddingHorizontal: 30, paddingVertical: 4}}>{t("close")}</TextBlock>}
+                    onPress={handleToggleIncidentFilter}/>
+                  <ButtonAction
+                    variant={ButtonTypeEnum.primary}
+                    content={<TextBlock type={TextBlockTypeEnum.body} style={{color: "white", paddingHorizontal: 30, paddingVertical: 4}}>{t("apply")}</TextBlock>}
+                    disabled={!isIncidentFilterModified}
+                    onPress={handleIncidentFilter}/>
+                </View>
               </View>
             )}
           </View>

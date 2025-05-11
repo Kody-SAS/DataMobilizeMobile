@@ -301,8 +301,8 @@ export default function Report() {
     }
 
     const handleAvailableIncidentResponseSelection = (value: string) => {
-        if (!availableIncidentResponse) setIsIncidentResponseModalVisible(true);
-        setAvailableIncidentResponse(!availableIncidentResponse);
+        setAvailableIncidentResponse(old => !old);
+        if (value == "yes") setIsIncidentResponseModalVisible(true);
     }
 
     const handleIncidentResponseTypeSelection = (value: string) => {
@@ -901,8 +901,6 @@ export default function Report() {
                                     onPress={() => handleIncidentResponseTypeSelection(item)}
                                     status={incidentResponseTypes.includes(item) ? "checked" : "unchecked"} />
                             ))}
-                            <Spacer variant="large" />
-                            <Spacer variant="medium" />
                         </View>
                         <Spacer variant="medium" />
                         <View>
@@ -918,27 +916,8 @@ export default function Report() {
                                     <RadioButton.Item label={t("moreThan60Minutes")} value={IncidentResponseTime.MoreThan60Minutes} />
                                 </View>
                             </RadioButton.Group>
-                            <Spacer variant="large" />
-                            <Spacer variant="medium" />
                         </View>
                         <Spacer variant="medium" />
-                        <View>
-                            <TextBlock type={TextBlockTypeEnum.title}>
-                                {t("incidentResponseTime")}
-                            </TextBlock>
-                           <RadioButton.Group 
-                                onValueChange={handleSeverityLevelSelection} 
-                                value={severity?.toString() ?? ""}>
-                                <View style={styles.safetyLevelContainer}>
-                                    <RadioButton.Item label={t("noRisk")} value={SeverityLevel.NoRisky} />
-                                    <RadioButton.Item label={t("risky")} value={SeverityLevel.Risky} />
-                                    <RadioButton.Item label={t("urgentRisk")} value={SeverityLevel.UrgentRisk} />
-                                </View>
-                            </RadioButton.Group>
-                            <Spacer variant="large" />
-                            <Spacer variant="medium" />
-                        </View>
-                        <Spacer variant="large" />
                         <ButtonAction
                             variant={ButtonTypeEnum.primary}
                             onPress={() => setIsIncidentResponseModalVisible(false)}
@@ -983,7 +962,7 @@ export default function Report() {
                     <Spacer variant="medium" />
                     <RadioButton.Group 
                         onValueChange={handleAvailableIncidentResponseSelection} 
-                        value={incidentType?.toString() ?? ""}>
+                        value={availableIncidentResponse ? "yes" : "no"}>
                         <View>
                             <RadioButton.Item label={t("yes")} value={"yes"} />
                             <RadioButton.Item label={t("no")} value={"no"} />
