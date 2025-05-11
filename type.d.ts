@@ -181,6 +181,20 @@ export type IncidentEquipmentData = {
     reasons: string[];
 }
 
+export enum IncidentResponseType {
+    Passerby = "Passerby",
+    Police = "Police",
+    FireFighters = "Firefighters",
+    Ambulance = "Ambulance",
+    Other = "Other"
+}
+
+export enum IncidentResponseTime {
+    LessThan10Minutes = "Less than 10 minutes",
+    Between10And60Minutes = "Between 10 and 60 minutes",
+    MoreThan60Minutes = "More than 60 minutes"
+}
+
 export type SafetyPerceptionReport =  {
     id?: string;
     userId: string;
@@ -224,6 +238,10 @@ export type IncidentReport = {
     incidentType: IncidentType;
     incidentTypeData?: IncidentCrashData | IncidentInfrastructureData | IncidentEquipmentData;
     description: string;
+    responseData?: {
+        responses: string[];
+        time: IncidentResponseTime;
+    };
     reportType: ReportType;
     comment?: string;
     images: string[];

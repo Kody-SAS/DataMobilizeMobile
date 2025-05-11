@@ -5,7 +5,7 @@ import { Colors } from "../../constants/Colors";
 import { useEffect, useState } from "react";
 import { requestForegroundPermissionsAsync } from "expo-location";
 import { useTranslation } from "react-i18next";
-import { ButtonTypeEnum, ConditionType, IncidentSeverity, IncidentReport, IncidentType, QuickReport, ReasonType, ReportType, RoadType, SafetyLevel, SafetyPerceptionReport, SeverityLevel, TextBlockTypeEnum, UserType } from "../../type.d";
+import { ButtonTypeEnum, ConditionType, IncidentSeverity, IncidentReport, IncidentType, QuickReport, ReasonType, ReportType, RoadType, SafetyLevel, SafetyPerceptionReport, SeverityLevel, TextBlockTypeEnum, UserType, IncidentResponseTime, IncidentResponseType } from "../../type.d";
 import { LocationCard } from "../../components/LocationCard";
 import { Spacer } from "../../components/Spacer";
 import { SelectedOption, SelectInput } from "../../components/SelectInput";
@@ -46,6 +46,10 @@ export default function Report() {
     const [infrastructureIncidentReasons, setInfrastructureIncidentReasons] = useState<string[]>([]);
     const [equipmentIncidentReasons, setEquipmentIncidentReasons] = useState<string[]>([]);
     const [incidentDescription, setIncidentDescription] = useState<string>("");
+    const [isIncidentResponseModalVisible, setIsIncidentResponseModalVisible] = useState<boolean>(false);
+    const [availableIncidentResponse, setAvailableIncidentResponse] = useState<boolean>(false);
+    const [incidentResponseTypes, setIncidentResponseTypes] = useState<string[]>([]);
+    const [incidentResponseTime, setIncidentResponseTime] = useState<string>("");
     const [comment, setComment] = useState<string>("");
 
     const {type} = useLocalSearchParams();
@@ -294,6 +298,26 @@ export default function Report() {
                 setEquipmentIncidentReasons(newList);
             }
         }
+    }
+
+    const handleAvailableIncidentResponseSelection = (value: string) => {
+        if (!availableIncidentResponse) setIsIncidentResponseModalVisible(true);
+        setAvailableIncidentResponse(!availableIncidentResponse);
+    }
+
+    const handleIncidentResponseTypeSelection = (value: string) => {
+        const existingResponseTypes = [...incidentResponseTypes];
+        if (!existingResponseTypes.includes(value)) {
+            setIncidentResponseTypes([...existingResponseTypes, value]);
+        }
+        else {
+            const newList = existingResponseTypes.filter(item => item != value);
+            setIncidentResponseTypes(newList);
+        }
+    }
+
+    const handleIncidentResponseTimeSelection = (value: string) => {
+        setIncidentResponseTime(value);
     }
 
     const handleSafetyReasonPressed = (e: GestureResponderEvent, type: ReasonType, selectedReason: string) => {
@@ -860,6 +884,72 @@ export default function Report() {
                         <Spacer variant="large" />
                     </ScrollView>
                 </Modal>
+
+                {/* Modal for the incident response type and response time */}
+                <Modal visible={isIncidentResponseModalVisible} dismissable={true}>
+                    <ScrollView style={styles.modalContentContainer}>
+                        <TextBlock type={TextBlockTypeEnum.h5}>{t("incidentResponse")}</TextBlock>
+                        <Spacer variant="medium" />
+                        <View>
+                            <TextBlock type={TextBlockTypeEnum.title}>
+                                {t("incidentResponseType")}
+                            </TextBlock>
+                            {Object.values(IncidentResponseType).map((item, index) => (
+                                <Checkbox.Item 
+                                    key={index}
+                                    label={item}
+                                    onPress={() => handleIncidentResponseTypeSelection(item)}
+                                    status={incidentResponseTypes.includes(item) ? "checked" : "unchecked"} />
+                            ))}
+                            <Spacer variant="large" />
+                            <Spacer variant="medium" />
+                        </View>
+                        <Spacer variant="medium" />
+                        <View>
+                            <TextBlock type={TextBlockTypeEnum.title}>
+                                {t("incidentResponseTime")}
+                            </TextBlock>
+                           <RadioButton.Group 
+                                onValueChange={handleIncidentResponseTimeSelection} 
+                                value={incidentResponseTime?.toString() ?? ""}>
+                                <View>
+                                    <RadioButton.Item label={t("lessThan10Minutes")} value={IncidentResponseTime.LessThan10Minutes} />
+                                    <RadioButton.Item label={t("between10And60Minutes")} value={IncidentResponseTime.Between10And60Minutes} />
+                                    <RadioButton.Item label={t("moreThan60Minutes")} value={IncidentResponseTime.MoreThan60Minutes} />
+                                </View>
+                            </RadioButton.Group>
+                            <Spacer variant="large" />
+                            <Spacer variant="medium" />
+                        </View>
+                        <Spacer variant="medium" />
+                        <View>
+                            <TextBlock type={TextBlockTypeEnum.title}>
+                                {t("incidentResponseTime")}
+                            </TextBlock>
+                           <RadioButton.Group 
+                                onValueChange={handleSeverityLevelSelection} 
+                                value={severity?.toString() ?? ""}>
+                                <View style={styles.safetyLevelContainer}>
+                                    <RadioButton.Item label={t("noRisk")} value={SeverityLevel.NoRisky} />
+                                    <RadioButton.Item label={t("risky")} value={SeverityLevel.Risky} />
+                                    <RadioButton.Item label={t("urgentRisk")} value={SeverityLevel.UrgentRisk} />
+                                </View>
+                            </RadioButton.Group>
+                            <Spacer variant="large" />
+                            <Spacer variant="medium" />
+                        </View>
+                        <Spacer variant="large" />
+                        <ButtonAction
+                            variant={ButtonTypeEnum.primary}
+                            onPress={() => setIsIncidentResponseModalVisible(false)}
+                            content={
+                                <TextBlock style={{color: "white"}}>OK</TextBlock>
+                            }/>
+                        <Spacer variant="large" />
+                        <Spacer variant="large" />
+                        <Spacer variant="large" />
+                    </ScrollView>
+                </Modal>
             </Portal>
 
             {(type == ReportType.Incident.toString()) && (
@@ -879,6 +969,26 @@ export default function Report() {
                             placeholder={t("descriptionPlaceholder")}
                         />
                     </View>
+                    <Spacer variant="large" />
+                    <Spacer variant="medium" />
+                </>
+            )}
+
+            {type == ReportType.Incident.toString() && (
+                <>
+                    {/* Choosing if the incident had an imediate response */}
+                    <TextBlock type={TextBlockTypeEnum.title}>
+                        {t("chooseIfThereWasAResponse")}
+                    </TextBlock>
+                    <Spacer variant="medium" />
+                    <RadioButton.Group 
+                        onValueChange={handleAvailableIncidentResponseSelection} 
+                        value={incidentType?.toString() ?? ""}>
+                        <View>
+                            <RadioButton.Item label={t("yes")} value={"yes"} />
+                            <RadioButton.Item label={t("no")} value={"no"} />
+                        </View>
+                    </RadioButton.Group>
                     <Spacer variant="large" />
                     <Spacer variant="medium" />
                 </>
