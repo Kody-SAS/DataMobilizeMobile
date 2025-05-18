@@ -606,9 +606,9 @@ export default function Report() {
                         onValueChange={handleSafetyLevelSelection} 
                         value={safety?.toString() ?? ""}>
                         <View style={styles.safetyLevelContainer}>
-                            <RadioButton.Item label={t("safe")} value={SafetyLevel.Safe} />
-                            <RadioButton.Item label={t("unsafe")} value={SafetyLevel.unSafe} />
-                            <RadioButton.Item label={t("veryUnsafe")} value={SafetyLevel.veryUnsafe} />
+                            <RadioButton.Item label={t("safe")} labelStyle={{fontSize: 12}} value={SafetyLevel.Safe} />
+                            <RadioButton.Item label={t("unsafe")} labelStyle={{fontSize: 12}} value={SafetyLevel.unSafe} />
+                            <RadioButton.Item label={t("veryUnsafe")} labelStyle={{fontSize: 12}} value={SafetyLevel.veryUnsafe} />
                         </View>
                     </RadioButton.Group>
                     <Spacer variant="large" />
@@ -622,9 +622,9 @@ export default function Report() {
                         onValueChange={handleSeverityLevelSelection} 
                         value={severity?.toString() ?? ""}>
                         <View style={styles.safetyLevelContainer}>
-                            <RadioButton.Item label={t("noRisk")} value={SeverityLevel.NoRisky} />
-                            <RadioButton.Item label={t("risky")} value={SeverityLevel.Risky} />
-                            <RadioButton.Item label={t("urgentRisk")} value={SeverityLevel.UrgentRisk} />
+                            <RadioButton.Item label={t("noRisk")} labelStyle={{fontSize: 12}} value={SeverityLevel.NoRisky} />
+                            <RadioButton.Item label={t("risky")} labelStyle={{fontSize: 12}} value={SeverityLevel.Risky} />
+                            <RadioButton.Item label={t("urgentRisk")} labelStyle={{fontSize: 12}} value={SeverityLevel.UrgentRisk} />
                         </View>
                     </RadioButton.Group>
                     <Spacer variant="large" />
@@ -643,9 +643,9 @@ export default function Report() {
                         onValueChange={handleIncidentTypeSelection} 
                         value={incidentType?.toString() ?? ""}>
                         <View>
-                            <RadioButton.Item label={t("crash")} value={IncidentType.Crash} />
-                            <RadioButton.Item label={t("equipment")} value={IncidentType.Equipment} />
-                            <RadioButton.Item label={t("infastructure")} value={IncidentType.Infrastructure} />
+                            <RadioButton.Item label={t("crash")} labelStyle={{fontSize: 12}} value={IncidentType.Crash} />
+                            <RadioButton.Item label={t("equipment")} labelStyle={{fontSize: 12}} value={IncidentType.Equipment} />
+                            <RadioButton.Item label={t("infastructure")} labelStyle={{fontSize: 12}} value={IncidentType.Infrastructure} />
                         </View>
                     </RadioButton.Group>
                     <Spacer variant="large" />
@@ -687,7 +687,7 @@ export default function Report() {
                                                                         <Checkbox.Item 
                                                                             key={reasonKey}
                                                                             label={reason}
-                                                                            labelStyle={{flexWrap: "wrap", marginBottom: 8}}
+                                                                            labelStyle={{flexWrap: "wrap", marginBottom: 8, fontSize: 12}}
                                                                             onPress={(e) => handleSafetyReasonPressed(e, level.type, reason)}
                                                                             status={safetyReasons.find(item => item.type == level.type)?.list.includes(reason) ? "checked" : "unchecked"} />
                                                                     ))}
@@ -733,6 +733,7 @@ export default function Report() {
                                                 <RadioButton.Item 
                                                     key={conditionKey}
                                                     label={condition}
+                                                    labelStyle={{fontSize: 12}}
                                                     value={condition}
                                                 />
                                             ))}
@@ -844,6 +845,7 @@ export default function Report() {
                                     <Checkbox.Item 
                                         key={index}
                                         label={item}
+                                        labelStyle={{fontSize: 12}}
                                         onPress={() => handleIncidentTypeReasonSelection(item)}
                                         status={infrastructureIncidentReasons.includes(item) ? "checked" : "unchecked"} />
                                 ))}
@@ -855,6 +857,7 @@ export default function Report() {
                                     <Checkbox.Item 
                                         key={index}
                                         label={item}
+                                        labelStyle={{fontSize: 12}}
                                         onPress={() => handleIncidentTypeReasonSelection(item)}
                                         status={equipmentIncidentReasons.includes(item) ? "checked" : "unchecked"} />
                                 ))}
@@ -865,10 +868,10 @@ export default function Report() {
                             onValueChange={handleIncidentCrashSeveritySelection} 
                             value={incidentCrashSeverity?.toString() ?? ""}>
                             <View>
-                                <RadioButton.Item label={t("fatal")} value={IncidentSeverity.Fatal} />
-                                <RadioButton.Item label={t("minorInjury")} value={IncidentSeverity.MinorInjury} />
-                                <RadioButton.Item label={t("seriousInjury")} value={IncidentSeverity.SeriousInjury} />
-                                <RadioButton.Item label={t("materialDamage")} value={IncidentSeverity.MaterialDamage} />
+                                <RadioButton.Item label={t("fatal")} labelStyle={{fontSize: 12}} value={IncidentSeverity.Fatal} />
+                                <RadioButton.Item label={t("minorInjury")} labelStyle={{fontSize: 12}} value={IncidentSeverity.MinorInjury} />
+                                <RadioButton.Item label={t("seriousInjury")} labelStyle={{fontSize: 12}} value={IncidentSeverity.SeriousInjury} />
+                                <RadioButton.Item label={t("materialDamage")} labelStyle={{fontSize: 12}} value={IncidentSeverity.MaterialDamage} />
                             </View>
                         </RadioButton.Group>
                         <Spacer variant="large" />
@@ -898,6 +901,7 @@ export default function Report() {
                                 <Checkbox.Item 
                                     key={index}
                                     label={item}
+                                    labelStyle={{fontSize: 12}}
                                     onPress={() => handleIncidentResponseTypeSelection(item)}
                                     status={incidentResponseTypes.includes(item) ? "checked" : "unchecked"} />
                             ))}
@@ -911,9 +915,9 @@ export default function Report() {
                                 onValueChange={handleIncidentResponseTimeSelection} 
                                 value={incidentResponseTime?.toString() ?? ""}>
                                 <View>
-                                    <RadioButton.Item label={t("lessThan10Minutes")} value={IncidentResponseTime.LessThan10Minutes} />
-                                    <RadioButton.Item label={t("between10And60Minutes")} value={IncidentResponseTime.Between10And60Minutes} />
-                                    <RadioButton.Item label={t("moreThan60Minutes")} value={IncidentResponseTime.MoreThan60Minutes} />
+                                    <RadioButton.Item label={t("lessThan10Minutes")} labelStyle={{fontSize: 12}} value={IncidentResponseTime.LessThan10Minutes} />
+                                    <RadioButton.Item label={t("between10And60Minutes")} labelStyle={{fontSize: 12}} value={IncidentResponseTime.Between10And60Minutes} />
+                                    <RadioButton.Item label={t("moreThan60Minutes")} labelStyle={{fontSize: 12}} value={IncidentResponseTime.MoreThan60Minutes} />
                                 </View>
                             </RadioButton.Group>
                         </View>
@@ -964,8 +968,8 @@ export default function Report() {
                         onValueChange={handleAvailableIncidentResponseSelection} 
                         value={availableIncidentResponse ? "yes" : "no"}>
                         <View>
-                            <RadioButton.Item label={t("yes")} value={"yes"} />
-                            <RadioButton.Item label={t("no")} value={"no"} />
+                            <RadioButton.Item label={t("yes")} labelStyle={{fontSize: 12}} value={"yes"} />
+                            <RadioButton.Item label={t("no")} labelStyle={{fontSize: 12}} value={"no"} />
                         </View>
                     </RadioButton.Group>
                     <Spacer variant="large" />
