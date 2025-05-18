@@ -837,6 +837,23 @@ export default function Map() {
               </View>
             </Marker>
         ))}
+        {isIncidentChecked && filteredIncidentReports.map((report, index) => (
+          <Marker
+            key={index}
+            coordinate={{
+              latitude: report.latitude,
+              longitude: report.longitude
+            }}
+            title={'Incident Report'}
+            description={report.comment}
+            onPress={() => handleMarkerReportPress(report)}>
+              <View style={{justifyContent: "center", alignItems: "center", backgroundColor: "white", borderRadius: 8}}>
+                {report.incidentType === IncidentType.Crash && <Image source={require("../../assets/images/incidentTypes/crash.png")} width={40} height={40} resizeMode='contain' />}
+                {report.incidentType === IncidentType.Equipment && <Image source={require("../../assets/images/incidentTypes/equipment.png")} width={40} height={40} resizeMode='contain' />}
+                {report.incidentType === IncidentType.Infrastructure && <Image source={require("../../assets/images/incidentTypes/infrastructure.png")} width={40} height={40} resizeMode='contain' />}
+              </View>
+            </Marker>
+        ))}
       </MapView>
       </View>
       <BottomSheetModal
