@@ -485,9 +485,9 @@ export default function Map() {
                   onValueChange={handleMapTypeSelection} 
                   value={mapType}>
                   <View>
-                    <RadioButton.Item label={t("satellite")} labelStyle={{fontSize: 12}} value={MAP_TYPES.SATELLITE} />
-                    <RadioButton.Item label={t("standard")} labelStyle={{fontSize: 12}} value={MAP_TYPES.STANDARD} />
-                    <RadioButton.Item label={t("terrain")} labelStyle={{fontSize: 12}} value={MAP_TYPES.TERRAIN} />
+                    <RadioButton.Item label={t("satellite")} labelStyle={{fontSize: 14}} value={MAP_TYPES.SATELLITE} />
+                    <RadioButton.Item label={t("standard")} labelStyle={{fontSize: 14}} value={MAP_TYPES.STANDARD} />
+                    <RadioButton.Item label={t("terrain")} labelStyle={{fontSize: 14}} value={MAP_TYPES.TERRAIN} />
                   </View>
               </RadioButton.Group>
             </View>
@@ -508,17 +508,17 @@ export default function Map() {
               <TextBlock type={TextBlockTypeEnum.title} style={{fontWeight: '700'}}>{t('selectReportToDisplay')}</TextBlock>
               <Checkbox.Item
                 label={t("safetyPerceptionReport")}
-                labelStyle={{fontSize: 12}}
+                labelStyle={{fontSize: 14}}
                 status={isSafetyChecked ? 'checked' : 'unchecked'}
                 onPress={() => setIsSafetyChecked(!isSafetyChecked)}/>
               <Checkbox.Item
                 label={t("quickReport")}
-                labelStyle={{fontSize: 12}}
+                labelStyle={{fontSize: 14}}
                 status={isQuickChecked ? 'checked' : 'unchecked'}
                 onPress={() => setIsQuickChecked(!isQuickChecked)}/>
               <Checkbox.Item
                 label={t("incidentReport")}
-                labelStyle={{fontSize: 12}}
+                labelStyle={{fontSize: 14}}
                 status={isIncidentChecked ? 'checked' : 'unchecked'}
                 onPress={() => setIsIncidentChecked(!isIncidentChecked)}/> 
               <ButtonAction
@@ -546,39 +546,39 @@ export default function Map() {
                 <View style={{ flexDirection: 'row', gap: 4, justifyContent: "space-between", width: "auto", height: "auto" }}>
                   <Checkbox.Item
                     label={t("pedestrian")}
-                    labelStyle={{fontSize: 12}}
+                    labelStyle={{fontSize: 14}}
                     position='leading'
                     status={isPedestrianSafetyChecked ? "checked" : 'unchecked'}
                     onPress={handleTogglePedestrianSafety}/>
                   <Checkbox.Item
                     label={t("cyclist")}
-                    labelStyle={{fontSize: 12}}
+                    labelStyle={{fontSize: 14}}
                     status={isCyclistSafetyChecked ? "checked" : 'unchecked'}
                     onPress={handleToggleCyclistSafety}/>
                 </View>
                 <View style={{ flexDirection: 'row', gap: 4, justifyContent: "space-between", width: "auto", height: "auto" }}>
                   <Checkbox.Item
                     label={t("motorcyclist")}
-                    labelStyle={{fontSize: 12}}
+                    labelStyle={{fontSize: 14}}
                     position='leading'
                     status={isMotorcyclistSafetyChecked ? "checked" : 'unchecked'}
                     onPress={handleToggleMotocyclistSafety}/>
                   <Checkbox.Item
                     label={t("car")}
-                    labelStyle={{fontSize: 12}}
+                    labelStyle={{fontSize: 14}}
                     status={isCarSafetyChecked ? "checked" : 'unchecked'}
                     onPress={handleToggleCarSafety}/>
                 </View>
                 <View style={{ flexDirection: 'row', gap: 4, justifyContent: "space-between", width: "auto", height: "auto" }}>
                   <Checkbox.Item
                     label={t("bus")}
-                    labelStyle={{fontSize: 12}}
+                    labelStyle={{fontSize: 14}}
                     position='leading'
                     status={isBusSafetyChecked ? "checked" : 'unchecked'}
                     onPress={handleToggleBusSafety}/>
                   <Checkbox.Item
                     label={t("truck")}
-                    labelStyle={{fontSize: 12}}
+                    labelStyle={{fontSize: 14}}
                     status={isTruckSafetyChecked ? "checked" : 'unchecked'}
                     onPress={handleToggleTruckSafety}/>
                 </View>
@@ -607,17 +607,17 @@ export default function Map() {
                 <View style={{ justifyContent: "flex-start", width: "auto", height: "auto" }}>
                   <Checkbox.Item 
                     label={t("safe")}
-                    labelStyle={{fontSize: 12}}
+                    labelStyle={{fontSize: 14}}
                     status={isSafeSafetyChecked ? "checked" : "unchecked"}
                     onPress={handleToggleSafeSafety} />
                   <Checkbox.Item 
                     label={t("unsafe")} 
-                    labelStyle={{fontSize: 12}}
+                    labelStyle={{fontSize: 14}}
                     status={isUnsafeSafetyChecked ? "checked" : "unchecked"}
                     onPress={handleToggleUnsafeSafety} />
                   <Checkbox.Item 
                     label={t("veryUnsafe")} 
-                    labelStyle={{fontSize: 12}}
+                    labelStyle={{fontSize: 14}}
                     status={isVeryUnsafeSafetyChecked ? "checked" : "unchecked"}
                     onPress={handleToggleVeryUnsafeSafety} />
                 </View>
@@ -675,7 +675,7 @@ export default function Map() {
                     <Checkbox.Item 
                       key={index}
                       label={severity.label}
-                      labelStyle={{fontSize: 12}}
+                      labelStyle={{fontSize: 14}}
                       status={severity.status}
                       onPress={(e) => handleToggleQuickSeverity(index)} />
                   ))}
@@ -687,7 +687,7 @@ export default function Map() {
                     <Checkbox.Item
                       key={index}
                       label={condition.label}
-                      labelStyle={{fontSize: 12}}
+                      labelStyle={{fontSize: 14}}
                       status={condition.status}
                       onPress={(e) => handleToggleQuickConditionIssue(index)}
                     />
@@ -746,7 +746,7 @@ export default function Map() {
                     <Checkbox.Item
                       key={index}
                       label={type.label}
-                      labelStyle={{fontSize: 12}}
+                      labelStyle={{fontSize: 14}}
                       status={type.status}
                       onPress={(e) => handleToggleIncidentType(index)}
                     />
@@ -759,7 +759,7 @@ export default function Map() {
                     <Checkbox.Item
                       key={index}
                       label={severity.label}
-                      labelStyle={{fontSize: 12}}
+                      labelStyle={{fontSize: 14}}
                       status={severity.status}
                       onPress={(e) => handleToggleIncidentSeverity(index)}
                     />

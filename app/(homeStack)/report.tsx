@@ -260,7 +260,6 @@ export default function Report() {
 
     const handleIncidentCrashSeveritySelection = (value: string) => {
         setIncidentCrashSeverity(value);
-        setIsIncidentTypeModalVisible(false);
     }
 
     const handleSeverityLevelSelection = (value: string) => {
@@ -606,9 +605,9 @@ export default function Report() {
                         onValueChange={handleSafetyLevelSelection} 
                         value={safety?.toString() ?? ""}>
                         <View style={styles.safetyLevelContainer}>
-                            <RadioButton.Item label={t("safe")} labelStyle={{fontSize: 12}} value={SafetyLevel.Safe} />
-                            <RadioButton.Item label={t("unsafe")} labelStyle={{fontSize: 12}} value={SafetyLevel.unSafe} />
-                            <RadioButton.Item label={t("veryUnsafe")} labelStyle={{fontSize: 12}} value={SafetyLevel.veryUnsafe} />
+                            <RadioButton.Item label={t("safe")} labelStyle={{fontSize: 14}} value={SafetyLevel.Safe} />
+                            <RadioButton.Item label={t("unsafe")} labelStyle={{fontSize: 14}} value={SafetyLevel.unSafe} />
+                            <RadioButton.Item label={t("veryUnsafe")} labelStyle={{fontSize: 14}} value={SafetyLevel.veryUnsafe} />
                         </View>
                     </RadioButton.Group>
                     <Spacer variant="large" />
@@ -622,9 +621,9 @@ export default function Report() {
                         onValueChange={handleSeverityLevelSelection} 
                         value={severity?.toString() ?? ""}>
                         <View style={styles.safetyLevelContainer}>
-                            <RadioButton.Item label={t("noRisk")} labelStyle={{fontSize: 12}} value={SeverityLevel.NoRisky} />
-                            <RadioButton.Item label={t("risky")} labelStyle={{fontSize: 12}} value={SeverityLevel.Risky} />
-                            <RadioButton.Item label={t("urgentRisk")} labelStyle={{fontSize: 12}} value={SeverityLevel.UrgentRisk} />
+                            <RadioButton.Item label={t("noRisk")} labelStyle={{fontSize: 14}} value={SeverityLevel.NoRisky} />
+                            <RadioButton.Item label={t("risky")} labelStyle={{fontSize: 14}} value={SeverityLevel.Risky} />
+                            <RadioButton.Item label={t("urgentRisk")} labelStyle={{fontSize: 14}} value={SeverityLevel.UrgentRisk} />
                         </View>
                     </RadioButton.Group>
                     <Spacer variant="large" />
@@ -643,9 +642,9 @@ export default function Report() {
                         onValueChange={handleIncidentTypeSelection} 
                         value={incidentType?.toString() ?? ""}>
                         <View>
-                            <RadioButton.Item label={t("crash")} labelStyle={{fontSize: 12}} value={IncidentType.Crash} />
-                            <RadioButton.Item label={t("equipment")} labelStyle={{fontSize: 12}} value={IncidentType.Equipment} />
-                            <RadioButton.Item label={t("infastructure")} labelStyle={{fontSize: 12}} value={IncidentType.Infrastructure} />
+                            <RadioButton.Item label={t("crash")} labelStyle={{fontSize: 14}} value={IncidentType.Crash} />
+                            <RadioButton.Item label={t("equipment")} labelStyle={{fontSize: 14}} value={IncidentType.Equipment} />
+                            <RadioButton.Item label={t("infastructure")} labelStyle={{fontSize: 14}} value={IncidentType.Infrastructure} />
                         </View>
                     </RadioButton.Group>
                     <Spacer variant="large" />
@@ -687,7 +686,7 @@ export default function Report() {
                                                                         <Checkbox.Item 
                                                                             key={reasonKey}
                                                                             label={reason}
-                                                                            labelStyle={{flexWrap: "wrap", marginBottom: 8, fontSize: 12}}
+                                                                            labelStyle={{flexWrap: "wrap", marginBottom: 8, fontSize: 14}}
                                                                             onPress={(e) => handleSafetyReasonPressed(e, level.type, reason)}
                                                                             status={safetyReasons.find(item => item.type == level.type)?.list.includes(reason) ? "checked" : "unchecked"} />
                                                                     ))}
@@ -733,7 +732,7 @@ export default function Report() {
                                                 <RadioButton.Item 
                                                     key={conditionKey}
                                                     label={condition}
-                                                    labelStyle={{fontSize: 12}}
+                                                    labelStyle={{fontSize: 14}}
                                                     value={condition}
                                                 />
                                             ))}
@@ -751,10 +750,10 @@ export default function Report() {
                     <ScrollView style={styles.modalContentContainer}>
                         {incidentType == IncidentType.Crash.toString() && (
                             <>
-                                <TextBlock type={TextBlockTypeEnum.h5} style={{fontWeight: '700'}}>{t("whyIncidentType")}: {incidentType} ?</TextBlock>
+                                <TextBlock type={TextBlockTypeEnum.h5} style={{fontWeight: '700'}}>{t("moreInformationAboutIncident")}</TextBlock>
                                 <Spacer variant="medium" />
                                 <View style={{flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center'}}>
-                                    <TextBlock type={TextBlockTypeEnum.title}>
+                                    <TextBlock type={TextBlockTypeEnum.body}>
                                         {t("incidentPedestrianNumber")}
                                     </TextBlock>
                                     <TextInput
@@ -766,7 +765,7 @@ export default function Report() {
                                 </View>
                                 <Spacer variant="large" />
                                 <View style={{flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center'}}>
-                                    <TextBlock type={TextBlockTypeEnum.title}>
+                                    <TextBlock type={TextBlockTypeEnum.body}>
                                         {t("incidentCyclistNumber")}
                                     </TextBlock>
                                     <TextInput
@@ -778,7 +777,7 @@ export default function Report() {
                                 </View>
                                 <Spacer variant="large" />
                                 <View style={{flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center'}}>
-                                    <TextBlock type={TextBlockTypeEnum.title}>
+                                    <TextBlock type={TextBlockTypeEnum.body}>
                                         {t("incidentMotocyclistNumber")}
                                     </TextBlock>
                                     <TextInput
@@ -790,7 +789,7 @@ export default function Report() {
                                 </View>
                                 <Spacer variant="large" />
                                 <View style={{flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center'}}>
-                                    <TextBlock type={TextBlockTypeEnum.title}>
+                                    <TextBlock type={TextBlockTypeEnum.body}>
                                         {t("incidentCarNumber")}
                                     </TextBlock>
                                     <TextInput
@@ -802,7 +801,7 @@ export default function Report() {
                                 </View>
                                 <Spacer variant="large" />
                                 <View style={{flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center'}}>
-                                    <TextBlock type={TextBlockTypeEnum.title}>
+                                    <TextBlock type={TextBlockTypeEnum.body}>
                                         {t("incidentTruckNumber")}
                                     </TextBlock>
                                     <TextInput
@@ -814,7 +813,7 @@ export default function Report() {
                                 </View>
                                 <Spacer variant="large" />
                                 <View style={{flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center'}}>
-                                    <TextBlock type={TextBlockTypeEnum.title}>
+                                    <TextBlock type={TextBlockTypeEnum.body}>
                                         {t("incidentBusNumber")}
                                     </TextBlock>
                                     <TextInput
@@ -825,42 +824,42 @@ export default function Report() {
                                     />
                                 </View>
                                 <Spacer variant="large" />
-                                <View style={{flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center'}}>
-                                    <TextBlock type={TextBlockTypeEnum.title}>
-                                        {t("incidentBusNumber")}
-                                    </TextBlock>
-                                    <TextInput
-                                        keyboardType="numeric"
-                                        value={incidentBusNumber?.toString()}
-                                        onChangeText={(text) => setIncidentBusNumber(parseInt(text ? text : "0"))}
-                                        style={{width: 90, height: 40, borderRadius: 8, backgroundColor: Colors.light.background.secondary, padding: 8}}
-                                    />
-                                </View>
                                 <Spacer variant="large" />
                             </>
                         )}
                         {incidentType == IncidentType.Infrastructure.toString() && (
                             <>
+                                <TextBlock type={TextBlockTypeEnum.h5} style={{fontWeight: '700'}}>{t("moreInformationAboutIncident")}</TextBlock>
+                                <Spacer variant="medium" />
+                                <TextBlock type={TextBlockTypeEnum.title}>{t("whatAreYourReporting")}</TextBlock>
+                                
                                 {infrastructureIncidentReasonsData.map((item, index) => (
                                     <Checkbox.Item 
                                         key={index}
                                         label={item}
-                                        labelStyle={{fontSize: 12}}
+                                        labelStyle={{fontSize: 14}}
                                         onPress={() => handleIncidentTypeReasonSelection(item)}
                                         status={infrastructureIncidentReasons.includes(item) ? "checked" : "unchecked"} />
                                 ))}
+                                <Spacer variant="large" />
                             </>
                         )}
                         {incidentType == IncidentType.Equipment.toString() && (
                             <>
+                                <TextBlock type={TextBlockTypeEnum.h5} style={{fontWeight: '700'}}>{t("moreInformationAboutIncident")}</TextBlock>
+                                <Spacer variant="medium" />
+                                <TextBlock type={TextBlockTypeEnum.title}>{t("whatAreYourReporting")}</TextBlock>
+
                                 {equipmentIncidentReasonsData.map((item, index) => (
                                     <Checkbox.Item 
                                         key={index}
                                         label={item}
-                                        labelStyle={{fontSize: 12}}
+                                        labelStyle={{fontSize: 14}}
                                         onPress={() => handleIncidentTypeReasonSelection(item)}
                                         status={equipmentIncidentReasons.includes(item) ? "checked" : "unchecked"} />
                                 ))}
+                                <Spacer variant="large" />
+
                             </>
                         )}
                         <TextBlock type={TextBlockTypeEnum.title}>{t("selectIncidentSeverity")}</TextBlock>
@@ -868,10 +867,10 @@ export default function Report() {
                             onValueChange={handleIncidentCrashSeveritySelection} 
                             value={incidentCrashSeverity?.toString() ?? ""}>
                             <View>
-                                <RadioButton.Item label={t("fatal")} labelStyle={{fontSize: 12}} value={IncidentSeverity.Fatal} />
-                                <RadioButton.Item label={t("minorInjury")} labelStyle={{fontSize: 12}} value={IncidentSeverity.MinorInjury} />
-                                <RadioButton.Item label={t("seriousInjury")} labelStyle={{fontSize: 12}} value={IncidentSeverity.SeriousInjury} />
-                                <RadioButton.Item label={t("materialDamage")} labelStyle={{fontSize: 12}} value={IncidentSeverity.MaterialDamage} />
+                                <RadioButton.Item label={t("fatal")} labelStyle={{fontSize: 14}} value={IncidentSeverity.Fatal} />
+                                <RadioButton.Item label={t("minorInjury")} labelStyle={{fontSize: 14}} value={IncidentSeverity.MinorInjury} />
+                                <RadioButton.Item label={t("seriousInjury")} labelStyle={{fontSize: 14}} value={IncidentSeverity.SeriousInjury} />
+                                <RadioButton.Item label={t("materialDamage")} labelStyle={{fontSize: 14}} value={IncidentSeverity.MaterialDamage} />
                             </View>
                         </RadioButton.Group>
                         <Spacer variant="large" />
@@ -901,7 +900,7 @@ export default function Report() {
                                 <Checkbox.Item 
                                     key={index}
                                     label={item}
-                                    labelStyle={{fontSize: 12}}
+                                    labelStyle={{fontSize: 14}}
                                     onPress={() => handleIncidentResponseTypeSelection(item)}
                                     status={incidentResponseTypes.includes(item) ? "checked" : "unchecked"} />
                             ))}
@@ -915,9 +914,9 @@ export default function Report() {
                                 onValueChange={handleIncidentResponseTimeSelection} 
                                 value={incidentResponseTime?.toString() ?? ""}>
                                 <View>
-                                    <RadioButton.Item label={t("lessThan10Minutes")} labelStyle={{fontSize: 12}} value={IncidentResponseTime.LessThan10Minutes} />
-                                    <RadioButton.Item label={t("between10And60Minutes")} labelStyle={{fontSize: 12}} value={IncidentResponseTime.Between10And60Minutes} />
-                                    <RadioButton.Item label={t("moreThan60Minutes")} labelStyle={{fontSize: 12}} value={IncidentResponseTime.MoreThan60Minutes} />
+                                    <RadioButton.Item label={t("lessThan10Minutes")} labelStyle={{fontSize: 14}} value={IncidentResponseTime.LessThan10Minutes} />
+                                    <RadioButton.Item label={t("between10And60Minutes")} labelStyle={{fontSize: 14}} value={IncidentResponseTime.Between10And60Minutes} />
+                                    <RadioButton.Item label={t("moreThan60Minutes")} labelStyle={{fontSize: 14}} value={IncidentResponseTime.MoreThan60Minutes} />
                                 </View>
                             </RadioButton.Group>
                         </View>
@@ -968,8 +967,8 @@ export default function Report() {
                         onValueChange={handleAvailableIncidentResponseSelection} 
                         value={availableIncidentResponse ? "yes" : "no"}>
                         <View>
-                            <RadioButton.Item label={t("yes")} labelStyle={{fontSize: 12}} value={"yes"} />
-                            <RadioButton.Item label={t("no")} labelStyle={{fontSize: 12}} value={"no"} />
+                            <RadioButton.Item label={t("yes")} labelStyle={{fontSize: 14}} value={"yes"} />
+                            <RadioButton.Item label={t("no")} labelStyle={{fontSize: 14}} value={"no"} />
                         </View>
                     </RadioButton.Group>
                     <Spacer variant="large" />
