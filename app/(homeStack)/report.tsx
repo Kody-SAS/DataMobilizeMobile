@@ -119,47 +119,47 @@ export default function Report() {
     const roadTypeData : SelectedOption[] = [
         {
             content: t("busStation"),
-            imageUrl: require("../../assets/images/intersection.png"),
+            imageUrl: require("../../assets/images/roadTypes/busStation.webp"),
             data: {type: RoadType.BusStation}
         },
         {
             content: t("busStop"),
-            imageUrl: require("../../assets/images/section.png"),
+            imageUrl: require("../../assets/images/roadTypes/busStop.webp"),
             data: {type: RoadType.BusStop}
         },
         {
             content: t("highway"),
-            imageUrl: require("../../assets/images/roundabout.png"),
+            imageUrl: require("../../assets/images/roadTypes/highway.png"),
             data: {type: RoadType.Highway}
         },
         {
             content: t("parkingLot"),
-            imageUrl: require("../../assets/images/straight.png"),
+            imageUrl: require("../../assets/images/roadTypes/parkingLot.webp"),
             data: {type: RoadType.ParkingLot}
         },
         {
             content: t("roundAbout"),
-            imageUrl: require("../../assets/images/turn.png"),
+            imageUrl: require("../../assets/images/roadTypes/roundabout.webp"),
             data: {type: RoadType.RoundAbout}
         },
         {
             content: t("ruralRoad"),
-            imageUrl: require("../../assets/images/turn.png"),
+            imageUrl: require("../../assets/images/roadTypes/ruralRoad.png"),
             data: {type: RoadType.RuralRoad}
         },
         {
             content: t("signalizedIntersection"),
-            imageUrl: require("../../assets/images/turn.png"),
+            imageUrl: require("../../assets/images/roadTypes/signalizedIntersection.jpg"),
             data: {type: RoadType.SignalizedIntersection}
         },
         {
             content: t("unsignalizedIntersection"),
-            imageUrl: require("../../assets/images/turn.png"),
+            imageUrl: require("../../assets/images/roadTypes/unsignalizedIntersection.png"),
             data: {type: RoadType.UnsignalizedIntersection}
         },
         {
             content: t("urbanRoad"),
-            imageUrl: require("../../assets/images/turn.png"),
+            imageUrl: require("../../assets/images/roadTypes/urbanRoad.png"),
             data: {type: RoadType.UrbanRoad}
         },
     ]
@@ -167,32 +167,32 @@ export default function Report() {
     const userTypeData : SelectedOption[] = [
         {
             content: t("pedestrian"),
-            imageUrl: require("../../assets/images/pedestrian.png"),
+            imageUrl: require("../../assets/images/userTypes/pedestrian.png"),
             data: {type: UserType.Pedestrian}
         },
         {
             content: t("cyclist"),
-            imageUrl: require("../../assets/images/cyclist.png"),
+            imageUrl: require("../../assets/images/userTypes/cyclist.png"),
             data: {type: UserType.Cyclist}
         },
         {
             content: t("motocyclist"),
-            imageUrl: require("../../assets/images/motocyclist.png"),
+            imageUrl: require("../../assets/images/userTypes/motocyclist.png"),
             data: {type: UserType.Motocyclist}
         },
         {
             content: t("car"),
-            imageUrl: require("../../assets/images/car.png"),
+            imageUrl: require("../../assets/images/userTypes/car.png"),
             data: {type: UserType.Car}
         },
         {
             content: t("truck"),
-            imageUrl: require("../../assets/images/truck.png"),
+            imageUrl: require("../../assets/images/userTypes/truck.png"),
             data: {type: UserType.Truck}
         },
         {
             content: t("bus"),
-            imageUrl: require("../../assets/images/bus.png"),
+            imageUrl: require("../../assets/images/userTypes/bus.png"),
             data: {type: UserType.Bus}
         },
     ]
