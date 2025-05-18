@@ -8,7 +8,7 @@ import { useNetInfo } from '@react-native-community/netinfo';
 import { useTranslation } from 'react-i18next';
 import { useDispatch, useSelector } from 'react-redux';
 import { ThunkDispatch } from '@reduxjs/toolkit';
-import { ButtonTypeEnum, IncidentCrashData, IncidentEquipmentData, IncidentInfrastructureData, IncidentReport, IncidentSeverity, IncidentType, QuickReport, ReportType, SafetyLevel, SafetyPerceptionReport, TextBlockTypeEnum, UserType } from '../../type.d';
+import { ButtonTypeEnum, ConditionType, IncidentCrashData, IncidentEquipmentData, IncidentInfrastructureData, IncidentReport, IncidentSeverity, IncidentType, QuickReport, ReportType, SafetyLevel, SafetyPerceptionReport, TextBlockTypeEnum, UserType } from '../../type.d';
 import { Checkbox, FAB, RadioButton, Searchbar } from 'react-native-paper';
 import MapView, { MAP_TYPES, Marker, PROVIDER_GOOGLE } from 'react-native-maps';
 import { Spacer } from '../../components/Spacer';
@@ -397,7 +397,7 @@ export default function Map() {
     }
   }
 
-  const handleMarkerSafetyPress = (report: SafetyPerceptionReport | QuickReport | IncidentReport) => {
+  const handleMarkerReportPress = (report: SafetyPerceptionReport | QuickReport | IncidentReport) => {
     setCurrentOpenedReport(report);
     bottomSheetModalRef.current?.present();
   }
@@ -799,7 +799,7 @@ export default function Map() {
             }}
             title={"Safety Report"}
             description={report.comment}
-            onPress={() => handleMarkerSafetyPress(report)}
+            onPress={() => handleMarkerReportPress(report)}
           >
             <View style={{justifyContent: "center", alignItems: "center", backgroundColor: "white", borderRadius: 8}}>
               {report.userType == UserType.Pedestrian && <MaterialCommunityIcons name="human" size={30} color={determineSafetyStyle(report.safetyLevel)} />}
@@ -810,6 +810,32 @@ export default function Map() {
               {report.userType == UserType.Truck && <MaterialCommunityIcons name="truck" size={30} color={determineSafetyStyle(report.safetyLevel)} />}
             </View>
           </Marker>
+        ))}
+        {isQuickChecked && filteredQuickReports.map((report, index) => (
+          <Marker
+            key={index}
+            coordinate={{
+              latitude: report.latitude,
+              longitude: report.longitude
+            }}
+            title={'Quick Report'}
+            description={report.comment}
+            onPress={() => handleMarkerReportPress(report)}>
+              <View style={{justifyContent: "center", alignItems: "center", backgroundColor: "white", borderRadius: 8}}>
+                {report.conditionType === ConditionType.BusStopAndStation && <Image source={require("../../assets/images/conditionTypes/busStopAndStation.png")} width={40} height={40} resizeMode='contain' />}
+                {report.conditionType === ConditionType.CrosswalksAndPedestrian && <Image source={require("../../assets/images/conditionTypes/crosswalksAndPedestrian.png")} width={40} height={40} resizeMode='contain' />}
+                {report.conditionType === ConditionType.DrainageIssues && <Image source={require("../../assets/images/conditionTypes/drainageIssues.png")} width={40} height={40} resizeMode='contain' />}
+                {report.conditionType === ConditionType.ParkingAreas && <Image source={require("../../assets/images/conditionTypes/parkingAreas.png")} width={40} height={40} resizeMode='contain' />}
+                {report.conditionType === ConditionType.PavementCondition && <Image source={require("../../assets/images/conditionTypes/pavementCondition.png")} width={40} height={40} resizeMode='contain' />}
+                {report.conditionType === ConditionType.RoadGeometry && <Image source={require("../../assets/images/conditionTypes/roadGeometry.png")} width={40} height={40} resizeMode='contain' />}
+                {report.conditionType === ConditionType.RoadSignage && <Image source={require("../../assets/images/conditionTypes/roadSignage.png")} width={40} height={40} resizeMode='contain' />}
+                {report.conditionType === ConditionType.RoadsideObstacles && <Image source={require("../../assets/images/conditionTypes/roadsideObstacles.png")} width={40} height={40} resizeMode='contain' />}
+                {report.conditionType === ConditionType.SidewalkCondition && <Image source={require("../../assets/images/conditionTypes/sidewalkCondition.png")} width={40} height={40} resizeMode='contain' />}
+                {report.conditionType === ConditionType.StreetLighting && <Image source={require("../../assets/images/conditionTypes/streetLighting.png")} width={40} height={40} resizeMode='contain' />}
+                {report.conditionType === ConditionType.TrafficControlDevices && <Image source={require("../../assets/images/conditionTypes/trafficControlDevices.png")} width={40} height={40} resizeMode='contain' />}
+                {report.conditionType === ConditionType.TrafficSigns && <Image source={require("../../assets/images/conditionTypes/trafficSigns.png")} width={40} height={40} resizeMode='contain' />}
+              </View>
+            </Marker>
         ))}
       </MapView>
       </View>
