@@ -52,6 +52,9 @@ export default function Report() {
     const [incidentResponseTypes, setIncidentResponseTypes] = useState<string[]>([]);
     const [incidentResponseTime, setIncidentResponseTime] = useState<string>("");
     const [comment, setComment] = useState<string>("");
+    const [auditRoadType, setAuditRoadType] = useState<string>();
+    const [segmentPath, setSegmentPath] = useState<{latitude: number, longitude: number}[]>();
+    const [junctionLocation, setJunctionLocation] = useState<{latitude: number, longitude: number}>();
 
     const {type} = useLocalSearchParams();
     const {t} = useTranslation();
