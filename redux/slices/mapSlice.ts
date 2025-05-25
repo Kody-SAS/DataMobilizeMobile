@@ -19,9 +19,17 @@ export const mapSlice = createSlice({
     initialState,
     reducers: {
         clearReports: (state, action) => {
-            const length = state.safetyPerceptionReports.length;
-            for(let i = 0; i < length; i++) {
+            const length1 = state.safetyPerceptionReports.length;
+            for(let i = 0; i < length1; i++) {
                 state.safetyPerceptionReports.pop();
+            }
+             const length2 = state.quickReports.length;
+            for(let i = 0; i < length2; i++) {
+                state.quickReports.pop();
+            }
+             const length3 = state.incidentReports.length;
+            for(let i = 0; i < length3; i++) {
+                state.incidentReports.pop();
             }
         },
         addSafetyPerceptionReport: (state, action) => {

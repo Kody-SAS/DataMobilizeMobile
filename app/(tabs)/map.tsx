@@ -8,7 +8,7 @@ import { useNetInfo } from '@react-native-community/netinfo';
 import { useTranslation } from 'react-i18next';
 import { useDispatch, useSelector } from 'react-redux';
 import { ThunkDispatch } from '@reduxjs/toolkit';
-import { ButtonTypeEnum, ConditionType, IncidentCrashData, IncidentEquipmentData, IncidentInfrastructureData, IncidentReport, IncidentSeverity, IncidentType, QuickReport, ReportType, SafetyLevel, SafetyPerceptionReport, TextBlockTypeEnum, UserType } from '../../type.d';
+import { ButtonTypeEnum, ConditionType, IncidentCrashData, IncidentEquipmentData, IncidentInfrastructureData, IncidentReport, IncidentSeverity, IncidentType, QuickReport, ReportType, SafetyLevel, SafetyPerceptionReport, SeverityLevel, TextBlockTypeEnum, UserType } from '../../type.d';
 import { Checkbox, FAB, RadioButton, Searchbar } from 'react-native-paper';
 import MapView, { MAP_TYPES, Marker, PROVIDER_GOOGLE } from 'react-native-maps';
 import { Spacer } from '../../components/Spacer';
@@ -31,7 +31,7 @@ const conditionIssues : {label: string, status: "checked" | "unchecked"}[] = con
   })
 )
 
-const severityOptions : {label: string, status: "checked" | "unchecked"}[] = Object.values(SafetyLevel).map((level, index) => ({
+const severityOptions : {label: string, status: "checked" | "unchecked"}[] = Object.values(SeverityLevel).map((level, index) => ({
   label: level,
   status: "checked"
 }));
@@ -321,7 +321,7 @@ export default function Map() {
 
     const filteredReports = quickReports.filter((report) => {
       const reportDate = new Date(report.createdAt);
-      const isDateInRange = reportDate >= safetyStartDate && reportDate <= safetyEndDate;
+      const isDateInRange = reportDate >= quickStartDate && reportDate <= quickEndDate;
       const isValidCondition = quickConditionIssues.some((condition, index) => {
         return condition.status === "checked" && report.conditionType == condition.label;
       });
@@ -404,8 +404,11 @@ export default function Map() {
 
 
   useEffect(() => {
-    // dispatch(clearReports(null)); // for development only
+    //dispatch(clearReports(null)); // for development only
     locateUser();
+    handleSafetyFilter();
+    handleQuickFilter();
+    handleIncidentFilter();
   }, []);
   
   return (
@@ -838,18 +841,18 @@ export default function Map() {
             description={report.comment}
             onPress={() => handleMarkerReportPress(report)}>
               <View style={{justifyContent: "center", alignItems: "center", backgroundColor: "white", borderRadius: 8}}>
-                {report.conditionType === ConditionType.BusStopAndStation && <Image source={require("../../assets/images/conditionTypes/busStopAndStation.png")} width={40} height={40} resizeMode='contain' />}
-                {report.conditionType === ConditionType.CrosswalksAndPedestrian && <Image source={require("../../assets/images/conditionTypes/crosswalksAndPedestrian.png")} width={40} height={40} resizeMode='contain' />}
-                {report.conditionType === ConditionType.DrainageIssues && <Image source={require("../../assets/images/conditionTypes/drainageIssues.png")} width={40} height={40} resizeMode='contain' />}
-                {report.conditionType === ConditionType.ParkingAreas && <Image source={require("../../assets/images/conditionTypes/parkingAreas.png")} width={40} height={40} resizeMode='contain' />}
-                {report.conditionType === ConditionType.PavementCondition && <Image source={require("../../assets/images/conditionTypes/pavementCondition.png")} width={40} height={40} resizeMode='contain' />}
-                {report.conditionType === ConditionType.RoadGeometry && <Image source={require("../../assets/images/conditionTypes/roadGeometry.png")} width={40} height={40} resizeMode='contain' />}
-                {report.conditionType === ConditionType.RoadSignage && <Image source={require("../../assets/images/conditionTypes/roadSignage.png")} width={40} height={40} resizeMode='contain' />}
-                {report.conditionType === ConditionType.RoadsideObstacles && <Image source={require("../../assets/images/conditionTypes/roadsideObstacles.png")} width={40} height={40} resizeMode='contain' />}
-                {report.conditionType === ConditionType.SidewalkCondition && <Image source={require("../../assets/images/conditionTypes/sidewalkCondition.png")} width={40} height={40} resizeMode='contain' />}
-                {report.conditionType === ConditionType.StreetLighting && <Image source={require("../../assets/images/conditionTypes/streetLighting.png")} width={40} height={40} resizeMode='contain' />}
-                {report.conditionType === ConditionType.TrafficControlDevices && <Image source={require("../../assets/images/conditionTypes/trafficControlDevices.png")} width={40} height={40} resizeMode='contain' />}
-                {report.conditionType === ConditionType.TrafficSigns && <Image source={require("../../assets/images/conditionTypes/trafficSigns.png")} width={40} height={40} resizeMode='contain' />}
+                {report.conditionType === ConditionType.BusStopAndStation && <Image source={require("../../assets/images/conditionTypes/busStopAndStation.png")} style={{width: 40, height: 40}} resizeMode='contain' resizeMethod="resize" />}
+                {report.conditionType === ConditionType.CrosswalksAndPedestrian && <Image source={require("../../assets/images/conditionTypes/crosswalksAndPedestrian.png")} style={{width: 40, height: 40}} resizeMode='contain' />}
+                {report.conditionType === ConditionType.DrainageIssues && <Image source={require("../../assets/images/conditionTypes/drainageIssues.png")} style={{width: 40, height: 40}} resizeMode='contain' />}
+                {report.conditionType === ConditionType.ParkingAreas && <Image source={require("../../assets/images/conditionTypes/parkingAreas.png")} style={{width: 40, height: 40}} resizeMode='contain' />}
+                {report.conditionType === ConditionType.PavementCondition && <Image source={require("../../assets/images/conditionTypes/pavementCondition.png")} style={{width: 40, height: 40}} resizeMode='contain' />}
+                {report.conditionType === ConditionType.RoadGeometry && <Image source={require("../../assets/images/conditionTypes/roadGeometry.png")} style={{width: 40, height: 40}} resizeMode='contain' />}
+                {report.conditionType === ConditionType.RoadSignage && <Image source={require("../../assets/images/conditionTypes/roadSignage.png")} style={{width: 40, height: 40}} resizeMode='contain' />}
+                {report.conditionType === ConditionType.RoadsideObstacles && <Image source={require("../../assets/images/conditionTypes/roadsideObstacles.png")} style={{width: 40, height: 40}} resizeMode='contain' />}
+                {report.conditionType === ConditionType.SidewalkCondition && <Image source={require("../../assets/images/conditionTypes/sidewalkCondition.png")} style={{width: 40, height: 40}} resizeMode='contain' />}
+                {report.conditionType === ConditionType.StreetLighting && <Image source={require("../../assets/images/conditionTypes/streetLighting.png")} style={{width: 40, height: 40}} resizeMode='contain' />}
+                {report.conditionType === ConditionType.TrafficControlDevices && <Image source={require("../../assets/images/conditionTypes/trafficControlDevices.png")} style={{width: 40, height: 40}} resizeMode='contain' />}
+                {report.conditionType === ConditionType.TrafficSigns && <Image source={require("../../assets/images/conditionTypes/trafficSigns.png")} style={{width: 40, height: 40}} resizeMode='contain' />}
               </View>
             </Marker>
         ))}
@@ -864,9 +867,9 @@ export default function Map() {
             description={report.comment}
             onPress={() => handleMarkerReportPress(report)}>
               <View style={{justifyContent: "center", alignItems: "center", backgroundColor: "white", borderRadius: 8}}>
-                {report.incidentType === IncidentType.Crash && <Image source={require("../../assets/images/incidentTypes/crash.png")} width={40} height={40} resizeMode='contain' />}
-                {report.incidentType === IncidentType.Equipment && <Image source={require("../../assets/images/incidentTypes/equipment.png")} width={40} height={40} resizeMode='contain' />}
-                {report.incidentType === IncidentType.Infrastructure && <Image source={require("../../assets/images/incidentTypes/infrastructure.png")} width={40} height={40} resizeMode='contain' />}
+                {report.incidentType === IncidentType.Crash && <Image source={require("../../assets/images/incidentTypes/crash.png")} style={{width: 40, height: 40}} resizeMode='contain' />}
+                {report.incidentType === IncidentType.Equipment && <Image source={require("../../assets/images/incidentTypes/equipment.png")} style={{width: 40, height: 40}} resizeMode='contain' />}
+                {report.incidentType === IncidentType.Infrastructure && <Image source={require("../../assets/images/incidentTypes/infrastructure.png")} style={{width: 40, height: 40}} resizeMode='contain' />}
               </View>
             </Marker>
         ))}
@@ -887,8 +890,6 @@ export default function Map() {
                   <TextBlock type={TextBlockTypeEnum.body}>{t("userType")}: {(currentOpenedReport as SafetyPerceptionReport).userType}</TextBlock>
                   <Spacer variant="medium" />
                   <TextBlock type={TextBlockTypeEnum.body}>{t("safetyLevel")}: {(currentOpenedReport as SafetyPerceptionReport).safetyLevel}</TextBlock>
-                  <Spacer variant="medium" />
-                  <TextBlock type={TextBlockTypeEnum.body}>{t("comment")}: {(currentOpenedReport as SafetyPerceptionReport).comment}</TextBlock>
                   <Spacer variant="medium" />
                   <TextBlock type={TextBlockTypeEnum.body}>{t("createdAt")}: {(currentOpenedReport as SafetyPerceptionReport).createdAt.toLocaleString(user?.localisation, {weekday: "short", year: "numeric", month: "long", day: "numeric",})}</TextBlock>
                   <Spacer variant="medium" />
@@ -928,7 +929,7 @@ export default function Map() {
                   <Spacer variant="medium" />
                   <Spacer variant="large" />
                   <View style={{ flexDirection: "row", gap: 8, justifyContent: "flex-start", width: "auto", height: "auto" }}>
-                    {(currentOpenedReport as SafetyPerceptionReport).images.map((image, index) => (
+                    {(currentOpenedReport as QuickReport).images.map((image, index) => (
                       <Image
                         key={index}
                         source={{ uri: image }}
@@ -978,7 +979,7 @@ export default function Map() {
                   <TextBlock type={TextBlockTypeEnum.body}>{t("comment")}: {(currentOpenedReport as IncidentReport).comment}</TextBlock>
                   <Spacer variant="large" />
                   <View style={{ flexDirection: "row", gap: 8, justifyContent: "flex-start", width: "auto", height: "auto" }}>
-                    {(currentOpenedReport as SafetyPerceptionReport).images.map((image, index) => (
+                    {(currentOpenedReport as IncidentReport).images.map((image, index) => (
                       <Image
                         key={index}
                         source={{ uri: image }}

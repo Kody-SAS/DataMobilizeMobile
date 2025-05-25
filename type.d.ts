@@ -111,6 +111,11 @@ export enum RoadType {
     BusStation = "Bus station"
 }
 
+export enum AuditRoadType {
+    RoadSegment = "Road Segment",
+    Junction = "Junction (Signalized Intersection, Unsignalized Intersection, Roundabout)"
+}
+
 export enum UserType {
     Pedestrian = "Pedestrian",
     Cyclist = "Cyclist",
@@ -195,6 +200,14 @@ export enum IncidentResponseTime {
     MoreThan60Minutes = "More than 60 minutes"
 }
 
+export enum WeatherCondition {
+    Clear = "Clear",
+    Cloudy = "Cloudy",
+    Rainy = "Rainy",
+    Foggy = "Foggy",
+    Other = "Other"
+}
+
 export type SafetyPerceptionReport =  {
     id?: string;
     userId: string;
@@ -245,4 +258,23 @@ export type IncidentReport = {
     reportType: ReportType;
     comment?: string;
     images: string[];
+}
+
+export type AuditReport = {
+    id?: string;
+    userId: string;
+    auditRoadType: AuditRoadType;
+    segmentPath?: [
+        {
+            latitude: number;
+            longitude: number;
+        }
+    ];
+    junctionLocation?: {
+        latitude: number;
+        longitude: number;
+    },
+    author: string;
+    weatherCondition: WeatherCondition;
+    createdAt: Date;
 }

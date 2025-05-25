@@ -22,6 +22,7 @@ import { addSafetyPerceptionReport, addQuickReport } from "../../redux/slices/ma
 import { isValidReport } from "../../utils/Validation";
 
 export default function Report() {
+    const [auditLocation, setAuditLocation] = useState<string>("");
     const [roadType, setRoadType] = useState<SelectedOption>();
     const [conditionType, setConditionType] = useState<SelectedOption>();
     const [userType, setUserType] = useState<SelectedOption>();
@@ -435,7 +436,7 @@ export default function Report() {
                         conditionType: conditionType?.data.type as ConditionType,
                         conditionDescription: conditionItem,
                         severityLevel: severity as SeverityLevel,
-                        reportType: ReportType.SafetyPerception,
+                        reportType: ReportType.Quick,
                         comment: comment,
                         images: reportImages
                     }
@@ -539,6 +540,27 @@ export default function Report() {
             {(type == ReportType.SafetyPerception.toString() || type == ReportType.Quick.toString() || type == ReportType.Incident.toString()) && (
                 <>
                     <LocationCard />
+                    <Spacer variant="large" />
+                    <Spacer variant="medium" />
+                </>
+            )}
+
+            {(type == ReportType.Audit.toString()) && (
+                <>
+                    {/* Audit location section */}
+                    <View>
+                        <TextBlock type={TextBlockTypeEnum.title}>
+                            {t("addAuditLocation")}
+                        </TextBlock>
+                        <Spacer variant="medium" />
+                        <TextInput
+                            value={auditLocation}
+                            onChangeText={setAuditLocation}
+                            maxLength={250}
+                            style={{backgroundColor: Colors.light.background.secondary, padding: 8, borderRadius: 8}}
+                            placeholder={t("locationPlaceholder")}
+                        />
+                    </View>
                     <Spacer variant="large" />
                     <Spacer variant="medium" />
                 </>

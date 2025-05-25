@@ -163,6 +163,10 @@
     "incidentResponseTime": "How long did it take for the response take to arrive at the incident ?",
     "lessThan10Minutes": "Less than 10 minutes",
     "between10And60Minutes": "Between 10 and 60 Minutes",
-    "moreThan60Minutes": "More than 60 minutes"
+    "moreThan60Minutes": "More than 60 minutes",
+    "selectSeverityLevel": "Select the severity level",
+    "selectIncidentType": "Select the incident type",
+    "addAuditLocation": "Add the audit location",
+    "locationPlaceholder": "Enter the location"
   }
 }

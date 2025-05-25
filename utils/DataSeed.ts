@@ -729,3 +729,689 @@ export const equipmentIncidentReasonsData : string[] = [
     "Broken traffic lights",
     "Damaged barriers or fences"
 ]
+
+export const auditSegmentQuestionData: {type: UserType, questions: {question: string, answers: string[]}[]}[] = [
+    {
+        type: UserType.Pedestrian,
+        questions: [
+            {
+                question: "Are sidewalks present on both sides?",
+                answers: [
+                    "Yes, both sides",
+                    "One side only",
+                    "No sidewalks"
+                ]
+            },
+            {
+                question: "What is the condition of the sidewalk?",
+                answers: [
+                    "Smooth, well-maintained",
+                    "Minor cracks or obstructions",
+                    "Heavily damaged or obstructed"
+                ]
+            },
+            {
+                question: "What is the width of the sidewalk?",
+                answers: [
+                    ">2m",
+                    "1-2m",
+                    "Less than 1m or No sidewalk"
+                ]
+            },
+            {
+                question: "Is the street lighting sufficient for pedestrians?",
+                answers: [
+                    "Bright",
+                    "Dim",
+                    "No lighting"
+                ]
+            },
+            {
+                question: "Are pedestrian crossings available within 100m?",
+                answers: [
+                    "Yes, well-marked",
+                    "Present but faded",
+                    "No crossings"
+                ]
+            },
+            {
+                question: "Are pedestrian barriers (railings, bollards) present where needed?",
+                answers: [
+                    "Yes",
+                    "Some barriers missing",
+                    "No barriers"
+                ]
+            },
+            {
+                question: "Are road signs for pedestrians visible?",
+                answers: [
+                    "Clear & visible",
+                    "Some missing",
+                    "No signs"
+                ]
+            },
+            {
+                question: "Are there obstructions on the sidewalk (parked cars, vendors, etc.)?",
+                answers: [
+                    "No obstructions",
+                    "Some obstructions",
+                    "Many obstructions"
+                ]
+            },
+            {
+                question: "Is the road speed controlled (e.g., speed bumps, narrowing)?",
+                answers: [
+                    "Yes",
+                    "Some measures",
+                    "No speed control"
+                ]
+            },
+            {
+                question: "What is the observed vehicle speed in the segment?",
+                answers: [
+                    "<30 km/h",
+                    "30-50 km/h",
+                    ">50 km/h"
+                ]
+            }
+        ]
+    },
+    {
+        type: UserType.Cyclist,
+        questions: [
+            {
+                question: "Is there a dedicated cycle lane?",
+                answers: [
+                    "Yes, exclusive",
+                    "Shared lane with vehicles",
+                    "No cycle lane"
+                ]
+            },
+            {
+                question: "Is the cycle lane physically separated from motor vehicles?",
+                answers: [
+                    "Physically separated",
+                    "Painted only",
+                    "No separation"
+                ]
+            },
+            {
+                question: "What is the width of the cycle lane?",
+                answers: [
+                    ">2m",
+                    "1-2m",
+                    "Less than 1m or No lane"
+                ]
+            },
+            {
+                question: "What is the condition of the cycle lane?",
+                answers: [
+                    "Smooth",
+                    "Some cracks",
+                    "Major potholes/obstacles"
+                ]
+            },
+            {
+                question: "Is the street lighting sufficient for cyclists?",
+                answers: [
+                    "Bright",
+                    "Dim",
+                    "No lighting"
+                ]
+            },
+            {
+                question: "What is the condition of the road surface for cyclists?",
+                answers: [
+                    "Smooth",
+                    "Some minor potholes",
+                    "Major potholes"
+                ]
+            },
+            {
+                question: "Are there road signs for cyclists?",
+                answers: [
+                    "Clear & visible",
+                    "Some missing",
+                    "No signs"
+                ]
+            },
+            {
+                question: "Are cycle lanes frequently obstructed (parked cars, barriers, debris)?",
+                answers: [
+                    "No obstructions",
+                    "Some obstructions",
+                    "Many obstructions"
+                ]
+            },
+            {
+                question: "Is the traffic volume low?",
+                answers: [
+                    "Low",
+                    "Moderate",
+                    "High"
+                ]
+            },
+            {
+                question: "Is there bicycle parking or safe storage?",
+                answers: [
+                    "Yes",
+                    "Limited parking",
+                    "No bicycle parking"
+                ]
+            }
+        ]
+    },
+    {
+        type: UserType.Motocyclist,
+        questions: [
+            {
+                question: "What is the condition of the road surface for motorcycles?",
+                answers: [
+                    "Smooth",
+                    "Some potholes",
+                    "Major potholes"
+                ]
+            },
+            {
+                question: "Are motorcycle lanes available?",
+                answers: [
+                    "Clearly marked",
+                    "Shared lanes",
+                    "No lanes"
+                ]
+            },
+            {
+                question: "Is street lighting sufficient for motorcyclists?",
+                answers: [
+                    "Bright",
+                    "Dim",
+                    "No lighting"
+                ]
+            },
+            {
+                question: "Are safe parking zones for motorcycles present?",
+                answers: [
+                    "Yes",
+                    "Informal parking",
+                    "No parking"
+                ]
+            },
+            {
+                question: "Is traffic volume low for motorcyclists?",
+                answers: [
+                    "Low",
+                    "Moderate",
+                    "High"
+                ]
+            },
+            {
+                question: "Are lane markings visible?",
+                answers: [
+                    "Clear",
+                    "Faded",
+                    "No markings"
+                ]
+            },
+            {
+                question: "Are speed control measures present?",
+                answers: [
+                    "Speed bumps, narrowing",
+                    "Some measures",
+                    "No speed control"
+                ]
+            },
+            {
+                question: "Are traffic signs visible for motorcyclists?",
+                answers: [
+                    "Clear & well-maintained",
+                    "Some unclear",
+                    "No signs"
+                ]
+            },
+            {
+                question: "Are there frequent road hazards (debris, potholes, oil spills, open ditches/gutters)?",
+                answers: [
+                    "No hazards",
+                    "Some minor hazards",
+                    "Many hazards"
+                ]
+            },
+            {
+                question: "Do motorcycles have a designated waiting area at signals?",
+                answers: [
+                    "Yes",
+                    "Partially marked",
+                    "No"
+                ]
+            }
+        ]
+    },
+    {
+        type: UserType.Car,
+        questions: [
+            {
+                question: "What is the road surface condition?",
+                answers: [
+                    "Smooth",
+                    "Some potholes",
+                    "Major potholes"
+                ]
+            },
+            {
+                question: "What is the road width per lane?",
+                answers: [
+                    ">2.4m",
+                    "1.5-2.4m",
+                    "<1.5m"
+                ]
+            },
+            {
+                question: "Are lane markings visible?",
+                answers: [
+                    "Clear",
+                    "Faded",
+                    "No markings"
+                ]
+            },
+            {
+                question: "Is street lighting sufficient?",
+                answers: [
+                    "Bright",
+                    "Dim",
+                    "No lighting"
+                ]
+            },
+            {
+                question: "Are parking areas clearly marked?",
+                answers: [
+                    "Yes",
+                    "Some markings",
+                    "No parking"
+                ]
+            },
+            {
+                question: "Is traffic volume low?",
+                answers: [
+                    "Low",
+                    "Moderate",
+                    "High"
+                ]
+            },
+            {
+                question: "Are traffic signs visible?",
+                answers: [
+                    "Clear",
+                    "Some unclear",
+                    "No signs"
+                ]
+            },
+            {
+                question: "Are speed control measures present?",
+                answers: [
+                    "Speed bumps, narrowing",
+                    "Some measures",
+                    "No speed control"
+                ]
+            },
+            {
+                question: "Are traffic lights present and working?",
+                answers: [
+                    "Yes",
+                    "Some not working",
+                    "No traffic lights"
+                ]
+            },
+            {
+                question: "Are road hazards frequent (fallen objects, potholes, debris)?",
+                answers: [
+                    "No hazards",
+                    "Some hazards",
+                    "Many hazards"
+                ]
+            }
+        ]
+    }
+];
+
+export const auditJunctionQuestionData: {type: UserType, questions: {question: string, answers: string[]}[]}[] = [
+    {
+        type: UserType.Pedestrian,
+        questions: [
+            {
+                question: "Are pedestrian crossings marked at all legs?",
+                answers: [
+                    "Marked & highly visible",
+                    "Marked but faded",
+                    "No crossings"
+                ]
+            },
+            {
+                question: "Are pedestrian signals present and working?",
+                answers: [
+                    "Yes, all signals work",
+                    "Some signals missing/not working",
+                    "No pedestrian signals"
+                ]
+            },
+            {
+                question: "Are pedestrian refuge islands provided at wide intersections?",
+                answers: [
+                    "Yes, all crossings have islands",
+                    "Some crossings have islands",
+                    "No pedestrian islands"
+                ]
+            },
+            {
+                question: "Is the waiting area for pedestrians safe and spacious?",
+                answers: [
+                    "Wide, safe & protected",
+                    "Narrow, limited space",
+                    "No dedicated pedestrian waiting area"
+                ]
+            },
+            {
+                question: "Is street lighting sufficient for pedestrians?",
+                answers: [
+                    "Bright",
+                    "Dim",
+                    "No lighting"
+                ]
+            },
+            {
+                question: "Are pedestrian barriers (railings) present where needed?",
+                answers: [
+                    "Yes",
+                    "Some barriers missing",
+                    "No barriers"
+                ]
+            },
+            {
+                question: "Is the pedestrian crossing distance short and safe?",
+                answers: [
+                    "<10m crossing distance",
+                    "10-15m crossing",
+                    ">15m crossing, long exposure to traffic"
+                ]
+            },
+            {
+                question: "Is there a pedestrian phase at the signal?",
+                answers: [
+                    "Dedicated pedestrian phase",
+                    "Shared with vehicles",
+                    "No pedestrian phase"
+                ]
+            },
+            {
+                question: "Is pedestrian traffic volume accommodated safely?",
+                answers: [
+                    "Plenty of space for pedestrians",
+                    "Moderate crowding",
+                    "Overcrowding, pedestrians forced onto the road"
+                ]
+            },
+            {
+                question: "Is traffic volume low, making crossing easy?",
+                answers: [
+                    "Low traffic",
+                    "Moderate traffic",
+                    "High traffic"
+                ]
+            }
+        ]
+    },
+    {
+        type: UserType.Cyclist,
+        questions: [
+            {
+                question: "Are bicycle lanes clearly marked through the intersection?",
+                answers: [
+                    "Clearly marked & continuous",
+                    "Partially marked",
+                    "No cycle lane markings"
+                ]
+            },
+            {
+                question: "Are there separate cycle waiting areas (bike boxes)?",
+                answers: [
+                    "Clearly marked bike boxes",
+                    "Some waiting areas but not dedicated",
+                    "No bike waiting area"
+                ]
+            },
+            {
+                question: "Is traffic speed controlled for cyclists?",
+                answers: [
+                    "Speed humps, signal timing adjustments",
+                    "Some speed management",
+                    "No speed control"
+                ]
+            },
+            {
+                question: "Is the cycle lane physically separated at the intersection?",
+                answers: [
+                    "Yes, full separation",
+                    "Painted only, no protection",
+                    "No separation, mixed with cars"
+                ]
+            },
+            {
+                question: "Is the cycle lane free of obstructions (parked cars, debris, etc.)?",
+                answers: [
+                    "No obstructions",
+                    "Some minor obstructions",
+                    "Many obstructions"
+                ]
+            },
+            {
+                question: "Are traffic signs for cyclists clear and visible?",
+                answers: [
+                    "Yes, well-placed",
+                    "Some signs missing",
+                    "No cyclist signs"
+                ]
+            },
+            {
+                question: "Are cycle lanes continuous on all legs of the intersection?",
+                answers: [
+                    "Yes",
+                    "Some missing sections",
+                    "No cycle lanes"
+                ]
+            },
+            {
+                question: "Is traffic volume at the intersection low for cyclists?",
+                answers: [
+                    "Low traffic",
+                    "Moderate traffic",
+                    "High traffic"
+                ]
+            },
+            {
+                question: "Are dedicated turn lanes provided for cyclists?",
+                answers: [
+                    "Yes",
+                    "Some turn lanes missing",
+                    "No cyclist turn lanes"
+                ]
+            },
+            {
+                question: "Are cyclists accommodated safely during red signals?",
+                answers: [
+                    "Separate cycle area at signals",
+                    "Shared with motor vehicles",
+                    "No dedicated space for cyclists"
+                ]
+            }
+        ]
+    },
+    {
+        type: UserType.Motocyclist,
+        questions: [
+            {
+                question: "Are lane markings clear and visible for motorcyclists?",
+                answers: [
+                    "Clear lane markings",
+                    "Faded but still visible",
+                    "No lane markings"
+                ]
+            },
+            {
+                question: "Are motorcycles given a designated waiting area at signals?",
+                answers: [
+                    "Clearly marked area",
+                    "Some waiting space but not clear",
+                    "No designated waiting area"
+                ]
+            },
+            {
+                question: "Are speed control measures present?",
+                answers: [
+                    "Speed bumps, enforcement",
+                    "Some measures present",
+                    "No speed control"
+                ]
+            },
+            {
+                question: "Are traffic signals visible and functioning for motorcyclists?",
+                answers: [
+                    "Clear & working",
+                    "Some signals not working",
+                    "No signals"
+                ]
+            },
+            {
+                question: "Are road signs relevant to motorcycles clear and visible?",
+                answers: [
+                    "Yes, well-maintained",
+                    "Some unclear signs",
+                    "No signs"
+                ]
+            },
+            {
+                question: "Are motorcycles protected from right-turning vehicles?",
+                answers: [
+                    "Yes, clear separation",
+                    "Partial separation",
+                    "No separation, risk of conflict"
+                ]
+            },
+            {
+                question: "Is motorcycle movement safely integrated with other vehicles?",
+                answers: [
+                    "Dedicated space for motorcycles",
+                    "Some shared lanes",
+                    "No clear space for motorcycles"
+                ]
+            },
+            {
+                question: "Is the road surface at the intersection in good condition?",
+                answers: [
+                    "Smooth, no potholes",
+                    "Some minor potholes",
+                    "Major potholes, uneven surface"
+                ]
+            },
+            {
+                question: "Are motorcyclists given priority at intersections (like advanced stop lines)?",
+                answers: [
+                    "Yes, well-marked",
+                    "Some areas available",
+                    "No motorcycle priority at signals"
+                ]
+            },
+            {
+                question: "Are there frequent conflicts between motorcycles and pedestrians/cars?",
+                answers: [
+                    "No conflicts",
+                    "Some minor conflicts",
+                    "Many unsafe conflicts"
+                ]
+            }
+        ]
+    },
+    {
+        type: UserType.Car,
+        questions: [
+            {
+                question: "Is the intersection well-marked with lane assignments?",
+                answers: [
+                    "Yes, clear lane assignments",
+                    "Some faded markings",
+                    "No lane markings"
+                ]
+            },
+            {
+                question: "Are traffic signals present and working?",
+                answers: [
+                    "Yes, fully functional",
+                    "Some not working",
+                    "No traffic signals"
+                ]
+            },
+            {
+                question: "Is the intersection clear of obstructions (billboards, parked cars)?",
+                answers: [
+                    "No obstructions",
+                    "Some obstructions",
+                    "Many obstructions"
+                ]
+            },
+            {
+                question: "Are speed control measures in place?",
+                answers: [
+                    "Speed bumps, cameras",
+                    "Some speed measures",
+                    "No speed control"
+                ]
+            },
+            {
+                question: "Is the intersection layout simple and easy to navigate?",
+                answers: [
+                    "Simple layout",
+                    "Some complex features",
+                    "Confusing layout"
+                ]
+            },
+            {
+                question: "Is the waiting time at the intersection reasonable?",
+                answers: [
+                    "Short wait time",
+                    "Moderate wait time",
+                    "Long wait time, congestion"
+                ]
+            },
+            {
+                question: "Is there dedicated turning space for vehicles?",
+                answers: [
+                    "Yes, clearly marked",
+                    "Some missing turn lanes",
+                    "No dedicated turning space"
+                ]
+            },
+            {
+                question: "Are roundabouts or signal timings efficient?",
+                answers: [
+                    "Well-timed and efficient",
+                    "Some delays",
+                    "Poor signal timing, congestion"
+                ]
+            },
+            {
+                question: "Are visibility conditions at the intersection good?",
+                answers: [
+                    "No blind spots",
+                    "Some minor visibility issues",
+                    "Poor visibility"
+                ]
+            },
+            {
+                question: "Are pedestrian and cyclist movements predictable and safe for car drivers?",
+                answers: [
+                    "Well-organized",
+                    "Some conflicts",
+                    "Many unpredictable movements"
+                ]
+            }
+        ]
+    }
+]
