@@ -84,6 +84,8 @@ export default function Report() {
     const [isQuestionaireAnswered, setIsQuestionaireAnswered] = useState<boolean>(false);
     const [roadSegmentAuditAnswers, setRoadSegmentAnswers] = useState(initialRoadSegmentAuditAnswers());
     const [junctionAuditAnswers, setJunctionAuditAnswers] = useState(initialJunctionAuditAnswers());
+    const [roadSegmentLocationImageUrl, setRoadSegmentLocationImageUrl] = useState<string>("");
+    const [junctionLocationImageUrl, setJunctionLocationImageUrl] = useState<string>("");
 
     const bottomSheetModalRef = useRef<BottomSheetModal>(null);
     const snapPoints = useMemo(() => ['70%', '95%'], []);
@@ -641,7 +643,7 @@ export default function Report() {
                     case UserType.Pedestrian: {
                         const existingAnswers = [...junctionAuditAnswers.pedestrian];
                         existingAnswers[questionIndex] = answer;
-                        setRoadSegmentAnswers({
+                        setJunctionAuditAnswers({
                             ...junctionAuditAnswers,
                             pedestrian: existingAnswers
                         });
@@ -650,7 +652,7 @@ export default function Report() {
                     case UserType.Cyclist: {
                         const existingAnswers = [...junctionAuditAnswers.cyclist];
                         existingAnswers[questionIndex] = answer;
-                        setRoadSegmentAnswers({
+                        setJunctionAuditAnswers({
                             ...roadSegmentAuditAnswers,
                             cyclist: existingAnswers
                         });
@@ -659,7 +661,7 @@ export default function Report() {
                     case UserType.Motocyclist: {
                         const existingAnswers = [...junctionAuditAnswers.motocyclist];
                         existingAnswers[questionIndex] = answer;
-                        setRoadSegmentAnswers({
+                        setJunctionAuditAnswers({
                             ...junctionAuditAnswers,
                             motocyclist: existingAnswers
                         });
@@ -668,7 +670,7 @@ export default function Report() {
                     case UserType.Car: {
                         const existingAnswers = [...junctionAuditAnswers.car];
                         existingAnswers[questionIndex] = answer;
-                        setRoadSegmentAnswers({
+                        setJunctionAuditAnswers({
                             ...junctionAuditAnswers,
                             car: existingAnswers
                         });
@@ -748,12 +750,32 @@ export default function Report() {
         };
 
         if(isValidReport(report, ReportType.Audit)) {
-            dispatch(addQuickReport(report));
+            const imageUrl = roadTypeConverted == AuditRoadType.RoadSegment ? roadSegmentLocationImageUrl : junctionLocationImageUrl;
             setReportError("");
-            router.back();
+            router.push({pathname: "/(homestack)/export", params: {report: JSON.stringify(report), locationUrl: imageUrl}})
         }
         else {
             setReportError(t("reportError"));
+        }
+    }
+
+    const handleCaptureLocationImage = (roadType: AuditRoadType) => {
+        switch(roadType) {
+            case AuditRoadType.RoadSegment: {
+                roadSegmentLocationRef.current?.capture()
+                .then(uri => {
+                    setRoadSegmentLocationImageUrl(uri);
+                });
+                break;
+            }
+            case AuditRoadType.Junction: {
+                junctionLocationRef.current?.capture()
+                .then(uri => {
+                    setJunctionLocationImageUrl(uri);
+                });
+                break;
+            }
+            default: break;
         }
     }
 
