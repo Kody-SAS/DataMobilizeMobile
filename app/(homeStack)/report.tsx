@@ -2,16 +2,16 @@ import { Alert, GestureResponderEvent, Image, Linking, ScrollView, StyleSheet, T
 import { TextBlock } from "../../components/TextBlock";
 import { router, useLocalSearchParams, useNavigation } from "expo-router";
 import { Colors } from "../../constants/Colors";
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { requestForegroundPermissionsAsync } from "expo-location";
 import { useTranslation } from "react-i18next";
-import { ButtonTypeEnum, ConditionType, IncidentSeverity, IncidentReport, IncidentType, QuickReport, ReasonType, ReportType, RoadType, SafetyLevel, SafetyPerceptionReport, SeverityLevel, TextBlockTypeEnum, UserType, IncidentResponseTime, IncidentResponseType } from "../../type.d";
+import { ButtonTypeEnum, ConditionType, IncidentSeverity, IncidentReport, IncidentType, QuickReport, ReasonType, ReportType, RoadType, SafetyLevel, SafetyPerceptionReport, SeverityLevel, TextBlockTypeEnum, UserType, IncidentResponseTime, IncidentResponseType, AuditRoadType, AuditReport, WeatherCondition } from "../../type.d";
 import { LocationCard } from "../../components/LocationCard";
 import { Spacer } from "../../components/Spacer";
 import { SelectedOption, SelectInput } from "../../components/SelectInput";
 import { DateInput } from "../../components/DateInput";
-import { Checkbox, Modal, PaperProvider, Portal, RadioButton, TextInput } from "react-native-paper";
-import { conditionListData, equipmentIncidentReasonsData, infrastructureIncidentReasonsData, safetyLevelReasons } from "../../utils/DataSeed";
+import { Checkbox, Modal, PaperProvider, Portal, ProgressBar, RadioButton, TextInput } from "react-native-paper";
+import { auditJunctionQuestionData, auditSegmentQuestionData, conditionListData, equipmentIncidentReasonsData, infrastructureIncidentReasonsData, safetyLevelReasons } from "../../utils/DataSeed";
 import * as ImagePicker from 'expo-image-picker';
 import { ButtonAction } from "../../components/ButtonAction";
 import * as Location from 'expo-location';
@@ -20,6 +20,30 @@ import { selectUser } from "../../redux/slices/accountSlice";
 import { ThunkDispatch } from "@reduxjs/toolkit";
 import { addSafetyPerceptionReport, addQuickReport } from "../../redux/slices/mapSlice";
 import { isValidReport } from "../../utils/Validation";
+import * as TaskManager from 'expo-task-manager';
+import ViewShot from "react-native-view-shot";
+import { GestureHandlerRootView } from "react-native-gesture-handler";
+import { BottomSheetModal, BottomSheetModalProvider, BottomSheetView } from "@gorhom/bottom-sheet";
+
+const LOCATION_TRACKING_TASK = "location-tracking";
+
+const initialRoadSegmentAuditAnswers = () => {
+    return {
+        pedestrian: Array.from({ length: auditSegmentQuestionData[0].questions.length }, () => ""),
+        cyclist: Array.from({ length: auditSegmentQuestionData[1].questions.length }, () => ""),
+        motocyclist: Array.from({ length: auditSegmentQuestionData[2].questions.length }, () => ""),
+        car: Array.from({ length: auditSegmentQuestionData[3].questions.length }, () => ""),
+    }
+}
+
+const initialJunctionAuditAnswers = () => {
+    return {
+        pedestrian: Array.from({ length: auditJunctionQuestionData[0].questions.length }, () => ""),
+        cyclist: Array.from({ length: auditJunctionQuestionData[1].questions.length }, () => ""),
+        motocyclist: Array.from({ length: auditJunctionQuestionData[2].questions.length }, () => ""),
+        car: Array.from({ length: auditJunctionQuestionData[3].questions.length }, () => ""),
+    }
+}
 
 export default function Report() {
     const [auditLocation, setAuditLocation] = useState<string>("");
@@ -53,14 +77,33 @@ export default function Report() {
     const [incidentResponseTime, setIncidentResponseTime] = useState<string>("");
     const [comment, setComment] = useState<string>("");
     const [auditRoadType, setAuditRoadType] = useState<string>();
-    const [segmentPath, setSegmentPath] = useState<{latitude: number, longitude: number}[]>();
-    const [junctionLocation, setJunctionLocation] = useState<{latitude: number, longitude: number}>();
+    const [segmentPath, setSegmentPath] = useState<{latitude: number, longitude: number}[]>([]);
+    const [authorName, setAuthorName] = useState<string>("");
+    const [weatherCondition, setWeatherCondition] = useState<string>("");
+    const [isLocationTrackStarted, setIsLocationTrackStarted] = useState<boolean>(false);
+    const [isQuestionaireAnswered, setIsQuestionaireAnswered] = useState<boolean>(false);
+    const [roadSegmentAuditAnswers, setRoadSegmentAnswers] = useState(initialRoadSegmentAuditAnswers());
+    const [junctionAuditAnswers, setJunctionAuditAnswers] = useState(initialJunctionAuditAnswers());
+
+    const bottomSheetModalRef = useRef<BottomSheetModal>(null);
+    const snapPoints = useMemo(() => ['70%', '95%'], []);
 
     const {type} = useLocalSearchParams();
     const {t} = useTranslation();
     const navigation = useNavigation();
     const user = useSelector(selectUser);
     const dispatch = useDispatch<ThunkDispatch<any, any, any>>();
+    const roadSegmentLocationRef = useRef<ViewShot | null>(null);
+    const junctionLocationRef = useRef<ViewShot | null>(null);
+
+    TaskManager.defineTask(LOCATION_TRACKING_TASK, async ({ data, error }: TaskManager.TaskManagerTaskBody<{ locations?: any[] }>) => {
+        if (error) {
+            return;
+        }
+        if (data && Array.isArray(data.locations)) {
+            console.log('Received new locations', data.locations);
+        }
+    });
 
     const canUserReport = async() => {
         const request = await requestForegroundPermissionsAsync();
@@ -323,6 +366,14 @@ export default function Report() {
         setIncidentResponseTime(value);
     }
 
+    const handleAuditRoadTypeSelection = (value: string) => {
+        setAuditRoadType(value);
+    }
+
+    const handleWeatherConditionSelection = (value: string) => {
+        setWeatherCondition(value);
+    }
+
     const handleSafetyReasonPressed = (e: GestureResponderEvent, type: ReasonType, selectedReason: string) => {
         let existingReasons = [...safetyReasons];
 
@@ -348,6 +399,23 @@ export default function Report() {
         if (notFoundReasons.length == 0) {
             setSafetyReasons([...existingReasons, {type: type, list: [selectedReason]}]);
         }
+    }
+
+    const handleStartLocationTracking = async () => {
+        setIsLocationTrackStarted(true);
+
+        await Location.startLocationUpdatesAsync(LOCATION_TRACKING_TASK, {
+            accuracy: Location.Accuracy.Balanced,
+            timeInterval: 5000, // Update every 5 seconds
+            distanceInterval: 5, // Update every 5 meters
+            showsBackgroundLocationIndicator: true,
+        });
+    }
+
+    const handleStopLocationTracking = async () => {
+        setIsLocationTrackStarted(false);
+        
+        await Location.stopLocationUpdatesAsync(LOCATION_TRACKING_TASK);
     }
 
     const handleAddImage = async () => {
@@ -514,13 +582,180 @@ export default function Report() {
                 break;
             }
             case ReportType.Audit.toString() : {
-                router.back();
                 break;
             }
             default: 
                 break;
         }
     };
+
+    const handleAnswerAuditQuestionaire = () => {
+        bottomSheetModalRef.current?.present();
+    }
+
+    const handleAuditAnswerSelection = (roadType: AuditRoadType, userType: UserType, questionIndex: number, answer: string) => {
+        switch(roadType) {
+            case AuditRoadType.RoadSegment: {
+                switch(userType) {
+                    case UserType.Pedestrian: {
+                        const existingAnswers = [...roadSegmentAuditAnswers.pedestrian];
+                        existingAnswers[questionIndex] = answer;
+                        setRoadSegmentAnswers({
+                            ...roadSegmentAuditAnswers,
+                            pedestrian: existingAnswers
+                        });
+                        break;
+                    }
+                    case UserType.Cyclist: {
+                        const existingAnswers = [...roadSegmentAuditAnswers.cyclist];
+                        existingAnswers[questionIndex] = answer;
+                        setRoadSegmentAnswers({
+                            ...roadSegmentAuditAnswers,
+                            cyclist: existingAnswers
+                        });
+                        break; 
+                    }
+                    case UserType.Motocyclist: {
+                        const existingAnswers = [...roadSegmentAuditAnswers.motocyclist];
+                        existingAnswers[questionIndex] = answer;
+                        setRoadSegmentAnswers({
+                            ...roadSegmentAuditAnswers,
+                            motocyclist: existingAnswers
+                        });
+                        break;
+                    }
+                    case UserType.Car: {
+                        const existingAnswers = [...roadSegmentAuditAnswers.car];
+                        existingAnswers[questionIndex] = answer;
+                        setRoadSegmentAnswers({
+                            ...roadSegmentAuditAnswers,
+                            car: existingAnswers
+                        });
+                        break;
+                    }
+                    default: break;
+                }
+            }
+            case AuditRoadType.Junction: {
+                switch(userType) {
+                    case UserType.Pedestrian: {
+                        const existingAnswers = [...junctionAuditAnswers.pedestrian];
+                        existingAnswers[questionIndex] = answer;
+                        setRoadSegmentAnswers({
+                            ...junctionAuditAnswers,
+                            pedestrian: existingAnswers
+                        });
+                        break;
+                    }
+                    case UserType.Cyclist: {
+                        const existingAnswers = [...junctionAuditAnswers.cyclist];
+                        existingAnswers[questionIndex] = answer;
+                        setRoadSegmentAnswers({
+                            ...roadSegmentAuditAnswers,
+                            cyclist: existingAnswers
+                        });
+                        break; 
+                    }
+                    case UserType.Motocyclist: {
+                        const existingAnswers = [...junctionAuditAnswers.motocyclist];
+                        existingAnswers[questionIndex] = answer;
+                        setRoadSegmentAnswers({
+                            ...junctionAuditAnswers,
+                            motocyclist: existingAnswers
+                        });
+                        break;
+                    }
+                    case UserType.Car: {
+                        const existingAnswers = [...junctionAuditAnswers.car];
+                        existingAnswers[questionIndex] = answer;
+                        setRoadSegmentAnswers({
+                            ...junctionAuditAnswers,
+                            car: existingAnswers
+                        });
+                        break;
+                    }
+                    default: break;
+                }
+            }
+            default: 
+                break;
+        }
+    }
+
+    const displayAnswerValue = (roadType: AuditRoadType, userType: UserType, questionIndex: number) => {
+        switch(roadType) {
+            case AuditRoadType.RoadSegment: {
+                switch(userType) {
+                    case UserType.Pedestrian: {
+                        return roadSegmentAuditAnswers.pedestrian[questionIndex];
+                    }
+                    case UserType.Cyclist: {
+                        return roadSegmentAuditAnswers.cyclist[questionIndex];
+                    }
+                    case UserType.Motocyclist: {
+                        return roadSegmentAuditAnswers.motocyclist[questionIndex];
+                    }
+                    case UserType.Car: {
+                        return roadSegmentAuditAnswers.car[questionIndex];
+                    }
+                    default: return "";
+                }
+            }
+            case AuditRoadType.Junction: {
+                switch(userType) {
+                    case UserType.Pedestrian: {
+                        return junctionAuditAnswers.pedestrian[questionIndex];
+                    }
+                    case UserType.Cyclist: {
+                        return junctionAuditAnswers.cyclist[questionIndex];
+                    }
+                    case UserType.Motocyclist: {
+                        return junctionAuditAnswers.motocyclist[questionIndex];
+                    }
+                    case UserType.Car: {
+                        return junctionAuditAnswers.car[questionIndex];
+                    }
+                    default: return "";
+                }
+            }
+            default: return "";
+        }
+    }
+
+    const handleExportAuditReport = async () => {
+        const roadTypeConverted = auditRoadType as AuditRoadType;
+        let location;
+        if (roadTypeConverted == AuditRoadType.Junction) {
+            location = await locateUser();
+        }
+
+        const report : AuditReport = {
+            id: user.id,
+            userId: user.id!,
+            auditRoadType: roadTypeConverted,
+            createdAt: date,
+            author: authorName,
+            weatherCondition: weatherCondition as WeatherCondition,
+            junctionLocation: (location && roadTypeConverted == AuditRoadType.Junction) ? {
+                latitude: location.coords.latitude,
+                longitude: location.coords.longitude }
+                : undefined,
+            segmentPath: (segmentPath.length > 0 && roadTypeConverted == AuditRoadType.RoadSegment) ? segmentPath : undefined,
+            answers: roadTypeConverted == AuditRoadType.RoadSegment ? roadSegmentAuditAnswers : junctionAuditAnswers,
+            reportType: ReportType.Audit,
+            comment: comment,
+            images: reportImages,
+        };
+
+        if(isValidReport(report, ReportType.Audit)) {
+            dispatch(addQuickReport(report));
+            setReportError("");
+            router.back();
+        }
+        else {
+            setReportError(t("reportError"));
+        }
+    }
 
     // change screen title
     useEffect(() => {
@@ -540,6 +775,8 @@ export default function Report() {
     return (
         <PaperProvider>
         <ScrollView style={styles.container}>
+            <GestureHandlerRootView>
+            <BottomSheetModalProvider>
             {(type == ReportType.SafetyPerception.toString() || type == ReportType.Quick.toString() || type == ReportType.Incident.toString()) && (
                 <>
                     <LocationCard />
@@ -582,7 +819,8 @@ export default function Report() {
                     <Spacer variant="medium" />
                 </>
             )}
-            {(type == ReportType.SafetyPerception.toString() || type == ReportType.Quick.toString() || type == ReportType.Incident.toString()) && (
+
+            {(type == ReportType.SafetyPerception.toString() || type == ReportType.Quick.toString() || type == ReportType.Incident.toString() || type == ReportType.Audit.toString()) && (
                 <>
                     <DateInput
                         date={date}
@@ -592,6 +830,7 @@ export default function Report() {
                     <Spacer variant="medium" />
                 </>
             )}
+
             {type == ReportType.Quick.toString() && (
                 <>
                     {/* Choosing the condition type */}
@@ -609,6 +848,7 @@ export default function Report() {
                     <Spacer variant="large" />
                 </>
             )}
+            
             {type == ReportType.SafetyPerception.toString() && (
                 <>
                     {/* Choosing the user type */}
@@ -1001,7 +1241,114 @@ export default function Report() {
                 </>
             )}
 
-            {(type == ReportType.SafetyPerception.toString() || type == ReportType.Quick.toString() || type == ReportType.Incident.toString()) && (
+            {(type == ReportType.Audit.toString()) && (
+                <>
+                    {/* Input for the audit author name */}
+                    <TextBlock type={TextBlockTypeEnum.title}>
+                        {t("addAuthorName")}
+                    </TextBlock>
+                    <Spacer variant="medium" />
+                    <TextInput
+                        value={authorName}
+                        onChangeText={setAuthorName}
+                        maxLength={250}
+                        style={{backgroundColor: Colors.light.background.secondary, padding: 8, borderRadius: 8}}
+                        placeholder={t("authorNamePlaceholder")}
+                    />
+                    <Spacer variant="large" />
+                    <Spacer variant="medium" />
+                </>
+            )}
+
+            {(type == ReportType.Audit.toString()) && (
+                <>
+                    {/* Select the audit weather condition */}
+                    <TextBlock type={TextBlockTypeEnum.title}>
+                        {t("chooseWeatherCondition")}
+                    </TextBlock>
+                    <Spacer variant="medium" />
+                    <RadioButton.Group 
+                        onValueChange={handleWeatherConditionSelection} 
+                        value={weatherCondition ? weatherCondition.toString() : ""}>
+                        <View>
+                            <RadioButton.Item label={t("clearWeather")} labelStyle={{fontSize: 14}} value={WeatherCondition.Clear} />
+                            <RadioButton.Item label={t("cloudyWeather")} labelStyle={{fontSize: 14}} value={WeatherCondition.Cloudy} />
+                            <RadioButton.Item label={t("foggyWeather")} labelStyle={{fontSize: 14}} value={WeatherCondition.Foggy} />
+                            <RadioButton.Item label={t("rainyWeather")} labelStyle={{fontSize: 14}} value={WeatherCondition.Rainy} />
+                            <RadioButton.Item label={t("otherWeather")} labelStyle={{fontSize: 14}} value={WeatherCondition.Other} />
+                        </View>
+                    </RadioButton.Group>
+                    <Spacer variant="large" />
+                    <Spacer variant="medium" />
+                </>
+            )}
+
+            {(type == ReportType.Audit.toString()) && (
+                <>
+                    {/* Choosing the audit road type */}
+                    <TextBlock type={TextBlockTypeEnum.title}>
+                        {t("chooseAuditRoadType")}
+                    </TextBlock>
+                    <Spacer variant="medium" />
+                    <RadioButton.Group
+                        onValueChange={handleAuditRoadTypeSelection}
+                        value={auditRoadType?.toString() ?? ""}>
+                        <View>
+                            <RadioButton.Item label={t("junction")} labelStyle={{fontSize: 14}} value={AuditRoadType.Junction} />
+                            <RadioButton.Item label={t("roadSegment")} labelStyle={{fontSize: 14}} value={AuditRoadType.RoadSegment} />
+                        </View>
+                    </RadioButton.Group>
+                    <Spacer variant="large" />
+                    <Spacer variant="medium" />
+                </>
+            )}
+
+            {(type == ReportType.Audit.toString() && auditRoadType) && (
+                <>
+                    {/* Present location option for audit with respect to the road type selected */}
+                    {(auditRoadType as AuditRoadType) == AuditRoadType.RoadSegment && (
+                        <>
+                            <TextBlock type={TextBlockTypeEnum.body}>
+                                {t("auditRoadSegmentLocationInfo")}
+                            </TextBlock>
+                            <Spacer variant="large" />
+                            <ViewShot ref={roadSegmentLocationRef} options={{ fileName: "road-segment-location", format: "jpg", quality: 0.9 }}>
+                                <LocationCard coordinates={segmentPath} />
+                            </ViewShot>
+                            <Spacer variant="medium" />
+                            <ProgressBar indeterminate={true} color={Colors.light.background.primary} visible={isLocationTrackStarted} />
+                            <Spacer variant="medium" />
+                            <View style={{flexDirection: "row", justifyContent: "space-between"}}>
+                                <ButtonAction
+                                    variant={ButtonTypeEnum.primary}
+                                    content={<TextBlock type={TextBlockTypeEnum.body} style={{color: "white", paddingHorizontal: 30, paddingVertical: 4}}>{t("start")}</TextBlock>}
+                                    disabled={isLocationTrackStarted}
+                                    onPress={handleStartLocationTracking}/>
+                                <ButtonAction
+                                    variant={ButtonTypeEnum.primary}
+                                    content={<TextBlock type={TextBlockTypeEnum.body} style={{color: "white", paddingHorizontal: 30, paddingVertical: 4}}>{t("stop")}</TextBlock>}
+                                    disabled={!isLocationTrackStarted}
+                                    onPress={handleStopLocationTracking}/>
+                            </View>
+                        </>
+                    )}
+                    {(auditRoadType as AuditRoadType) == AuditRoadType.Junction && (
+                        <>
+                            <TextBlock type={TextBlockTypeEnum.body}>
+                                {t("auditJunctionLocationInfo")}
+                            </TextBlock>
+                            <Spacer variant="large" />
+                            <ViewShot ref={junctionLocationRef} options={{ fileName: "junction-location", format: "jpg", quality: 0.9 }}>
+                                <LocationCard />
+                            </ViewShot>
+                        </>
+                    )}
+                    <Spacer variant="large" />
+                    <Spacer variant="medium" />
+                </>
+            )}
+
+            {(type == ReportType.SafetyPerception.toString() || type == ReportType.Quick.toString() || type == ReportType.Incident.toString() || type == ReportType.Audit.toString()) && (
                 <>
                     {/* Comment section */}
                     <View>
@@ -1070,17 +1417,126 @@ export default function Report() {
 
             {reportError && <TextBlock type={TextBlockTypeEnum.caption} style={{color: 'red'}}>{reportError}</TextBlock>}
             <Spacer variant="medium" />
-            <ButtonAction 
-                variant={ButtonTypeEnum.primary}
-                onPress={handleAddReport}
-                content={
-                    <TextBlock style={{color: Colors.light.background.quaternary}}>{t("addReport")}</TextBlock>
-                }
-            />
+
+            
+            {(type == ReportType.SafetyPerception.toString() || type == ReportType.Quick.toString() || type == ReportType.Incident.toString()) && (
+                <ButtonAction 
+                    variant={ButtonTypeEnum.primary}
+                    onPress={handleAddReport}
+                    content={
+                        <TextBlock style={{color: Colors.light.background.quaternary}}>{t("addReport")}</TextBlock>
+                    }
+                />
+            )}
+
+            {(type == ReportType.Audit.toString() && !isQuestionaireAnswered) && (
+                <ButtonAction
+                    variant={ButtonTypeEnum.primary}
+                    onPress={handleAnswerAuditQuestionaire}
+                    content={
+                        <TextBlock style={{color: Colors.light.background.quaternary}}>{t("answerAuditQuestionaire")}</TextBlock>
+                    }
+                />
+            )}
+
+            {(type == ReportType.Audit.toString() && isQuestionaireAnswered) && (
+                <ButtonAction
+                    variant={ButtonTypeEnum.primary}
+                    onPress={handleExportAuditReport}
+                    content={
+                        <TextBlock style={{color: Colors.light.background.quaternary}}>{t("exportAuditReport")}</TextBlock>
+                    }
+                />
+            )}
+
             <Spacer variant="large" />
             <Spacer variant="large" />
             <Spacer variant="large" />
             <Spacer variant="large" />
+
+            {/* Bottom sheet to display audit questionaire */}
+            <BottomSheetModal
+                ref={bottomSheetModalRef} 
+                snapPoints={snapPoints}
+                >
+                <BottomSheetView style={{ flex: 1, padding: 16 }}>
+                    <>
+                        {auditRoadType && auditRoadType == AuditRoadType.RoadSegment && (
+                            <>
+                                <TextBlock type={TextBlockTypeEnum.h5} style={{fontWeight: '700'}}>{t("auditRoadSegmentQuestionaire")}</TextBlock>
+                                <Spacer variant="medium" />
+                                <TextBlock type={TextBlockTypeEnum.title} style={{fontWeight: '700'}}>{t("explainRoadSegmentQuestionaire")}</TextBlock>
+                                <Spacer variant="large" />
+                                {auditSegmentQuestionData.map((data, index) => (
+                                    <View key={index}>
+                                        <TextBlock type={TextBlockTypeEnum.title}>{data.type}</TextBlock>
+                                        <Spacer variant="large" />
+                                        {data.questions.map((question, questionIndex) => (
+                                            <View>
+                                                <TextBlock type={TextBlockTypeEnum.title}>{(questionIndex + 1) + ". " + question.question}</TextBlock>
+                                                <RadioButton.Group
+                                                    onValueChange={(val) => handleAuditAnswerSelection(auditRoadType, data.type, questionIndex, val)}
+                                                    value={displayAnswerValue(auditRoadType, UserType.Pedestrian, questionIndex)}>
+                                                    <View>
+                                                        {question.answers.map((answer, answerIndex) => (
+                                                            <RadioButton.Item 
+                                                                key={answerIndex}
+                                                                label={answer}
+                                                                labelStyle={{fontSize: 14}}
+                                                                value={answer}
+                                                            />
+                                                        ))}
+                                                    </View>
+                                                </RadioButton.Group>
+                                            </View>
+                                        ))}
+                                        <Spacer variant="large" />
+                                        <Spacer variant="medium" />
+                                    </View>
+                                ))}
+                            </>
+                        )}
+
+                        {auditRoadType && auditRoadType == AuditRoadType.Junction && (
+                            <>
+                                <TextBlock type={TextBlockTypeEnum.h5} style={{fontWeight: '700'}}>{t("auditJunctionQuestionaire")}</TextBlock>
+                                <Spacer variant="medium" />
+                                <TextBlock type={TextBlockTypeEnum.title} style={{fontWeight: '700'}}>{t("explainJunctionQuestionaire")}</TextBlock>
+                                <Spacer variant="large" />
+                                {auditJunctionQuestionData.map((data, index) => (
+                                    <View key={index}>
+                                        <TextBlock type={TextBlockTypeEnum.title}>{data.type}</TextBlock>
+                                        <Spacer variant="large" />
+                                        {data.questions.map((question, questionIndex) => (
+                                            <View>
+                                                <TextBlock type={TextBlockTypeEnum.title}>{(questionIndex + 1) + ". " + question.question}</TextBlock>
+                                                <RadioButton.Group
+                                                    onValueChange={(val) => handleAuditAnswerSelection(auditRoadType, data.type, questionIndex, val)}
+                                                    value={displayAnswerValue(auditRoadType, UserType.Pedestrian, questionIndex)}>
+                                                    <View>
+                                                        {question.answers.map((answer, answerIndex) => (
+                                                            <RadioButton.Item 
+                                                                key={answerIndex}
+                                                                label={answer}
+                                                                labelStyle={{fontSize: 14}}
+                                                                value={answer}
+                                                            />
+                                                        ))}
+                                                    </View>
+                                                </RadioButton.Group>
+                                            </View>
+                                        ))}
+                                        <Spacer variant="large" />
+                                        <Spacer variant="medium" />
+                                    </View>
+                                ))}
+                            </>
+                        )}
+                    </>
+                </BottomSheetView>
+            </BottomSheetModal>
+            </BottomSheetModalProvider>
+            </GestureHandlerRootView>
         </ScrollView>
         </PaperProvider>
     );

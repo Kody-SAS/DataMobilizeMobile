@@ -167,6 +167,27 @@
     "selectSeverityLevel": "Select the severity level",
     "selectIncidentType": "Select the incident type",
     "addAuditLocation": "Add the audit location",
-    "locationPlaceholder": "Enter the location"
+    "locationPlaceholder": "Enter the location",
+    "addAuthorName": "Add your name",
+    "authorNamePlaceholder": "Enter your name",
+    "chooseWeatherCondition": "What is the weather condition?",
+    "clearWeather": "Clear",
+    "cloudyWeather": "Cloudy",
+    "foggyWeather": "Foggy",
+    "rainyWeather": "Rainy",
+    "otherWeather": "Other",
+    "chooseAuditRoadType": "What are you auditing ?",
+    "junction": "Junction",
+    "roadSegment": "Road segment",
+    "auditJunctionLocationInfo": "By auditing a junction, your current location will be used as the junction location in the report.",
+    "auditRoadSegmentLocationInfo": "By auditing a road segment, you shall press the start button to start tracking your route and once you reach the end of the segment, press the stop button to finish tracking your route.",
+    "stop": "Stop",
+    "answerAuditQuestionaire": "Answer the questionnaire",
+    "exportAuditReport": "Export the report",
+    "auditRoadSegmentQuestionaire": "Road segment audit questionnaire",
+    "auditJunctionQuestionaire": "Junction audit questionnaire",
+    "explainRoadSegmentQuestionaire": "The questions are related to the road segment characteristics, the road user behavior, and the safety perception of a pedestrian, cyclist, motocyclist and car user.",
+    "explainJunctionQuestionaire": "The questions are related to the junction characteristics, the road user behavior, and the safety perception of a pedestrian, cyclist, motocyclist and car user.",
+    "export": "Export"
   }
 }

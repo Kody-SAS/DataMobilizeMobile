@@ -264,17 +264,19 @@ export type AuditReport = {
     id?: string;
     userId: string;
     auditRoadType: AuditRoadType;
-    segmentPath?: [
-        {
-            latitude: number;
-            longitude: number;
-        }
-    ];
+    segmentPath?: {
+        latitude: number;
+        longitude: number;
+    }[];
     junctionLocation?: {
         latitude: number;
         longitude: number;
     },
     author: string;
+    answers: { pedestrian: string[]; cyclist: string[]; motocyclist: string[]; car: string[]; };
     weatherCondition: WeatherCondition;
     createdAt: Date;
+    reportType: ReportType;
+    comment?: string;
+    images: string[];
 }

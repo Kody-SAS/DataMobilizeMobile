@@ -4,7 +4,7 @@ import { useTranslation } from "react-i18next";
 import { ButtonAction } from "./ButtonAction";
 import { ButtonTypeEnum, TextBlockTypeEnum } from "../type.d";
 import { Spacer } from "./Spacer";
-import MapView, { PROVIDER_GOOGLE } from "react-native-maps";
+import MapView, { Polyline, PROVIDER_GOOGLE } from "react-native-maps";
 import { Colors } from "../constants/Colors";
 import { useEffect, useState } from "react";
 import { registerForForegroundLocationPermissionAsync } from "../utils/Permissions";
@@ -12,14 +12,18 @@ import ToastMessage from "../utils/Toast";
 import * as Location from 'expo-location';
 import { router } from "expo-router";
 
-export const LocationCard = () => {
+export type LocationCardProps = {
+    coordinates?: {latitude: number, longitude: number}[];
+}
+
+export const LocationCard = ({coordinates}: LocationCardProps) => {
     const [currentLocation, setCurrentLocation] = useState<Location.LocationObject | null>(null);
     const {t} = useTranslation();
     const handleMapNavigation = async() => {
         const foregroundPermissionStatus = await registerForForegroundLocationPermissionAsync();
         if (foregroundPermissionStatus) {
             console.log('Permission granted');
-            router.push("/(homeStack)/map");
+            router.push({pathname: "/(homeStack)/map", params: {coordinates: JSON.stringify(coordinates)}});
             return;
         }
         console.log('Permission denied');
@@ -63,10 +67,19 @@ export const LocationCard = () => {
                 initialRegion={{
                     latitude: currentLocation?.coords.latitude ?? 6,
                     longitude: currentLocation?.coords.longitude ?? 12,
-                    latitudeDelta: 5,
-                    longitudeDelta: 5
+                    latitudeDelta: 0.5,
+                    longitudeDelta: 0.5
                 }}
-            />
+            >
+            {(coordinates && coordinates.length > 0) && (
+                <Polyline
+                    coordinates={coordinates}
+                    strokeColor="#000" // fallback for when `strokeColors` is not supported by the map-provider
+                    strokeColors={['#7F0000']}
+                    strokeWidth={6}
+                    />
+            )}
+            </MapView>
         </View>
     )
 }
@@ -79,6 +92,6 @@ const styles = StyleSheet.create({
     },
     map: {
         width: "100%",
-        height: 140
+        height: 150
     }
 })

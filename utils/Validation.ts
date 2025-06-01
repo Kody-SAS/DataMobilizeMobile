@@ -1,6 +1,6 @@
-import { IncidentReport, IncidentType, IncidentCrashData, QuickReport, ReportType, SafetyPerceptionReport, IncidentInfrastructureData, IncidentEquipmentData } from "../type.d";
+import { IncidentReport, IncidentType, IncidentCrashData, QuickReport, ReportType, SafetyPerceptionReport, IncidentInfrastructureData, IncidentEquipmentData, AuditReport } from "../type.d";
 
-export const isValidReport = (report: SafetyPerceptionReport | QuickReport | IncidentReport, reportType: ReportType) => {
+export const isValidReport = (report: SafetyPerceptionReport | QuickReport | IncidentReport | AuditReport, reportType: ReportType) => {
     switch (reportType) {
         case ReportType.SafetyPerception:
             const safetyReport = report as SafetyPerceptionReport;
@@ -32,6 +32,11 @@ export const isValidReport = (report: SafetyPerceptionReport | QuickReport | Inc
             }
             
             return incidentReport.roadType && incidentReport.incidentType && isValidIncidentTypeData && incidentReport.reportType && incidentReport.description && incidentReport.images.length > 0;
+
+        case ReportType.Audit:
+            const auditReport = report as AuditReport;
+            
+            return auditReport.userId && auditReport.auditRoadType && auditReport.reportType && auditReport.author && auditReport.weatherCondition && auditReport.images.length > 0;
         default:
             return false;
     }
