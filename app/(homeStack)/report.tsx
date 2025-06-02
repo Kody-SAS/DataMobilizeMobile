@@ -2,7 +2,7 @@ import { Alert, GestureResponderEvent, Image, Linking, ScrollView, StyleSheet, T
 import { TextBlock } from "../../components/TextBlock";
 import { router, useLocalSearchParams, useNavigation } from "expo-router";
 import { Colors } from "../../constants/Colors";
-import { useEffect, useMemo, useRef, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { requestForegroundPermissionsAsync } from "expo-location";
 import { useTranslation } from "react-i18next";
 import { ButtonTypeEnum, ConditionType, IncidentSeverity, IncidentReport, IncidentType, QuickReport, ReasonType, ReportType, RoadType, SafetyLevel, SafetyPerceptionReport, SeverityLevel, TextBlockTypeEnum, UserType, IncidentResponseTime, IncidentResponseType, AuditRoadType, AuditReport, WeatherCondition } from "../../type.d";
@@ -23,7 +23,9 @@ import { isValidReport } from "../../utils/Validation";
 import * as TaskManager from 'expo-task-manager';
 import ViewShot from "react-native-view-shot";
 import { GestureHandlerRootView } from "react-native-gesture-handler";
-import { BottomSheetModal, BottomSheetModalProvider, BottomSheetView } from "@gorhom/bottom-sheet";
+import { BottomSheetModal, BottomSheetModalProvider, BottomSheetScrollView, BottomSheetView } from "@gorhom/bottom-sheet";
+import RNHTMLtoPDF from 'react-native-html-to-pdf';
+import { createAuditReport } from "../../utils/Report";
 
 const LOCATION_TRACKING_TASK = "location-tracking";
 
@@ -88,7 +90,7 @@ export default function Report() {
     const [junctionLocationImageUrl, setJunctionLocationImageUrl] = useState<string>("");
 
     const bottomSheetModalRef = useRef<BottomSheetModal>(null);
-    const snapPoints = useMemo(() => ['70%', '95%'], []);
+    const snapPoints = useMemo(() => ['75%'], []);
 
     const {type} = useLocalSearchParams();
     const {t} = useTranslation();
@@ -370,6 +372,7 @@ export default function Report() {
 
     const handleAuditRoadTypeSelection = (value: string) => {
         setAuditRoadType(value);
+        setIsQuestionaireAnswered(false);
     }
 
     const handleWeatherConditionSelection = (value: string) => {
@@ -595,7 +598,7 @@ export default function Report() {
         bottomSheetModalRef.current?.present();
     }
 
-    const handleAuditAnswerSelection = (roadType: AuditRoadType, userType: UserType, questionIndex: number, answer: string) => {
+    const handleAuditAnswerSelection = useCallback((roadType: AuditRoadType, userType: UserType, questionIndex: number, answer: string) => {
         switch(roadType) {
             case AuditRoadType.RoadSegment: {
                 switch(userType) {
@@ -682,9 +685,9 @@ export default function Report() {
             default: 
                 break;
         }
-    }
+    }, [roadSegmentAuditAnswers, junctionAuditAnswers]);
 
-    const displayAnswerValue = (roadType: AuditRoadType, userType: UserType, questionIndex: number) => {
+    const displayAnswerValue = useCallback((roadType: AuditRoadType, userType: UserType, questionIndex: number) => {
         switch(roadType) {
             case AuditRoadType.RoadSegment: {
                 switch(userType) {
@@ -722,7 +725,7 @@ export default function Report() {
             }
             default: return "";
         }
-    }
+    }, [roadSegmentAuditAnswers, junctionAuditAnswers]);
 
     const handleExportAuditReport = async () => {
         const roadTypeConverted = auditRoadType as AuditRoadType;
@@ -750,29 +753,48 @@ export default function Report() {
         };
 
         if(isValidReport(report, ReportType.Audit)) {
+            handleCaptureLocationImage(roadTypeConverted);
             const imageUrl = roadTypeConverted == AuditRoadType.RoadSegment ? roadSegmentLocationImageUrl : junctionLocationImageUrl;
+
+            let options = {
+                html: createAuditReport(report, imageUrl, roadTypeConverted == AuditRoadType.RoadSegment ? auditSegmentQuestionData : auditJunctionQuestionData),
+                fileName: `audit_report_${new Date().toISOString()}`,
+                directory: 'Documents',
+            };
+
+            let file = await RNHTMLtoPDF.convert(options)
+
             setReportError("");
-            router.push({pathname: "/(homestack)/export", params: {report: JSON.stringify(report), locationUrl: imageUrl}})
+            router.push({pathname: "/(homestack)/export", params: {report: file.filePath }});
         }
         else {
             setReportError(t("reportError"));
         }
     }
 
+    const handleCloseBottomSheet = () => {
+        bottomSheetModalRef.current?.dismiss();
+        setIsQuestionaireAnswered(true);
+    }
+
     const handleCaptureLocationImage = (roadType: AuditRoadType) => {
         switch(roadType) {
             case AuditRoadType.RoadSegment: {
-                roadSegmentLocationRef.current?.capture()
-                .then(uri => {
-                    setRoadSegmentLocationImageUrl(uri);
-                });
+                if (roadSegmentLocationRef && roadSegmentLocationRef.current) {
+                    roadSegmentLocationRef.current?.capture()
+                    .then(uri => {
+                        setRoadSegmentLocationImageUrl(uri);
+                    });
+                }
                 break;
             }
             case AuditRoadType.Junction: {
-                junctionLocationRef.current?.capture()
-                .then(uri => {
-                    setJunctionLocationImageUrl(uri);
-                });
+                if (junctionLocationRef && junctionLocationRef.current) {
+                    junctionLocationRef.current?.capture()
+                    .then(uri => {
+                        setJunctionLocationImageUrl(uri);
+                    });
+                }
                 break;
             }
             default: break;
@@ -796,9 +818,9 @@ export default function Report() {
 
     return (
         <PaperProvider>
-        <ScrollView style={styles.container}>
             <GestureHandlerRootView>
             <BottomSheetModalProvider>
+        <ScrollView style={styles.container}>
             {(type == ReportType.SafetyPerception.toString() || type == ReportType.Quick.toString() || type == ReportType.Incident.toString()) && (
                 <>
                     <LocationCard />
@@ -1392,7 +1414,7 @@ export default function Report() {
                 </>
             )}
 
-            {(type == ReportType.SafetyPerception.toString() || type == ReportType.Quick.toString() || type == ReportType.Incident.toString()) && (
+            {(type == ReportType.SafetyPerception.toString() || type == ReportType.Quick.toString() || type == ReportType.Incident.toString() || type == ReportType.Audit.toString()) && (
                 <>
                     {/* Image picker section */}
                     <View>
@@ -1400,7 +1422,7 @@ export default function Report() {
                             {t("addImages")}
                         </TextBlock>
                         <Spacer variant="medium" />
-                        <View style={styles.imagesContainer}>
+                        <ScrollView style={styles.imagesContainer} horizontal={true} showsHorizontalScrollIndicator={false}>
                             {reportImages.map((image, index) => {
                                 return (
                                     <TouchableOpacity
@@ -1419,7 +1441,7 @@ export default function Report() {
                                 )
                             })}
                             {
-                                reportImages.length < 2 && (
+                                (reportImages.length < 2 && type != ReportType.Audit.toString()) && ( //for all except Audit, we take less than 2 images
                                     <TouchableOpacity
                                         activeOpacity={0.8}
                                         onPress={handleAddImage}
@@ -1430,7 +1452,19 @@ export default function Report() {
                                     </TouchableOpacity>
                                 )
                             }
-                        </View>
+                            {
+                                (reportImages.length < 20 && type == ReportType.Audit.toString()) && ( //for only Audit, we take less than 20 images
+                                    <TouchableOpacity
+                                        activeOpacity={0.8}
+                                        onPress={handleAddImage}
+                                        style={{width: 74, height: 60, borderRadius: 8, backgroundColor: Colors.light.background.tertiary, justifyContent: 'center', alignItems: 'center'}}>
+                                        <TextBlock type={TextBlockTypeEnum.title}>
+                                            +
+                                        </TextBlock>
+                                    </TouchableOpacity>
+                                )
+                            }
+                        </ScrollView>
                     </View>
                     <Spacer variant="large" />
                     <Spacer variant="medium" />
@@ -1451,15 +1485,17 @@ export default function Report() {
                 />
             )}
 
-            {(type == ReportType.Audit.toString() && !isQuestionaireAnswered) && (
+            {(type == ReportType.Audit.toString()) && (
                 <ButtonAction
-                    variant={ButtonTypeEnum.primary}
+                    variant={!isQuestionaireAnswered ? ButtonTypeEnum.primary : ButtonTypeEnum.secondary}
                     onPress={handleAnswerAuditQuestionaire}
                     content={
-                        <TextBlock style={{color: Colors.light.background.quaternary}}>{t("answerAuditQuestionaire")}</TextBlock>
+                        <TextBlock style={{color: !isQuestionaireAnswered ? Colors.light.background.quaternary : Colors.light.text.primary}}>{t("answerAuditQuestionaire")}</TextBlock>
                     }
                 />
             )}
+            <Spacer variant="large" />
+            <Spacer variant="medium" />
 
             {(type == ReportType.Audit.toString() && isQuestionaireAnswered) && (
                 <ButtonAction
@@ -1475,14 +1511,15 @@ export default function Report() {
             <Spacer variant="large" />
             <Spacer variant="large" />
             <Spacer variant="large" />
+        </ScrollView>
 
             {/* Bottom sheet to display audit questionaire */}
             <BottomSheetModal
                 ref={bottomSheetModalRef} 
                 snapPoints={snapPoints}
                 >
-                <BottomSheetView style={{ flex: 1, padding: 16 }}>
-                    <>
+                <BottomSheetScrollView style={{ flex: 1, padding: 16 }}>
+                    <View>
                         {auditRoadType && auditRoadType == AuditRoadType.RoadSegment && (
                             <>
                                 <TextBlock type={TextBlockTypeEnum.h5} style={{fontWeight: '700'}}>{t("auditRoadSegmentQuestionaire")}</TextBlock>
@@ -1494,11 +1531,11 @@ export default function Report() {
                                         <TextBlock type={TextBlockTypeEnum.title}>{data.type}</TextBlock>
                                         <Spacer variant="large" />
                                         {data.questions.map((question, questionIndex) => (
-                                            <View>
+                                            <View key={questionIndex}>
                                                 <TextBlock type={TextBlockTypeEnum.title}>{(questionIndex + 1) + ". " + question.question}</TextBlock>
                                                 <RadioButton.Group
                                                     onValueChange={(val) => handleAuditAnswerSelection(auditRoadType, data.type, questionIndex, val)}
-                                                    value={displayAnswerValue(auditRoadType, UserType.Pedestrian, questionIndex)}>
+                                                    value={displayAnswerValue(auditRoadType, data.type, questionIndex)}>
                                                     <View>
                                                         {question.answers.map((answer, answerIndex) => (
                                                             <RadioButton.Item 
@@ -1530,11 +1567,11 @@ export default function Report() {
                                         <TextBlock type={TextBlockTypeEnum.title}>{data.type}</TextBlock>
                                         <Spacer variant="large" />
                                         {data.questions.map((question, questionIndex) => (
-                                            <View>
+                                            <View key={questionIndex}>
                                                 <TextBlock type={TextBlockTypeEnum.title}>{(questionIndex + 1) + ". " + question.question}</TextBlock>
                                                 <RadioButton.Group
                                                     onValueChange={(val) => handleAuditAnswerSelection(auditRoadType, data.type, questionIndex, val)}
-                                                    value={displayAnswerValue(auditRoadType, UserType.Pedestrian, questionIndex)}>
+                                                    value={displayAnswerValue(auditRoadType, data.type, questionIndex)}>
                                                     <View>
                                                         {question.answers.map((answer, answerIndex) => (
                                                             <RadioButton.Item 
@@ -1554,12 +1591,21 @@ export default function Report() {
                                 ))}
                             </>
                         )}
-                    </>
-                </BottomSheetView>
+                        <ButtonAction
+                            variant={ButtonTypeEnum.primary}
+                            onPress={handleCloseBottomSheet}
+                            content={
+                                <TextBlock style={{color: Colors.light.background.quaternary}}>{t("continue")}</TextBlock>
+                            }
+                        />
+                        <Spacer variant="large" />
+                        <Spacer variant="large" />
+                        <Spacer variant="large" />
+                    </View>
+                </BottomSheetScrollView>
             </BottomSheetModal>
             </BottomSheetModalProvider>
             </GestureHandlerRootView>
-        </ScrollView>
         </PaperProvider>
     );
 }
