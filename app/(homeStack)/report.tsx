@@ -753,19 +753,20 @@ export default function Report() {
         };
 
         if(isValidReport(report, ReportType.Audit)) {
-            handleCaptureLocationImage(roadTypeConverted);
+            await handleCaptureLocationImage(roadTypeConverted);
             const imageUrl = roadTypeConverted == AuditRoadType.RoadSegment ? roadSegmentLocationImageUrl : junctionLocationImageUrl;
 
+            const fileName = `audit_report`;
             let options = {
                 html: createAuditReport(report, imageUrl, roadTypeConverted == AuditRoadType.RoadSegment ? auditSegmentQuestionData : auditJunctionQuestionData),
-                fileName: `audit_report_${new Date().toISOString()}`,
-                directory: 'Documents',
+                fileName,
+                height: 842, // A4 height in points
+                width: 595, // A4 width in points
             };
 
             let file = await RNHTMLtoPDF.convert(options)
-
             setReportError("");
-            router.push({pathname: "/(homestack)/export", params: {report: file.filePath }});
+            router.push({pathname: "/(homeStack)/export", params: {report: file.filePath.split('/')[file.filePath.split('/').length - 1] }});
         }
         else {
             setReportError(t("reportError"));
@@ -777,23 +778,19 @@ export default function Report() {
         setIsQuestionaireAnswered(true);
     }
 
-    const handleCaptureLocationImage = (roadType: AuditRoadType) => {
+    const handleCaptureLocationImage = async (roadType: AuditRoadType) => {
         switch(roadType) {
             case AuditRoadType.RoadSegment: {
                 if (roadSegmentLocationRef && roadSegmentLocationRef.current) {
-                    roadSegmentLocationRef.current?.capture()
-                    .then(uri => {
-                        setRoadSegmentLocationImageUrl(uri);
-                    });
+                    const uri = await roadSegmentLocationRef.current?.capture();
+                    setRoadSegmentLocationImageUrl(uri);
                 }
                 break;
             }
             case AuditRoadType.Junction: {
                 if (junctionLocationRef && junctionLocationRef.current) {
-                    junctionLocationRef.current?.capture()
-                    .then(uri => {
-                        setJunctionLocationImageUrl(uri);
-                    });
+                    const uri = await junctionLocationRef.current?.capture();
+                    setJunctionLocationImageUrl(uri);
                 }
                 break;
             }

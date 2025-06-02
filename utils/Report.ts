@@ -32,6 +32,65 @@ export const createAuditReport = (
         })
         .join('');
 
+    // Generate table rows for cyclist answers
+    const cyclistAnswersHtml = auditReportData.answers.cyclist
+        .map((selectedAnswer, index) => {
+            const questionData = questionsData.find(q => q.type === UserType.Cyclist)?.questions[index];
+            if (questionData) {
+                const question = questionData.question;
+                const allAnswers = questionData.answers.join(', ');
+                return `
+                    <tr>
+                        <td>${question}</td>
+                        <td>${allAnswers}</td>
+                        <td class="selected-answer">${selectedAnswer}</td>
+                    </tr>
+                `;
+            }
+            return '';
+        })
+        .join('');
+
+    
+        // Generate table rows for motocyclist answers
+    const motocyclistAnswersHtml = auditReportData.answers.pedestrian
+        .map((selectedAnswer, index) => {
+            const questionData = questionsData.find(q => q.type === UserType.Motocyclist)?.questions[index];
+            if (questionData) {
+                const question = questionData.question;
+                const allAnswers = questionData.answers.join(', ');
+                return `
+                    <tr>
+                        <td>${question}</td>
+                        <td>${allAnswers}</td>
+                        <td class="selected-answer">${selectedAnswer}</td>
+                    </tr>
+                `;
+            }
+            return '';
+        })
+        .join('');
+
+    
+        // Generate table rows for cars answers
+    const carAnswersHtml = auditReportData.answers.car
+        .map((selectedAnswer, index) => {
+            const questionData = questionsData.find(q => q.type === UserType.Car)?.questions[index];
+            if (questionData) {
+                const question = questionData.question;
+                const allAnswers = questionData.answers.join(', ');
+                return `
+                    <tr>
+                        <td>${question}</td>
+                        <td>${allAnswers}</td>
+                        <td class="selected-answer">${selectedAnswer}</td>
+                    </tr>
+                `;
+            }
+            return '';
+        })
+        .join('');
+
     // Generate image gallery HTML
     const imageGalleryHtml = auditReportData.images
         .map(
@@ -54,7 +113,6 @@ export const createAuditReport = (
             font-family: 'Inter', sans-serif;
             margin: 0;
             padding: 20px;
-            background-color: #f4f7f6;
             color: #333;
             line-height: 1.6;
             -webkit-print-color-adjust: exact;
@@ -62,12 +120,7 @@ export const createAuditReport = (
         }
         .report-container {
             max-width: 800px;
-            margin: 20px auto;
             background-color: #ffffff;
-            padding: 30px;
-            border-radius: 12px;
-            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.08);
-            border: 1px solid #e0e0e0;
         }
         .report-header {
             text-align: center;
@@ -76,7 +129,7 @@ export const createAuditReport = (
             padding-bottom: 20px;
         }
         .report-header h1 {
-            font-size: 2.5em;
+            font-size: 2em;
             color: #2c3e50;
             margin-bottom: 10px;
             font-weight: 700;
@@ -110,6 +163,7 @@ export const createAuditReport = (
 
         .location-image-section img {
             max-width: 70%; /* Max width 70% */
+            min-width: 250px; /* Minimum width 250px */
             height: 200px; /* Fixed height, not too high */
             object-fit: cover; /* Cover the area, cropping if necessary */
             border-radius: 8px;
@@ -166,6 +220,7 @@ export const createAuditReport = (
         }
         .image-gallery img {
             width: 100%;
+            max-width: 200px;
             height: 150px;
             object-fit: cover;
             border-radius: 8px;
@@ -188,20 +243,20 @@ export const createAuditReport = (
 <body>
     <div class="report-container">
         <header class="report-header">
-            <h1>Audit Report: ${auditReportData.reportType}</h1>
+            <h1>Audit Report: ${auditReportData.auditRoadType}</h1>
             <p>Date: ${formatDate(auditReportData.createdAt)}</p>
             <p>Author: ${auditReportData.author}</p>
             <p>Weather Condition: ${auditReportData.weatherCondition}</p>
         </header>
         <section class="report-details">
             <h2 class="section-title">Audit Details</h2>
-            <h3 style="font-size: 1.2em; color: #34495e; margin-top: 20px; margin-bottom: 10px;">Pedestrian Safety Questions</h3>
 
             <div class="location-image-section">
                 <img src="${locationImageUrl}" alt="Location of the Report" onerror="this.src='https://placehold.co/600x200/CCCCCC/333333?text=Location+Image+Error';">
                 <p>Image: location of the report</p>
             </div>
 
+            <h3 style="font-size: 1.2em; color: #34495e; margin-top: 20px; margin-bottom: 10px;">Pedestrian Questions</h3>
             <table class="data-table">
                 <thead>
                     <tr>
@@ -212,6 +267,48 @@ export const createAuditReport = (
                 </thead>
                 <tbody>
                     ${pedestrianAnswersHtml}
+                </tbody>
+            </table>
+
+            <h3 style="font-size: 1.2em; color: #34495e; margin-top: 20px; margin-bottom: 10px;">Cyclist Questions</h3>
+            <table class="data-table">
+                <thead>
+                    <tr>
+                        <th>Question</th>
+                        <th>All Possible Answers</th>
+                        <th>Selected Answer</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    ${cyclistAnswersHtml}
+                </tbody>
+            </table>
+
+            <h3 style="font-size: 1.2em; color: #34495e; margin-top: 20px; margin-bottom: 10px;">Motocyclist Questions</h3>
+            <table class="data-table">
+                <thead>
+                    <tr>
+                        <th>Question</th>
+                        <th>All Possible Answers</th>
+                        <th>Selected Answer</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    ${motocyclistAnswersHtml}
+                </tbody>
+            </table>
+
+            <h3 style="font-size: 1.2em; color: #34495e; margin-top: 20px; margin-bottom: 10px;">Car, Buses and Trucks Questions</h3>
+            <table class="data-table">
+                <thead>
+                    <tr>
+                        <th>Question</th>
+                        <th>All Possible Answers</th>
+                        <th>Selected Answer</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    ${carAnswersHtml}
                 </tbody>
             </table>
         </section>

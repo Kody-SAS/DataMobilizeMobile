@@ -4,7 +4,7 @@ import { useTranslation } from "react-i18next";
 import { ButtonAction } from "./ButtonAction";
 import { ButtonTypeEnum, TextBlockTypeEnum } from "../type.d";
 import { Spacer } from "./Spacer";
-import MapView, { Polyline, PROVIDER_GOOGLE } from "react-native-maps";
+import MapView, { Marker, Polyline, PROVIDER_GOOGLE } from "react-native-maps";
 import { Colors } from "../constants/Colors";
 import { useEffect, useState } from "react";
 import { registerForForegroundLocationPermissionAsync } from "../utils/Permissions";
@@ -43,6 +43,7 @@ export const LocationCard = ({coordinates}: LocationCardProps) => {
         registerForForegroundLocationPermissionAsync()
         .then(data => {
             if (data != null) {
+                console.log("Location permission granted");
                 locateUser();
             }
         });
@@ -71,6 +72,16 @@ export const LocationCard = ({coordinates}: LocationCardProps) => {
                     longitudeDelta: 0.5
                 }}
             >
+            {currentLocation && (
+                <Marker
+                    coordinate={{
+                        latitude: currentLocation.coords.latitude,
+                        longitude: currentLocation.coords.longitude
+                    }}
+                    title="You are here"
+                    description="Your current location"
+                />
+            )}
             {(coordinates && coordinates.length > 0) && (
                 <Polyline
                     coordinates={coordinates}
