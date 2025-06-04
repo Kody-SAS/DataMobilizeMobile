@@ -208,6 +208,15 @@ export enum WeatherCondition {
     Other = "Other"
 }
 
+export enum RoadSideActivity {
+    Education = "Education",
+    Commercial = "Commercial",
+    Residential = "Residential",
+    IndustrialAndManufacturing = "Industrial and Manufacturing",
+    FarmingAndAgriculture = "Farming and Agriculture",
+    UndevelopedArea = "Undeveloped Area"
+}
+
 export type SafetyPerceptionReport =  {
     id?: string;
     userId: string;
@@ -263,7 +272,9 @@ export type IncidentReport = {
 export type AuditReport = {
     id?: string;
     userId: string;
+    auditLocation: string;
     auditRoadType: AuditRoadType;
+    roadSideActivity: RoadActivity;
     segmentPath?: {
         latitude: number;
         longitude: number;

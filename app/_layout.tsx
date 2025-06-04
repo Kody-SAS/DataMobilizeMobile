@@ -84,7 +84,7 @@ export default function RootLayout() {
             {Platform.OS == 'android' && 
               <StatusBar translucent={true} barStyle="dark-content" backgroundColor={Colors.light.background.tertiary}/>
             }
-            <Toast />
+            <Toast topOffset={120}/>
           </PersistGate>
         </ThemeProvider>
       </StoreProvider>

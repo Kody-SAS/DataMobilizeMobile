@@ -91,6 +91,195 @@ export const createAuditReport = (
         })
         .join('');
 
+
+        // Helper function to calculate safety level based on majority rule
+    const calculateSafetyLevel = (selectedAnswers: string[], questionsForType: { question: string; answers: string[] }[]) => {
+        let safeCount = 0;
+        let moderateCount = 0;
+        let unsafeCount = 0;
+
+        selectedAnswers.forEach((answer, index) => {
+            const questionOptions = questionsForType[index]?.answers;
+            if (questionOptions) {
+                // Assuming the order of answers in questionOptions is Safe, Moderate, Unsafe
+                // This needs to be robust if the order isn't fixed or if answers are not exactly "Safe", "Moderate", "Unsafe"
+                if (questionOptions[0] === answer) { // First option is usually 'Safe'
+                    safeCount++;
+                } else if (questionOptions[1] === answer) { // Second option is usually 'Moderate'
+                    moderateCount++;
+                } else if (questionOptions[2] === answer) { // Third option is usually 'Unsafe'
+                    unsafeCount++;
+                }
+            }
+        });
+
+        const totalCount = safeCount + moderateCount + unsafeCount;
+        if (totalCount === 0) return { safe: 0, moderate: 0, unsafe: 0, rating: 'N/A', ratingClass: '' };
+
+        const counts = [
+            { type: 'Safe', count: safeCount, class: 'safe-rating', emoji: '🟢' },
+            { type: 'Moderate', count: moderateCount, class: 'moderate-rating', emoji: '🟡' },
+            { type: 'Unsafe', count: unsafeCount, class: 'unsafe-rating', emoji: '🔴' }
+        ];
+
+        // Sort by count in descending order to find the majority
+        counts.sort((a, b) => b.count - a.count);
+
+        // If there's a tie for the highest count, the first one in the sorted array wins
+        // (based on the initial order if counts are equal, which is Safe, Moderate, Unsafe)
+        const highestCount = counts[0].count;
+        const majorityTypes = counts.filter(c => c.count === highestCount);
+
+        // If there's a clear majority
+        if (majorityTypes.length === 1) {
+            return {
+                safe: safeCount,
+                moderate: moderateCount,
+                unsafe: unsafeCount,
+                rating: `${majorityTypes[0].emoji} ${majorityTypes[0].type}`,
+                ratingClass: majorityTypes[0].class
+            };
+        } else {
+            // Handle ties: Prioritize Safe > Moderate > Unsafe
+            if (safeCount === highestCount) {
+                return {
+                    safe: safeCount,
+                    moderate: moderateCount,
+                    unsafe: unsafeCount,
+                    rating: '🟢 Safe',
+                    ratingClass: 'safe-rating'
+                };
+            } else if (moderateCount === highestCount) {
+                return {
+                    safe: safeCount,
+                    moderate: moderateCount,
+                    unsafe: unsafeCount,
+                    rating: '🟡 Moderate',
+                    ratingClass: 'moderate-rating'
+                };
+            } else { // Unsafe must be the highest or tied
+                return {
+                    safe: safeCount,
+                    moderate: moderateCount,
+                    unsafe: unsafeCount,
+                    rating: '🔴 Unsafe',
+                    ratingClass: 'unsafe-rating'
+                };
+            }
+        }
+    };
+
+    // Calculate results for each user type
+    const pedestrianResults = calculateSafetyLevel(
+        auditReportData.answers.pedestrian,
+        questionsData.find(q => q.type === UserType.Pedestrian)?.questions || []
+    );
+    const cyclistResults = calculateSafetyLevel(
+        auditReportData.answers.cyclist,
+        questionsData.find(q => q.type === UserType.Cyclist)?.questions || []
+    );
+    const motocyclistResults = calculateSafetyLevel(
+        auditReportData.answers.motocyclist,
+        questionsData.find(q => q.type === UserType.Motocyclist)?.questions || []
+    );
+    const carResults = calculateSafetyLevel(
+        auditReportData.answers.car,
+        questionsData.find(q => q.type === UserType.Car)?.questions || []
+    );
+
+    // Calculate global results
+    const globalSafeCount = pedestrianResults.safe + cyclistResults.safe + motocyclistResults.safe + carResults.safe;
+    const globalModerateCount = pedestrianResults.moderate + cyclistResults.moderate + motocyclistResults.moderate + carResults.moderate;
+    const globalUnsafeCount = pedestrianResults.unsafe + cyclistResults.unsafe + motocyclistResults.unsafe + carResults.unsafe;
+
+    const globalResults = calculateSafetyLevel(
+        [], // No specific answers for global, just counts
+        [], // No specific questions for global
+    );
+    // Manually set global results based on aggregated counts
+    globalResults.safe = globalSafeCount;
+    globalResults.moderate = globalModerateCount;
+    globalResults.unsafe = globalUnsafeCount;
+
+    const globalCounts = [
+        { type: 'Safe', count: globalSafeCount, class: 'safe-rating', emoji: '🟢' },
+        { type: 'Moderate', count: globalModerateCount, class: 'moderate-rating', emoji: '🟡' },
+        { type: 'Unsafe', count: globalUnsafeCount, class: 'unsafe-rating', emoji: '🔴' }
+    ];
+    globalCounts.sort((a, b) => b.count - a.count);
+    const globalHighestCount = globalCounts[0].count;
+    const globalMajorityTypes = globalCounts.filter(c => c.count === globalHighestCount);
+
+    if (globalMajorityTypes.length === 1) {
+        globalResults.rating = `${globalMajorityTypes[0].emoji} ${globalMajorityTypes[0].type}`;
+        globalResults.ratingClass = globalMajorityTypes[0].class;
+    } else {
+        if (globalSafeCount === globalHighestCount) {
+            globalResults.rating = '🟢 Safe';
+            globalResults.ratingClass = 'safe-rating';
+        } else if (globalModerateCount === globalHighestCount) {
+            globalResults.rating = '🟡 Moderate';
+            globalResults.ratingClass = 'moderate-rating';
+        } else {
+            globalResults.rating = '🔴 Unsafe';
+            globalResults.ratingClass = 'unsafe-rating';
+        }
+    }
+
+
+        // Generate HTML for the report results table
+    const reportResultsHtml = `
+        <h2 class="section-title">Report Results</h2>
+        <table class="data-table report-results-table">
+            <thead>
+                <tr>
+                    <th>Road User</th>
+                    <th>Safe (🟢) Count</th>
+                    <th>Moderate (🟡) Count</th>
+                    <th>Unsafe (🔴) Count</th>
+                    <th>Final Rating</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>Pedestrian</td>
+                    <td>${pedestrianResults.safe}</td>
+                    <td>${pedestrianResults.moderate}</td>
+                    <td>${pedestrianResults.unsafe}</td>
+                    <td class="${pedestrianResults.ratingClass}">${pedestrianResults.rating}</td>
+                </tr>
+                <tr>
+                    <td>Cyclist</td>
+                    <td>${cyclistResults.safe}</td>
+                    <td>${cyclistResults.moderate}</td>
+                    <td>${cyclistResults.unsafe}</td>
+                    <td class="${cyclistResults.ratingClass}">${cyclistResults.rating}</td>
+                </tr>
+                <tr>
+                    <td>Motocyclist</td>
+                    <td>${motocyclistResults.safe}</td>
+                    <td>${motocyclistResults.moderate}</td>
+                    <td>${motocyclistResults.unsafe}</td>
+                    <td class="${motocyclistResults.ratingClass}">${motocyclistResults.rating}</td>
+                </tr>
+                <tr>
+                    <td>Car Driver</td>
+                    <td>${carResults.safe}</td>
+                    <td>${carResults.moderate}</td>
+                    <td>${carResults.unsafe}</td>
+                    <td class="${carResults.ratingClass}">${carResults.rating}</td>
+                </tr>
+                <tr style="font-weight: bold; background-color: #ecf0f1;">
+                    <td>Global</td>
+                    <td>${globalResults.safe}</td>
+                    <td>${globalResults.moderate}</td>
+                    <td>${globalResults.unsafe}</td>
+                    <td class="${globalResults.ratingClass}">${globalResults.rating}</td>
+                </tr>
+            </tbody>
+        </table>
+    `;
+
     // Generate image gallery HTML
     const imageGalleryHtml = auditReportData.images
         .map(
@@ -137,6 +326,11 @@ export const createAuditReport = (
             letter-spacing: 1px;
         }
         .report-header p {
+            font-size: 0.95em;
+            color: #7f8c8d;
+            margin: 5px 0;
+        }
+        .report-details p {
             font-size: 0.95em;
             color: #7f8c8d;
             margin: 5px 0;
@@ -247,13 +441,16 @@ export const createAuditReport = (
             <p>Date: ${formatDate(auditReportData.createdAt)}</p>
             <p>Author: ${auditReportData.author}</p>
             <p>Weather Condition: ${auditReportData.weatherCondition}</p>
+            <p>Road Side Activity: ${auditReportData.roadSideActivity}</p>
+
         </header>
         <section class="report-details">
             <h2 class="section-title">Audit Details</h2>
+            <p>${auditReportData.comment}</p>
 
             <div class="location-image-section">
                 <img src="${locationImageUrl}" alt="Location of the Report" onerror="this.src='https://placehold.co/600x200/CCCCCC/333333?text=Location+Image+Error';">
-                <p>Image: location of the report</p>
+                <p>Image: Location of the audit, ${auditReportData.auditLocation}</p>
             </div>
 
             <h3 style="font-size: 1.2em; color: #34495e; margin-top: 20px; margin-bottom: 10px;">Pedestrian Questions</h3>
@@ -311,6 +508,8 @@ export const createAuditReport = (
                     ${carAnswersHtml}
                 </tbody>
             </table>
+
+            ${reportResultsHtml}
         </section>
         <section class="report-images">
             <h2 class="section-title">Associated Images</h2>

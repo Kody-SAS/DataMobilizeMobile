@@ -1,27 +1,31 @@
 import { useLocalSearchParams } from "expo-router";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { View, StyleSheet, Dimensions } from "react-native";
 import Pdf from "react-native-pdf";
 import * as FileSystem from 'expo-file-system';
 import { FAB, PaperProvider, Portal } from "react-native-paper";
 import ToastMessage from "../../utils/Toast";
 import { useTranslation } from "react-i18next";
+import { AuditReport, AuditRoadType } from "../../type.d";
+import { createAuditReport } from "../../utils/Report";
+import { auditJunctionQuestionData, auditSegmentQuestionData } from "../../utils/DataSeed";
+import RNHTMLtoPDF from 'react-native-html-to-pdf';
 
 export default function Export() {
-    const [pdfUrl, setPdfUrl] = useState<string>("");
     const [state, setState] = useState({ open: false });
 
     const onStateChange = ({ open }: { open: boolean }) => setState({ open });
 
     const { open } = state;
 
-    const data = useLocalSearchParams() as {report: string;};
+    const data = useLocalSearchParams() as {report: string; fileName: string; imageUrl: string;};
     const { t } = useTranslation();
-    const { report } = data;
+    const { fileName, report, imageUrl } = data;
+    const parsedReport = JSON.parse(report) as AuditReport;
 
-    const getFilePath = (fileName: string) => {
-        FileSystem.getInfoAsync(`${FileSystem.cacheDirectory}${fileName}`).then((fileInfo) => console.log(fileInfo));
-        console.log(`File path: ${FileSystem.cacheDirectory}${fileName}`);
+    const getFilePath = (value: string) => {
+        console.log("file: ", fileName);
+        FileSystem.getInfoAsync(`${FileSystem.documentDirectory}${fileName}`).then((fileInfo) => console.log(fileInfo));
         return `${FileSystem.cacheDirectory}${fileName}`;
     };
 
@@ -30,22 +34,25 @@ export default function Export() {
     }
 
     const handleSavePdf = async () => {
-        if (pdfUrl) {
-            try {
-                const fileUri = `${FileSystem.documentDirectory}${report}`;
-                await FileSystem.copyAsync({
-                    from: pdfUrl,
-                    to: fileUri,
-                });
-                ToastMessage("success", t("success"), t("pdfSaved"));
-                console.log(`PDF saved to ${fileUri}`);
-            } catch (error) {
-                ToastMessage("error", t("error"), t("pdfSaveError"));
-                console.error("Error saving PDF:", error);
-            }
-        } else {
-            ToastMessage("info", t("info"), t("noPdfUrl"));
-            console.warn("No PDF URL available to save.");
+        try {
+            const fileUri = `${FileSystem.documentDirectory}${fileName}`;
+            const savedFileName = `Audit_report_${new Date().toString().replace(/ /g, "_").replace(/:/g, "-")}`;
+            let options = {
+                html: createAuditReport(parsedReport, imageUrl, parsedReport.auditRoadType == AuditRoadType.RoadSegment ? auditSegmentQuestionData : auditJunctionQuestionData),
+                directory: "Documents",
+                fileName: savedFileName,
+                height: 842, // A4 height in points
+                width: 595, // A4 width in points
+            };
+
+            let file = await RNHTMLtoPDF.convert(options)
+
+            FileSystem.getInfoAsync(file.filePath).then((fileInfo) => console.log(fileInfo));
+            ToastMessage("success", t("success"), t("pdfSaved"));
+            console.log(`PDF saved to ${fileUri}`);
+        } catch (error) {
+            ToastMessage("error", t("error"), t("pdfSaveError"));
+            console.error("Error saving PDF:", error);
         }
     };
 
@@ -54,18 +61,11 @@ export default function Export() {
         console.warn("CSV saving is not implemented yet.");
     }
 
-    useEffect(() => {
-        if (report) {
-            setPdfUrl(getFilePath(`${report}`));
-            console.log("URL: ", pdfUrl)
-        }
-    }, [report]);
-
     return (
         <PaperProvider>
             <View style={styles.container}>
                 <Pdf
-                    source={{uri: getFilePath(`${report}`), cache: true}}
+                    source={{uri: getFilePath(fileName), cache: true}}
                     onLoadComplete={(numberOfPages,filePath) => {
                         console.log(`Number of pages: ${numberOfPages}`);
                     }}

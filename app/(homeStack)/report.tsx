@@ -5,7 +5,7 @@ import { Colors } from "../../constants/Colors";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { requestForegroundPermissionsAsync } from "expo-location";
 import { useTranslation } from "react-i18next";
-import { ButtonTypeEnum, ConditionType, IncidentSeverity, IncidentReport, IncidentType, QuickReport, ReasonType, ReportType, RoadType, SafetyLevel, SafetyPerceptionReport, SeverityLevel, TextBlockTypeEnum, UserType, IncidentResponseTime, IncidentResponseType, AuditRoadType, AuditReport, WeatherCondition } from "../../type.d";
+import { ButtonTypeEnum, ConditionType, IncidentSeverity, IncidentReport, IncidentType, QuickReport, ReasonType, ReportType, RoadType, SafetyLevel, SafetyPerceptionReport, SeverityLevel, TextBlockTypeEnum, UserType, IncidentResponseTime, IncidentResponseType, AuditRoadType, AuditReport, WeatherCondition, RoadSideActivity } from "../../type.d";
 import { LocationCard } from "../../components/LocationCard";
 import { Spacer } from "../../components/Spacer";
 import { SelectedOption, SelectInput } from "../../components/SelectInput";
@@ -26,6 +26,7 @@ import { GestureHandlerRootView } from "react-native-gesture-handler";
 import { BottomSheetModal, BottomSheetModalProvider, BottomSheetScrollView, BottomSheetView } from "@gorhom/bottom-sheet";
 import RNHTMLtoPDF from 'react-native-html-to-pdf';
 import { createAuditReport } from "../../utils/Report";
+import { Picker } from "@react-native-picker/picker";
 
 const LOCATION_TRACKING_TASK = "location-tracking";
 
@@ -82,6 +83,7 @@ export default function Report() {
     const [segmentPath, setSegmentPath] = useState<{latitude: number, longitude: number}[]>([]);
     const [authorName, setAuthorName] = useState<string>("");
     const [weatherCondition, setWeatherCondition] = useState<string>("");
+    const [roadSideActivity, setRoadSideActivity] = useState<string>("");
     const [isLocationTrackStarted, setIsLocationTrackStarted] = useState<boolean>(false);
     const [isQuestionaireAnswered, setIsQuestionaireAnswered] = useState<boolean>(false);
     const [roadSegmentAuditAnswers, setRoadSegmentAnswers] = useState(initialRoadSegmentAuditAnswers());
@@ -377,6 +379,10 @@ export default function Report() {
 
     const handleWeatherConditionSelection = (value: string) => {
         setWeatherCondition(value);
+    }
+
+    const handleRoadSideActivitySelection = (value: string) => {
+        setRoadSideActivity(value);
     }
 
     const handleSafetyReasonPressed = (e: GestureResponderEvent, type: ReasonType, selectedReason: string) => {
@@ -737,7 +743,9 @@ export default function Report() {
         const report : AuditReport = {
             id: user.id,
             userId: user.id!,
+            auditLocation: auditLocation,
             auditRoadType: roadTypeConverted,
+            roadSideActivity: roadSideActivity as RoadSideActivity,
             createdAt: date,
             author: authorName,
             weatherCondition: weatherCondition as WeatherCondition,
@@ -753,8 +761,7 @@ export default function Report() {
         };
 
         if(isValidReport(report, ReportType.Audit)) {
-            await handleCaptureLocationImage(roadTypeConverted);
-            const imageUrl = roadTypeConverted == AuditRoadType.RoadSegment ? roadSegmentLocationImageUrl : junctionLocationImageUrl;
+            const imageUrl = await handleCaptureLocationImage(roadTypeConverted);
 
             const fileName = `audit_report`;
             let options = {
@@ -766,7 +773,8 @@ export default function Report() {
 
             let file = await RNHTMLtoPDF.convert(options)
             setReportError("");
-            router.push({pathname: "/(homeStack)/export", params: {report: file.filePath.split('/')[file.filePath.split('/').length - 1] }});
+            console.log("Converted file: ", file);
+            router.push({pathname: "/(homeStack)/export", params: {fileName: file.filePath.split('/')[file.filePath.split('/').length - 1], report: JSON.stringify(report), imageUrl }});
         }
         else {
             setReportError(t("reportError"));
@@ -784,17 +792,19 @@ export default function Report() {
                 if (roadSegmentLocationRef && roadSegmentLocationRef.current) {
                     const uri = await roadSegmentLocationRef.current?.capture();
                     setRoadSegmentLocationImageUrl(uri);
+                    return uri;
                 }
-                break;
+                return "";
             }
             case AuditRoadType.Junction: {
                 if (junctionLocationRef && junctionLocationRef.current) {
                     const uri = await junctionLocationRef.current?.capture();
                     setJunctionLocationImageUrl(uri);
+                    return uri;
                 }
-                break;
+                return "";
             }
-            default: break;
+            default: return "";
         }
     }
 
@@ -1308,17 +1318,39 @@ export default function Report() {
                         {t("chooseWeatherCondition")}
                     </TextBlock>
                     <Spacer variant="medium" />
-                    <RadioButton.Group 
+                    <Picker 
+                        style={{ borderWidth: 1, borderColor: Colors.light.background.tertiary, borderRadius: 8, backgroundColor: Colors.light.background.secondary, fontSize: 14 }}
                         onValueChange={handleWeatherConditionSelection} 
-                        value={weatherCondition ? weatherCondition.toString() : ""}>
-                        <View>
-                            <RadioButton.Item label={t("clearWeather")} labelStyle={{fontSize: 14}} value={WeatherCondition.Clear} />
-                            <RadioButton.Item label={t("cloudyWeather")} labelStyle={{fontSize: 14}} value={WeatherCondition.Cloudy} />
-                            <RadioButton.Item label={t("foggyWeather")} labelStyle={{fontSize: 14}} value={WeatherCondition.Foggy} />
-                            <RadioButton.Item label={t("rainyWeather")} labelStyle={{fontSize: 14}} value={WeatherCondition.Rainy} />
-                            <RadioButton.Item label={t("otherWeather")} labelStyle={{fontSize: 14}} value={WeatherCondition.Other} />
-                        </View>
-                    </RadioButton.Group>
+                        selectedValue={weatherCondition ? weatherCondition.toString() : ""}>
+                        <Picker.Item label={t("clearWeather")} value={WeatherCondition.Clear} style={{ fontSize: 14 }} />
+                        <Picker.Item label={t("cloudyWeather")} value={WeatherCondition.Cloudy} style={{ fontSize: 14 }} />
+                        <Picker.Item label={t("foggyWeather")} value={WeatherCondition.Foggy} style={{ fontSize: 14 }} />
+                        <Picker.Item label={t("rainyWeather")} value={WeatherCondition.Rainy} style={{ fontSize: 14 }} />
+                        <Picker.Item label={t("otherWeather")} value={WeatherCondition.Other} style={{ fontSize: 14 }} />
+                    </Picker>
+                    <Spacer variant="large" />
+                    <Spacer variant="medium" />
+                </>
+            )}
+
+            {(type == ReportType.Audit.toString()) && (
+                <>
+                    {/* Select the audit road side activity */}
+                    <TextBlock type={TextBlockTypeEnum.title}>
+                        {t("chooseRoadSideActivity")}
+                    </TextBlock>
+                    <Spacer variant="medium" />
+                    <Picker 
+                        style={{ borderWidth: 1, borderColor: Colors.light.background.tertiary, borderRadius: 8, backgroundColor: Colors.light.background.secondary, fontSize: 14 }}
+                        onValueChange={handleRoadSideActivitySelection} 
+                        selectedValue={roadSideActivity ? roadSideActivity.toString() : ""}>
+                        <Picker.Item label={RoadSideActivity.Education.toString()} value={RoadSideActivity.Education} style={{ fontSize: 14 }} />
+                        <Picker.Item label={RoadSideActivity.Commercial.toString()} value={RoadSideActivity.Commercial} style={{ fontSize: 14 }} />
+                        <Picker.Item label={RoadSideActivity.Residential.toString()} value={RoadSideActivity.Residential} style={{ fontSize: 14 }} />
+                        <Picker.Item label={RoadSideActivity.IndustrialAndManufacturing.toString()} value={RoadSideActivity.IndustrialAndManufacturing} style={{ fontSize: 14 }} />
+                        <Picker.Item label={RoadSideActivity.FarmingAndAgriculture.toString()} value={RoadSideActivity.FarmingAndAgriculture} style={{ fontSize: 14 }} />
+                        <Picker.Item label={RoadSideActivity.UndevelopedArea.toString()} value={RoadSideActivity.UndevelopedArea} style={{ fontSize: 14 }} />
+                    </Picker>
                     <Spacer variant="large" />
                     <Spacer variant="medium" />
                 </>
