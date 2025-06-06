@@ -10,6 +10,7 @@ import { AuditReport, AuditRoadType } from "../../type.d";
 import { createAuditReport } from "../../utils/Report";
 import { auditJunctionQuestionData, auditSegmentQuestionData } from "../../utils/DataSeed";
 import RNHTMLtoPDF from 'react-native-html-to-pdf';
+import Papa from "papaparse";
 
 export default function Export() {
     const [state, setState] = useState({ open: false });
@@ -29,14 +30,10 @@ export default function Export() {
         return `${FileSystem.cacheDirectory}${fileName}`;
     };
 
-    const handleShowExportOptions = () => {
-
-    }
+    const savedFileName = `Audit_report_${new Date().toString().replace(/ /g, "_").replace(/:/g, "-")}`;
 
     const handleSavePdf = async () => {
         try {
-            const fileUri = `${FileSystem.documentDirectory}${fileName}`;
-            const savedFileName = `Audit_report_${new Date().toString().replace(/ /g, "_").replace(/:/g, "-")}`;
             let options = {
                 html: createAuditReport(parsedReport, imageUrl, parsedReport.auditRoadType == AuditRoadType.RoadSegment ? auditSegmentQuestionData : auditJunctionQuestionData),
                 directory: "Documents",
@@ -49,7 +46,6 @@ export default function Export() {
 
             FileSystem.getInfoAsync(file.filePath).then((fileInfo) => console.log(fileInfo));
             ToastMessage("success", t("success"), t("pdfSaved"));
-            console.log(`PDF saved to ${fileUri}`);
         } catch (error) {
             ToastMessage("error", t("error"), t("pdfSaveError"));
             console.error("Error saving PDF:", error);
@@ -57,8 +53,27 @@ export default function Export() {
     };
 
     const handleSaveCsv = async () => {
-        // Implement CSV saving logic here
-        console.warn("CSV saving is not implemented yet.");
+
+        try {
+            const csvContent = Papa.unparse(combineQuestionsAndAnswers());
+
+            await FileSystem.writeAsStringAsync(
+                `${FileSystem.documentDirectory}${savedFileName}.csv`,
+                csvContent
+            )
+            ToastMessage("success", t("success"), t("csvSaved"));
+            console.log(`CSV saved to ${FileSystem.documentDirectory}${savedFileName}.pdf`);
+        } catch (e) {
+            ToastMessage("error", t("error"), t("pdfSaveError"));
+            console.error("Error saving CSV file:", e);
+        }
+    }
+
+    const combineQuestionsAndAnswers = () => {
+        const questionsData = parsedReport.auditRoadType == AuditRoadType.RoadSegment ? auditSegmentQuestionData : auditJunctionQuestionData;
+        return questionsData.map((data) => {
+            
+        });
     }
 
     return (
