@@ -27,7 +27,10 @@ export default {
         googleMaps: {
           apiKey: process.env.EXPO_PUBLIC_GOOGLE_MAPS_API_KEY
         }
-      }
+      },
+      permissions: [
+        "android.permission.WRITE_EXTERNAL_STORAGE"
+      ]
     },
     web: {
       bundler: "metro",
@@ -44,7 +47,14 @@ export default {
       "expo-font",
       "expo-localization",
       "expo-location",
-      "expo-image-picker"
+      "expo-image-picker",
+      [
+        "expo-media-library",
+        {
+          "photosPermission": "Allow $(PRODUCT_NAME) to access your files.",
+          "savePhotosPermission": "Allow $(PRODUCT_NAME) to save files."
+        }
+      ]
     ],
     experiments: {
       typedRoutes: false

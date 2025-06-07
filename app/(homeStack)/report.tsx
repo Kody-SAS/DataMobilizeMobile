@@ -82,8 +82,8 @@ export default function Report() {
     const [auditRoadType, setAuditRoadType] = useState<string>();
     const [segmentPath, setSegmentPath] = useState<{latitude: number, longitude: number}[]>([]);
     const [authorName, setAuthorName] = useState<string>("");
-    const [weatherCondition, setWeatherCondition] = useState<string>("");
-    const [roadSideActivity, setRoadSideActivity] = useState<string>("");
+    const [weatherCondition, setWeatherCondition] = useState<string>(WeatherCondition.Clear.toString());
+    const [roadSideActivity, setRoadSideActivity] = useState<string>(RoadSideActivity.Education.toString());
     const [isLocationTrackStarted, setIsLocationTrackStarted] = useState<boolean>(false);
     const [isQuestionaireAnswered, setIsQuestionaireAnswered] = useState<boolean>(false);
     const [roadSegmentAuditAnswers, setRoadSegmentAnswers] = useState(initialRoadSegmentAuditAnswers());
@@ -773,7 +773,7 @@ export default function Report() {
 
             let file = await RNHTMLtoPDF.convert(options)
             setReportError("");
-            console.log("Converted file: ", file);
+            console.log("Converted cached file: ", file);
             router.push({pathname: "/(homeStack)/export", params: {fileName: file.filePath.split('/')[file.filePath.split('/').length - 1], report: JSON.stringify(report), imageUrl }});
         }
         else {

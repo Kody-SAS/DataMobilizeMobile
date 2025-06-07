@@ -1,15 +1,17 @@
 import { useLocalSearchParams } from "expo-router";
 import { useState } from "react";
-import { View, StyleSheet, Dimensions } from "react-native";
+import { View, StyleSheet, Dimensions, Platform } from "react-native";
 import Pdf from "react-native-pdf";
+import * as Sharing from 'expo-sharing';
+import * as MediaLibrary from 'expo-media-library';
 import * as FileSystem from 'expo-file-system';
+import {Directory, File, Paths} from 'expo-file-system/next';
 import { FAB, PaperProvider, Portal } from "react-native-paper";
 import ToastMessage from "../../utils/Toast";
 import { useTranslation } from "react-i18next";
-import { AuditReport, AuditRoadType } from "../../type.d";
+import { AuditReport, AuditRoadType, UserType } from "../../type.d";
 import { createAuditReport } from "../../utils/Report";
 import { auditJunctionQuestionData, auditSegmentQuestionData } from "../../utils/DataSeed";
-import RNHTMLtoPDF from 'react-native-html-to-pdf';
 import Papa from "papaparse";
 
 export default function Export() {
@@ -25,7 +27,6 @@ export default function Export() {
     const parsedReport = JSON.parse(report) as AuditReport;
 
     const getFilePath = (value: string) => {
-        console.log("file: ", fileName);
         FileSystem.getInfoAsync(`${FileSystem.documentDirectory}${fileName}`).then((fileInfo) => console.log(fileInfo));
         return `${FileSystem.cacheDirectory}${fileName}`;
     };
@@ -34,18 +35,51 @@ export default function Export() {
 
     const handleSavePdf = async () => {
         try {
-            let options = {
-                html: createAuditReport(parsedReport, imageUrl, parsedReport.auditRoadType == AuditRoadType.RoadSegment ? auditSegmentQuestionData : auditJunctionQuestionData),
-                directory: "Documents",
-                fileName: savedFileName,
-                height: 842, // A4 height in points
-                width: 595, // A4 width in points
-            };
+            
+            if (Platform.OS == 'ios') {
 
-            let file = await RNHTMLtoPDF.convert(options)
+                await Sharing.shareAsync(getFilePath(fileName), {
+                    mimeType: 'application/pdf',
+                    dialogTitle: t('saveOrSharePdf')
+                })
+            }
+            else if (Platform.OS == 'android') {
+                const perm = await MediaLibrary.getPermissionsAsync();
 
-            FileSystem.getInfoAsync(file.filePath).then((fileInfo) => console.log(fileInfo));
-            ToastMessage("success", t("success"), t("pdfSaved"));
+                if (!perm.granted) {
+                    console.log(perm)
+                    const permission = await MediaLibrary.requestPermissionsAsync();
+                    if (!permission.granted) {
+                       alert("Permissions denied");
+                       return;
+                    }
+                }
+
+                const permissions =
+                await FileSystem.StorageAccessFramework.requestDirectoryPermissionsAsync();
+                if (!permissions.granted) {
+                    alert("Permissions denied");
+                    return;
+                }
+
+                const printFile = await FileSystem.StorageAccessFramework.readAsStringAsync(getFilePath(fileName), {encoding: 'base64'});
+                console.log(printFile.length);
+                const uri = await FileSystem.StorageAccessFramework.createFileAsync(
+                    permissions.directoryUri,
+                    savedFileName,
+                    "application/pdf"
+                )
+
+                await FileSystem.writeAsStringAsync(
+                    uri,
+                    printFile,
+                    {encoding: 'base64'}
+                );
+
+                ToastMessage("success", t("success"), t("csvSaved"));
+                console.log(`CSV saved to ${FileSystem.documentDirectory}Documents/${savedFileName}.csv ${Paths.document.uri}Documents`);
+                ToastMessage("success", t("success"), t("pdfSaved"));
+            }
         } catch (error) {
             ToastMessage("error", t("error"), t("pdfSaveError"));
             console.error("Error saving PDF:", error);
@@ -57,14 +91,40 @@ export default function Export() {
         try {
             const csvContent = Papa.unparse(combineQuestionsAndAnswers());
 
-            await FileSystem.writeAsStringAsync(
-                `${FileSystem.documentDirectory}${savedFileName}.csv`,
-                csvContent
-            )
-            ToastMessage("success", t("success"), t("csvSaved"));
-            console.log(`CSV saved to ${FileSystem.documentDirectory}${savedFileName}.pdf`);
+            if (Platform.OS == 'ios') {
+
+                const file = new File(FileSystem.cacheDirectory!, `${savedFileName}.csv`);
+                file.create();
+                file.write(csvContent);
+    
+                await Sharing.shareAsync(`file://${FileSystem.cacheDirectory}${savedFileName}.csv`, {
+                    dialogTitle: t('saveOrShareCsv')
+                })
+            }
+            else if (Platform.OS == 'android') {
+
+                const permissions =
+                await FileSystem.StorageAccessFramework.requestDirectoryPermissionsAsync();
+                if (!permissions.granted) {
+                    alert("Permissions denied");
+                    return;
+                }
+    
+                const uri = await FileSystem.StorageAccessFramework.createFileAsync(
+                    permissions.directoryUri,
+                    savedFileName,
+                    "text/csv"
+                )
+                await FileSystem.writeAsStringAsync(
+                    uri,
+                    csvContent
+                )
+                ToastMessage("success", t("success"), t("csvSaved"));
+                console.log(`CSV saved to ${FileSystem.documentDirectory}Documents/${savedFileName}.csv ${Paths.document.uri}Documents`);
+            }
+
         } catch (e) {
-            ToastMessage("error", t("error"), t("pdfSaveError"));
+            ToastMessage("error", t("error"), t("csvSaveError"));
             console.error("Error saving CSV file:", e);
         }
     }
@@ -72,7 +132,46 @@ export default function Export() {
     const combineQuestionsAndAnswers = () => {
         const questionsData = parsedReport.auditRoadType == AuditRoadType.RoadSegment ? auditSegmentQuestionData : auditJunctionQuestionData;
         return questionsData.map((data) => {
-            
+            switch(data.type) {
+                case UserType.Pedestrian: {
+                    return {
+                        type: data.type,
+                        questions: data.questions.map((item, index) => ({
+                            ...item,
+                            selected: parsedReport.answers.pedestrian[index]
+                        }))
+                    }
+                }
+                case UserType.Cyclist: {
+                    return {
+                        type: data.type,
+                        questions: data.questions.map((item, index) => ({
+                            ...item,
+                            selected: parsedReport.answers.cyclist[index]
+                        }))
+                    }
+                }
+                case UserType.Motocyclist: {
+                    return {
+                        type: data.type,
+                        questions: data.questions.map((item, index) => ({
+                            ...item,
+                            selected: parsedReport.answers.motocyclist[index]
+                        }))
+                    }
+                }
+                case UserType.Car: {
+                    return {
+                        type: data.type,
+                        questions: data.questions.map((item, index) => ({
+                            ...item,
+                            selected: parsedReport.answers.car[index]
+                        }))
+                    }
+                }
+                default:
+                    return [];
+            }
         });
     }
 
