@@ -195,6 +195,12 @@
     "pdfSaved": "PDF saved successfully",
     "pdfSaveError": "Error saving PDF",
     "noPdfUrl": "No PDF available to be saved",
-    "chooseRoadSideActivity": "Choose the road side activity"
+    "csvSaved": "CSV saved successfully",
+    "chooseRoadSideActivity": "Choose the road side activity",
+    "csvSaveError": "Error saving CSV",
+    "noCSVUrl": "No CSV available to be saved",
+    "permissionDenied": "Permission for the activity was denied",
+    "saveOrSharePdf": "Save or share PDF file",
+    "saveOrShareCsv": "Save or share CSV file"
   }
 }

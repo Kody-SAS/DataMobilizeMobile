@@ -49,7 +49,7 @@ export default function Export() {
                     console.log(perm)
                     const permission = await MediaLibrary.requestPermissionsAsync();
                     if (!permission.granted) {
-                       alert("Permissions denied");
+                       alert(t("permissionDenied"));
                        return;
                     }
                 }
@@ -57,7 +57,7 @@ export default function Export() {
                 const permissions =
                 await FileSystem.StorageAccessFramework.requestDirectoryPermissionsAsync();
                 if (!permissions.granted) {
-                    alert("Permissions denied");
+                    alert(t("permissionDenied"));
                     return;
                 }
 
@@ -75,9 +75,8 @@ export default function Export() {
                     {encoding: 'base64'}
                 );
 
-                ToastMessage("success", t("success"), t("csvSaved"));
-                console.log(`CSV saved to ${FileSystem.documentDirectory}Documents/${savedFileName}.csv ${Paths.document.uri}Documents`);
                 ToastMessage("success", t("success"), t("pdfSaved"));
+                console.log(`CSV saved to ${FileSystem.documentDirectory}Documents/${savedFileName}.csv ${Paths.document.uri}Documents`);
             }
         } catch (error) {
             ToastMessage("error", t("error"), t("pdfSaveError"));
@@ -105,7 +104,7 @@ export default function Export() {
                 const permissions =
                 await FileSystem.StorageAccessFramework.requestDirectoryPermissionsAsync();
                 if (!permissions.granted) {
-                    alert("Permissions denied");
+                    alert(t("permissionDenied"));
                     return;
                 }
     
