@@ -5,7 +5,7 @@ import Pdf from "react-native-pdf";
 import * as Sharing from 'expo-sharing';
 import * as MediaLibrary from 'expo-media-library';
 import * as FileSystem from 'expo-file-system';
-import {Directory, File, Paths} from 'expo-file-system/next';
+import {File, Paths} from 'expo-file-system/next';
 import { FAB, PaperProvider, Portal } from "react-native-paper";
 import ToastMessage from "../../utils/Toast";
 import { useTranslation } from "react-i18next";
