@@ -10,7 +10,6 @@ import { FAB, PaperProvider, Portal } from "react-native-paper";
 import ToastMessage from "../../utils/Toast";
 import { useTranslation } from "react-i18next";
 import { AuditReport, AuditRoadType, UserType } from "../../type.d";
-import { createAuditReport } from "../../utils/Report";
 import { auditJunctionQuestionData, auditSegmentQuestionData } from "../../utils/DataSeed";
 import Papa from "papaparse";
 
