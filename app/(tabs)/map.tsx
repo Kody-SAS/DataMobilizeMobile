@@ -864,15 +864,15 @@ export default function Map() {
                   )}
                 </View>
                 <Spacer variant='large' />
-                {isSafeSafetyChecked && (
+                {selectedStatisticsTab == ReportType.SafetyPerception && (
                   <View>
                     <DataTable>
                       <DataTable.Header>
-                        <DataTable.Title>User</DataTable.Title>
-                        <DataTable.Title numeric>{t('safe')}</DataTable.Title>
-                        <DataTable.Title numeric>{t('unSafe')}</DataTable.Title>
-                        <DataTable.Title numeric>{t('veryUnsafe')}</DataTable.Title>
-                        <DataTable.Title numeric>{t('total')}</DataTable.Title>
+                        <DataTable.Title textStyle={{fontSize: 14}}>User</DataTable.Title>
+                        <DataTable.Title textStyle={{fontSize: 14}} numeric>{t('safe')}</DataTable.Title>
+                        <DataTable.Title textStyle={{fontSize: 14}} numeric>{t('unSafe')}</DataTable.Title>
+                        <DataTable.Title textStyle={{fontSize: 14}} numeric>{t('veryUnsafe')}</DataTable.Title>
+                        <DataTable.Title textStyle={{fontSize: 14}} numeric>{t('total')}</DataTable.Title>
                       </DataTable.Header>
 
                       {Object.values(UserType).map(val => {
@@ -885,11 +885,11 @@ export default function Map() {
                         }
                       }).map((item, key) => (
                         <DataTable.Row key={key}>
-                          <DataTable.Cell>{item.name}</DataTable.Cell>
-                          <DataTable.Cell numeric>{item.safe}</DataTable.Cell>
-                          <DataTable.Cell numeric>{item.unSafe}</DataTable.Cell>
-                          <DataTable.Cell numeric>{item.veryUnsafe}</DataTable.Cell>
-                          <DataTable.Cell numeric>{item.total}</DataTable.Cell>
+                          <DataTable.Cell textStyle={{fontSize: 14}}>{item.name}</DataTable.Cell>
+                          <DataTable.Cell textStyle={{fontSize: 14}} numeric>{item.safe}</DataTable.Cell>
+                          <DataTable.Cell textStyle={{fontSize: 14}} numeric>{item.unSafe}</DataTable.Cell>
+                          <DataTable.Cell textStyle={{fontSize: 14}} numeric>{item.veryUnsafe}</DataTable.Cell>
+                          <DataTable.Cell textStyle={{fontSize: 14}} numeric>{item.total}</DataTable.Cell>
                         </DataTable.Row>
                       ))}
 
@@ -899,6 +899,43 @@ export default function Map() {
                         onPageChange={() => {}}
                       />
                     </DataTable>
+                    <Spacer variant='medium' />
+                    <TextBlock type={TextBlockTypeEnum.title}>Total reports: {filteredSafetyReports.length}</TextBlock>
+                  </View>
+                )}
+                {selectedStatisticsTab == ReportType.Quick && (
+                  <View>
+                    
+                  </View>
+                )}
+                {selectedStatisticsTab == ReportType.Incident && (
+                  <View>
+                    <DataTable>
+                      <DataTable.Header>
+                        <DataTable.Title textStyle={{fontSize: 14}}>Report</DataTable.Title>
+                        <DataTable.Title textStyle={{fontSize: 14}} numeric>{t('total')}</DataTable.Title>
+                      </DataTable.Header>
+
+                      {Object.values(IncidentType).map(val => {
+                        return {
+                          name: val.toString(),
+                          total: filteredIncidentReports.filter(rep => (rep.incidentType == val)).length,
+                        }
+                      }).map((item, key) => (
+                        <DataTable.Row key={key}>
+                          <DataTable.Cell textStyle={{fontSize: 14}}>{item.name}</DataTable.Cell>
+                          <DataTable.Cell textStyle={{fontSize: 14}} numeric>{item.total}</DataTable.Cell>
+                        </DataTable.Row>
+                      ))}
+
+                      <DataTable.Pagination
+                        page={0}
+                        numberOfPages={1}
+                        onPageChange={() => {}}
+                      />
+                    </DataTable>
+                    <Spacer variant='medium' />
+                    <TextBlock type={TextBlockTypeEnum.title}>Total reports: {filteredSafetyReports.length}</TextBlock>
                   </View>
                 )}
               </View>
