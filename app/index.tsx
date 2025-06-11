@@ -23,6 +23,7 @@ export default function App() {
 
   const isOnboarded = useSelector(selectIsOnboarded);
   const isAccountVerified = useSelector(selectIsAccountVerified);
+  const user = useSelector(selectUser);
 
   const navigation = useNavigation()
   const dispatch = useDispatch()
@@ -34,7 +35,7 @@ export default function App() {
     SplashScreen.hideAsync();
 
     // for dev purpose
-    dispatch(setOnboardingStatus());
+    //dispatch(setOnboardingStatus());
   }, [])
 
   if (!fontsLoaded) return null;
@@ -43,7 +44,7 @@ export default function App() {
     return <Redirect href="/(onboarding)/onboarding" />
   }
   else{
-    if (isAccountVerified) return <Redirect href="/(tabs)/" />
+    if (isAccountVerified && user && user?.id) { console.log("there is a user", user); return <Redirect href="/(tabs)/" />}
     else return <Redirect href="/(account)/" />
   }
 }

@@ -22,7 +22,7 @@ import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import BottomSheet, { BottomSheetModal, BottomSheetModalProvider, BottomSheetView } from '@gorhom/bottom-sheet';
 import { conditionListData } from '../../utils/DataSeed';
 import { selectUser } from '../../redux/slices/accountSlice';
-import { selectIncidentReports, selectQuickReports, selectSafetyReports } from '../../redux/slices/homeSlice';
+import { getAllReports, selectReports } from '../../redux/slices/homeSlice';
 
 const conditionIssues : {label: string, status: "checked" | "unchecked"}[] = conditionListData.map(
   (condition) => ({
@@ -47,6 +47,9 @@ const incidentSeverityData : {label: string, status: "checked" | "unchecked"}[] 
 }));
 
 export default function Map() {
+  const [safetyReports, setSafetyReports] = useState<SafetyPerceptionReport[]>([]);
+  const [quickReports, setQuickReports] = useState<QuickReport[]>([]);
+  const [incidentReports, setIncidentReports] = useState<IncidentReport[]>([]);
   const [searchQuery, setSearchQuery] = useState<string>('');
   const [locationPredictions, setLocationPredictions] = useState<any[]>([]);
   const [selectedLocation, setSelectedLocation] = useState<any>(null);
@@ -110,9 +113,7 @@ export default function Map() {
   const {t} = useTranslation();
   const dispatch = useDispatch<ThunkDispatch<any, any, any>>();
   const user = useSelector(selectUser);
-  const safetyReports: SafetyPerceptionReport[] = useSelector(selectSafetyReports);
-  const quickReports: QuickReport[] = useSelector(selectQuickReports);
-  const incidentRports: IncidentReport[] = useSelector(selectIncidentReports);
+  const allReports = useSelector(selectReports);
 
   const locateUser = async() => {
     const foregroundPermissionStatus = await registerForForegroundLocationPermissionAsync();
@@ -383,7 +384,7 @@ export default function Map() {
       setIsIncidentDateError(false);
     }
 
-    const filteredReports = incidentRports.filter((report) => {
+    const filteredReports = incidentReports.filter((report) => {
       const reportDate = new Date(report.createdAt);
       const isDateInRange = reportDate >= incidentStartDate && reportDate <= incidentEndDate;
       const isValidIncidentType = incidentTypeOptions.some((type, index) => {
@@ -431,12 +432,21 @@ export default function Map() {
   }
 
 
+  // initialise all the reports
   useEffect(() => {
-    //dispatch(clearReports(null)); // for development only
+    setSafetyReports(allReports.filter((report: { userId: string; data: SafetyPerceptionReport | QuickReport | IncidentReport }) => (report?.data?.reportType == ReportType.SafetyPerception)).map((item: any) => item.data));
+    setQuickReports(allReports.filter((report: { userId: string; data: SafetyPerceptionReport | QuickReport | IncidentReport }) => (report?.data?.reportType == ReportType.Quick)).map((item: any) => item.data));
+    setIncidentReports(allReports.filter((report: { userId: string; data: SafetyPerceptionReport | QuickReport | IncidentReport }) => (report?.data?.reportType == ReportType.Incident)).map((item: any) => item.data));
     locateUser();
     handleSafetyFilter();
     handleQuickFilter();
     handleIncidentFilter();
+  }, [allReports])
+
+  useEffect(() => {
+    //dispatch(clearReports(null)); // for development only
+    dispatch(getAllReports());
+    
   }, []);
 
   // update the default statistics view

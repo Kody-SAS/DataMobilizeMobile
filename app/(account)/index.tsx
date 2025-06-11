@@ -9,7 +9,7 @@ import { useTranslation } from "react-i18next";
 import { TextInput } from "react-native-paper";
 import { ButtonAction } from "../../components/ButtonAction";
 import { useDispatch } from "react-redux";
-import { loginUser } from "../../redux/slices/accountSlice";
+import { loginUser, signInWithGoogle } from "../../redux/slices/accountSlice";
 import { ThunkDispatch } from "@reduxjs/toolkit";
 import ToastMessage from "../../utils/Toast";
 import { useNetInfo } from "@react-native-community/netinfo";
@@ -45,7 +45,7 @@ export default function Login() {
     }
 
     const handleSigninWithGoogle = () => {
-        ToastMessage("info", t("info"), t("comingSoon"));
+        dispatch(signInWithGoogle());
     }
 
     const handleSigninWithApple = () => {
@@ -191,7 +191,7 @@ export default function Login() {
                 onPress={handleSigninWithGoogle}
             />
             {
-                Platform.OS != "ios" &&
+                Platform.OS == "ios" &&
                 <>
                     <Spacer variant="medium" />
                     <ButtonAction

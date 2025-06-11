@@ -60,6 +60,18 @@ export default {
         {
           "iosUrlScheme": process.env.EXPO_PUBLIC_GOOGLE_ID_CLIENT_SCHEME
         }
+      ],
+      [
+        'expo-build-properties', 
+        { 
+          android: 
+          { 
+            compileSdkVersion: 35, 
+            targetSdkVersion: 34, 
+            buildToolsVersion: '35.0.0', 
+            kotlinVersion: '1.9.25', 
+          }, 
+        }
       ]
     ],
     experiments: {

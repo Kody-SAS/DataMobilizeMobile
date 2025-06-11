@@ -18,12 +18,12 @@ import { useNetInfo } from "@react-native-community/netinfo";
 
 export default function Profile() {
     const {t} = useTranslation();
-    const user: User = useSelector(selectUser);    
+    const user: User | null = useSelector(selectUser);    
     const {isConnected} = useNetInfo();
     
 
     const [isEditModalVisible, setIsEditModalVisible] = useState<boolean>(false);
-    const [username, setUsername] = useState<string>(user.username);
+    const [username, setUsername] = useState<string>(user?.username ?? "");
     const [errorMessage, setErrorMessage] = useState<string>("");
     
     const dispatch = useDispatch<ThunkDispatch<any, any, any>>();
@@ -47,8 +47,8 @@ export default function Profile() {
             return;
         }
 
-        const newUser: User = {...user, username: username}
-        dispatch(updateUser(newUser));
+        const newUser: User = {...user, username: username} as User
+        dispatch(updateUser(newUser!));
         setIsEditModalVisible(false);
     }
 
@@ -65,7 +65,7 @@ export default function Profile() {
                 {
                     text: t("logout"),
                     onPress: () => {
-                        setUser({} as User);
+                        dispatch(setUser(null));
                         router.replace("/(account)/");
                     },
                 }
@@ -89,7 +89,7 @@ export default function Profile() {
                 {
                     text: t("deleteAccount"),
                     onPress: () => {
-                        dispatch(deleteUser(user));
+                        dispatch(deleteUser(user!));
                         setIsAccountVerified(false);
                         router.replace("/(account)/register");
                     },
@@ -106,8 +106,8 @@ export default function Profile() {
         <PaperProvider>
         <SafeAreaView style={styles.container}>
             <Spacer variant="large"/>
-            <TextBlock type={TextBlockTypeEnum.h3}>{user.username}</TextBlock>
-            <TextBlock type={TextBlockTypeEnum.caption}>{user.email}</TextBlock>
+            <TextBlock type={TextBlockTypeEnum.h3}>{user?.username}</TextBlock>
+            <TextBlock type={TextBlockTypeEnum.caption}>{user?.email}</TextBlock>
             <Spacer variant="large"/>
             <Spacer variant="large"/>
             <ButtonAction

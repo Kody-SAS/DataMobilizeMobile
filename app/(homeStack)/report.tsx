@@ -481,8 +481,8 @@ export default function Report() {
                 const location = await locateUser();
                 if(location != null) {
                     const report : SafetyPerceptionReport = {
-                        id: user.id + Math.random().toString(),
-                        userId: user.id!,
+                        id: user?.id + Math.random().toString(),
+                        userId: user?.id!,
                         latitude: location.coords.latitude,
                         longitude: location.coords.longitude,
                         createdAt: date,
@@ -496,11 +496,11 @@ export default function Report() {
                     }
 
                     if(isValidReport(report, ReportType.SafetyPerception)) {
-                        dispatch(createReportAsync({userId: user.id!, data: report}));
+                        dispatch(createReportAsync({userId: user?.id!, data: report}));
                         setReportError(errorMessage);
                     }
                     else {
-                        setReportError(errorMessage));
+                        setReportError(errorMessage);
                     }
                 }
                 break;
@@ -509,8 +509,8 @@ export default function Report() {
                 const location = await locateUser();
                 if(location != null) {
                     const report : QuickReport = {
-                        id: user.id,
-                        userId: user.id!,
+                        id: user?.id,
+                        userId: user?.id!,
                         latitude: location.coords.latitude,
                         longitude: location.coords.longitude,
                         createdAt: date,
@@ -524,7 +524,7 @@ export default function Report() {
                     }
 
                     if(isValidReport(report, ReportType.Quick)) {
-                        dispatch(createReportAsync({userId: user.id!, data: report}));
+                        dispatch(createReportAsync({userId: user?.id!, data: report}));
                         setReportError(errorMessage);
                     }
                     else {
@@ -537,8 +537,8 @@ export default function Report() {
                 const location = await locateUser();
                 if(location != null) {
                     const report : IncidentReport = {
-                        id: user.id,
-                        userId: user.id!,
+                        id: user?.id,
+                        userId: user?.id!,
                         latitude: location.coords.latitude,
                         longitude: location.coords.longitude,
                         createdAt: date,
@@ -581,7 +581,7 @@ export default function Report() {
                     }
 
                     if(isValidReport(report, ReportType.Incident)) {
-                        dispatch(createReportAsync({userId: user.id!, data: report}));
+                        dispatch(createReportAsync({userId: user?.id!, data: report}));
                         setReportError(errorMessage);
                     }
                     else {
@@ -739,8 +739,8 @@ export default function Report() {
         }
 
         const report : AuditReport = {
-            id: user.id,
-            userId: user.id!,
+            id: user?.id,
+            userId: user?.id!,
             auditLocation: auditLocation,
             auditRoadType: roadTypeConverted,
             roadSideActivity: roadSideActivity as RoadSideActivity,

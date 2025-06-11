@@ -204,6 +204,7 @@
     "saveOrShareCsv": "Save or share CSV file",
     "total": "Total",
     "visualizeYourData": "Visualize your filtered data",
-    "failedToCreateReport": "Failed to create the report"
+    "failedToCreateReport": "Failed to create the report",
+    "accountCreated": "Welcome, account created"
   }
 }

@@ -12,7 +12,7 @@ GoogleSignin.configure({
 
 const initialState = {
     createUser: {} as CreateUser,
-    user: {} as User,
+    user: null as User | null,
     forgotUser: {} as ForgotUser,
     isAccountVerified: false,
     isGuess: false,
@@ -300,7 +300,8 @@ export const accountSlice = createSlice({
         },
         setUser: (state, action) => {
             //state.isOnboarded = true
-            state.user = action.payload
+            console.log("payload", action.payload);
+            state.user = action.payload as User | null;
         },
         setIsGuess: (state, action) => {
             state.isGuess = action.payload as boolean;
@@ -414,13 +415,15 @@ export const accountSlice = createSlice({
             )
         })
         .addCase(signInWithGoogle.fulfilled, (state, action) => {
-            state.user = {... action.payload as any};
+            if (action.payload == undefined) return;
+            state.user = action.payload as User | null;
             state.isAccountVerified = true;
+            console.log("ahahah")
             router.push("/(tabs)/");
         })
         .addCase(signInWithGoogle.rejected, (state, action) => {
             const t = i18n.t;
-
+            state.user = null;
             ToastMessage(
                 "error",
                 t("error"),
@@ -434,7 +437,7 @@ export const {setCreateUser, setUser, setIsGuess, setIsAccountVerified} = accoun
 
 //selectors
 export const selectCreateUser = (state: any) => state.account.createUser as CreateUser;
-export const selectUser = (state: any) => state.account.user as User;
+export const selectUser = (state: any) => state.account.user as User | null;
 export const selectForgotUser = (state: any) => state.account.forgotUser as ForgotUser
 export const selectIsAccountVerified = (state: any) => state.account.isAccountVerified as boolean;
 export const selectIsGuess = (state: any) => state.account.isGuess as boolean;
