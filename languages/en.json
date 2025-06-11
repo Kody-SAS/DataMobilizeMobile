@@ -201,6 +201,8 @@
     "noCSVUrl": "No CSV available to be saved",
     "permissionDenied": "Permission for the activity was denied",
     "saveOrSharePdf": "Save or share PDF file",
-    "saveOrShareCsv": "Save or share CSV file"
+    "saveOrShareCsv": "Save or share CSV file",
+    "total": "Total",
+    "visualizeYourData": "Visualize your filtered data"
   }
 }

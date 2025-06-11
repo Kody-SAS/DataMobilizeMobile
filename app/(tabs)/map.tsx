@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { StyleSheet, Image, Platform, View, TouchableOpacity, ScrollView, FlatList } from 'react-native';
+import { StyleSheet, Image, Platform, View, TouchableOpacity, ScrollView, FlatList, Dimensions } from 'react-native';
 
 import { TextBlock } from '../../components/TextBlock';
 import { SafeAreaView } from 'react-native-safe-area-context';
@@ -9,7 +9,7 @@ import { useTranslation } from 'react-i18next';
 import { useDispatch, useSelector } from 'react-redux';
 import { ThunkDispatch } from '@reduxjs/toolkit';
 import { ButtonTypeEnum, ConditionType, IncidentCrashData, IncidentEquipmentData, IncidentInfrastructureData, IncidentReport, IncidentSeverity, IncidentType, QuickReport, ReportType, SafetyLevel, SafetyPerceptionReport, SeverityLevel, TextBlockTypeEnum, UserType } from '../../type.d';
-import { Checkbox, DataTable, FAB, RadioButton, Searchbar } from 'react-native-paper';
+import { Checkbox, DataTable, FAB, Provider, RadioButton, Searchbar } from 'react-native-paper';
 import MapView, { MAP_TYPES, Marker, PROVIDER_GOOGLE } from 'react-native-maps';
 import { Spacer } from '../../components/Spacer';
 import { registerForForegroundLocationPermissionAsync } from '../../utils/Permissions';
@@ -93,6 +93,14 @@ export default function Map() {
   const [isIncidentFilterModified, setIsIncidentFilterModified] = useState<boolean>(false);
   const [isStatisticsViewVisible, setIsStatisticsViewVisible] = useState<boolean>(false);
   const [selectedStatisticsTab, setSelectedStatisticsTab] = useState<ReportType.SafetyPerception | ReportType.Quick | ReportType.Incident>(isSafeSafetyChecked ? ReportType.SafetyPerception : (isIncidentChecked ? ReportType.Incident : ReportType.Quick));
+  const [quickStatPage, setQuickStatPage] = useState<number>(0);
+  const [numberOfItemsPerQuickStatPageList] = useState([4, 5, 6]);
+  const [itemsPerQuickStatPage, onItemsPerQuickStatPageChange] = useState(
+    numberOfItemsPerQuickStatPageList[0]
+  );
+
+  const quickStatFrom = quickStatPage * itemsPerQuickStatPage;
+  const quickStatTo = Math.min((quickStatPage + 1) * itemsPerQuickStatPage, Object.values(ConditionType).length);
 
   const bottomSheetModalRef = React.useRef<BottomSheetModal>(null);
   const mapRef = React.useRef<MapView>(null);
@@ -447,9 +455,15 @@ export default function Map() {
     }
     
   }, [isSafeSafetyChecked, isQuickChecked, isIncidentChecked])
+
+  // update the quick stat stat view
+  useEffect(() => {
+    setQuickStatPage(0);
+  }, [itemsPerQuickStatPage]);
   
   return (
     <SafeAreaView style={styles.container}>
+      <Provider>
       <GestureHandlerRootView style={styles.container}>
       <BottomSheetModalProvider>
       {!isFullMap && (
@@ -511,9 +525,6 @@ export default function Map() {
           <MaterialIcons name={isFullMap ? "zoom-in-map" : "zoom-out-map"} size={24} color={isFullMap ? "white" : "black"} />
         </TouchableOpacity>
 
-        
-
-        
 
         {/* Select the type of report to display */}
         <View style={{ position: "absolute", top: 12, left: 16, flexDirection: "row", gap: 8, zIndex: 99 }}>
@@ -837,42 +848,40 @@ export default function Map() {
             </TouchableOpacity>
 
             {isStatisticsViewVisible && (
-              <View style={{ backgroundColor: Colors.light.background.quinary, borderRadius: 8, padding: 12, gap: 8, width: "100%", height: "auto", zIndex: 99, maxWidth: 250 }}>
-                <TextBlock type={TextBlockTypeEnum.title}>{t('defineFilter')}</TextBlock>
-                <TextBlock type={TextBlockTypeEnum.title}>{t('selectDateInterval')}</TextBlock>
+              <View style={{ backgroundColor: Colors.light.background.quinary, borderRadius: 8, padding: 12, gap: 8, width: "100%", height: "auto", zIndex: 99, maxWidth: 0.8*Dimensions.get('window').width }}>
+                <TextBlock type={TextBlockTypeEnum.title}>{t('visualizeYourData')}</TextBlock>
                 <View style={{flexDirection: 'row'}}>
                   {isSafeSafetyChecked && (
                     <TouchableOpacity
                       onPress={() => setSelectedStatisticsTab(ReportType.SafetyPerception)}
-                      style={{borderBottomColor: selectedStatisticsTab == ReportType.SafetyPerception ? Colors.light.background.primary : undefined, borderBottomWidth: 4, marginHorizontal: 4, padding: 4}}>
-                      <TextBlock>Safety P.</TextBlock>
+                      style={{borderBottomColor: selectedStatisticsTab == ReportType.SafetyPerception ? Colors.light.background.primary : undefined, borderBottomWidth: selectedStatisticsTab == ReportType.SafetyPerception ? 4 : undefined, marginHorizontal: 4, padding: 4}}>
+                      <TextBlock style={{color: selectedStatisticsTab == ReportType.SafetyPerception ? Colors.light.background.primary : undefined }}>Safety Perception</TextBlock>
                     </TouchableOpacity>
                   )}
                   {isQuickChecked && (
                     <TouchableOpacity
                       onPress={() => setSelectedStatisticsTab(ReportType.Quick)}
-                      style={{borderBottomColor: selectedStatisticsTab == ReportType.Quick ? Colors.light.background.primary : undefined, borderBottomWidth: 4, marginHorizontal: 4, padding: 4}}>
-                      <TextBlock>Quick</TextBlock>
+                      style={{borderBottomColor: selectedStatisticsTab == ReportType.Quick ? Colors.light.background.primary : undefined, borderBottomWidth: selectedStatisticsTab == ReportType.Quick? 4 : undefined, marginHorizontal: 4, padding: 4}}>
+                      <TextBlock style={{color: selectedStatisticsTab == ReportType.Quick ? Colors.light.background.primary : undefined }}>Quick</TextBlock>
                     </TouchableOpacity>
                   )}
                   {isIncidentChecked && (
                     <TouchableOpacity
                       onPress={() => setSelectedStatisticsTab(ReportType.Incident)}
-                      style={{borderBottomColor: selectedStatisticsTab == ReportType.Incident ? Colors.light.background.primary : undefined, borderBottomWidth: 4, marginHorizontal: 4, padding: 4}}>
-                      <TextBlock>Quick</TextBlock>
+                      style={{borderBottomColor: selectedStatisticsTab == ReportType.Incident ? Colors.light.background.primary : undefined, borderBottomWidth: selectedStatisticsTab == ReportType.Incident ? 4 : undefined, marginHorizontal: 4, padding: 4}}>
+                      <TextBlock style={{color: selectedStatisticsTab == ReportType.Incident ? Colors.light.background.primary : undefined }}>Incident</TextBlock>
                     </TouchableOpacity>
                   )}
                 </View>
-                <Spacer variant='large' />
                 {selectedStatisticsTab == ReportType.SafetyPerception && (
                   <View>
                     <DataTable>
                       <DataTable.Header>
-                        <DataTable.Title textStyle={{fontSize: 14}}>User</DataTable.Title>
-                        <DataTable.Title textStyle={{fontSize: 14}} numeric>{t('safe')}</DataTable.Title>
-                        <DataTable.Title textStyle={{fontSize: 14}} numeric>{t('unSafe')}</DataTable.Title>
-                        <DataTable.Title textStyle={{fontSize: 14}} numeric>{t('veryUnsafe')}</DataTable.Title>
-                        <DataTable.Title textStyle={{fontSize: 14}} numeric>{t('total')}</DataTable.Title>
+                        <DataTable.Title textStyle={{fontSize: 12}}>User</DataTable.Title>
+                        <DataTable.Title textStyle={{fontSize: 12}} numeric>{t('safe')}</DataTable.Title>
+                        <DataTable.Title textStyle={{fontSize: 12}} numeric>{t('unsafe')}</DataTable.Title>
+                        <DataTable.Title textStyle={{fontSize: 12}} numeric>{t('veryUnsafe')}</DataTable.Title>
+                        <DataTable.Title textStyle={{fontSize: 12}} numeric>{t('total')}</DataTable.Title>
                       </DataTable.Header>
 
                       {Object.values(UserType).map(val => {
@@ -885,11 +894,11 @@ export default function Map() {
                         }
                       }).map((item, key) => (
                         <DataTable.Row key={key}>
-                          <DataTable.Cell textStyle={{fontSize: 14}}>{item.name}</DataTable.Cell>
-                          <DataTable.Cell textStyle={{fontSize: 14}} numeric>{item.safe}</DataTable.Cell>
-                          <DataTable.Cell textStyle={{fontSize: 14}} numeric>{item.unSafe}</DataTable.Cell>
-                          <DataTable.Cell textStyle={{fontSize: 14}} numeric>{item.veryUnsafe}</DataTable.Cell>
-                          <DataTable.Cell textStyle={{fontSize: 14}} numeric>{item.total}</DataTable.Cell>
+                          <DataTable.Cell textStyle={{fontSize: 12}}>{item.name}</DataTable.Cell>
+                          <DataTable.Cell textStyle={{fontSize: 12}} numeric>{item.safe}</DataTable.Cell>
+                          <DataTable.Cell textStyle={{fontSize: 12}} numeric>{item.unSafe}</DataTable.Cell>
+                          <DataTable.Cell textStyle={{fontSize: 12}} numeric>{item.veryUnsafe}</DataTable.Cell>
+                          <DataTable.Cell textStyle={{fontSize: 12}} numeric>{item.total}</DataTable.Cell>
                         </DataTable.Row>
                       ))}
 
@@ -905,15 +914,46 @@ export default function Map() {
                 )}
                 {selectedStatisticsTab == ReportType.Quick && (
                   <View>
-                    
+                    <DataTable>
+                      <DataTable.Header>
+                        <DataTable.Title textStyle={{fontSize: 12}}>Condition</DataTable.Title>
+                        <DataTable.Title textStyle={{fontSize: 12}} numeric>{t('total')}</DataTable.Title>
+                      </DataTable.Header>
+
+                      {Object.values(ConditionType).map(val => {
+                        return {
+                          name: val.toString(),
+                          total: filteredQuickReports.filter(rep => (rep.conditionType == val)).length,
+                        }
+                      }).slice(quickStatFrom, quickStatTo).map((item, key) => (
+                        <DataTable.Row key={key}>
+                          <DataTable.Cell textStyle={{fontSize: 12}}>{item.name}</DataTable.Cell>
+                          <DataTable.Cell textStyle={{fontSize: 12}} numeric>{item.total}</DataTable.Cell>
+                        </DataTable.Row>
+                      ))}
+
+                      <DataTable.Pagination
+                        page={quickStatPage}
+                        numberOfPages={Math.ceil(Object.values(ConditionType).length / itemsPerQuickStatPage)}
+                        onPageChange={(page) => setQuickStatPage(page)}
+                        label={`${quickStatFrom + 1}-${quickStatTo} of ${Object.values(ConditionType).length}`}
+                        numberOfItemsPerPageList={numberOfItemsPerQuickStatPageList}
+                        numberOfItemsPerPage={itemsPerQuickStatPage}
+                        onItemsPerPageChange={onItemsPerQuickStatPageChange}
+                        showFastPaginationControls
+                        selectPageDropdownLabel={'Rows per page'}
+                      />
+                    </DataTable>
+                    <Spacer variant='medium' />
+                    <TextBlock type={TextBlockTypeEnum.title}>Total reports: {filteredQuickReports.length}</TextBlock>
                   </View>
                 )}
                 {selectedStatisticsTab == ReportType.Incident && (
                   <View>
                     <DataTable>
                       <DataTable.Header>
-                        <DataTable.Title textStyle={{fontSize: 14}}>Report</DataTable.Title>
-                        <DataTable.Title textStyle={{fontSize: 14}} numeric>{t('total')}</DataTable.Title>
+                        <DataTable.Title textStyle={{fontSize: 12}}>Report type</DataTable.Title>
+                        <DataTable.Title textStyle={{fontSize: 12}} numeric>{t('total')}</DataTable.Title>
                       </DataTable.Header>
 
                       {Object.values(IncidentType).map(val => {
@@ -923,8 +963,8 @@ export default function Map() {
                         }
                       }).map((item, key) => (
                         <DataTable.Row key={key}>
-                          <DataTable.Cell textStyle={{fontSize: 14}}>{item.name}</DataTable.Cell>
-                          <DataTable.Cell textStyle={{fontSize: 14}} numeric>{item.total}</DataTable.Cell>
+                          <DataTable.Cell textStyle={{fontSize: 12}}>{item.name}</DataTable.Cell>
+                          <DataTable.Cell textStyle={{fontSize: 12}} numeric>{item.total}</DataTable.Cell>
                         </DataTable.Row>
                       ))}
 
@@ -935,7 +975,7 @@ export default function Map() {
                       />
                     </DataTable>
                     <Spacer variant='medium' />
-                    <TextBlock type={TextBlockTypeEnum.title}>Total reports: {filteredSafetyReports.length}</TextBlock>
+                    <TextBlock type={TextBlockTypeEnum.title}>Total reports: {filteredIncidentReports.length}</TextBlock>
                   </View>
                 )}
               </View>
@@ -1141,6 +1181,7 @@ export default function Map() {
       </BottomSheetModal>
       </BottomSheetModalProvider>
       </GestureHandlerRootView>
+      </Provider>
     </SafeAreaView>
   );
 }
