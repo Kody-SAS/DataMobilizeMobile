@@ -34,7 +34,7 @@
     "or": "or",
     "continueWithGoogle": "Continue with Google",
     "continueWithApple": "Continue with Apple",
-    "informTermsAndPolicy": "By continuing, you agree to our ",
+    "informPrivacyPolicy": "By continuing, you agree to our ",
     "termsOfService": "Terms of Service",
     "and": " and ",
     "privacyPolicy": "Privacy Policy",
@@ -203,6 +203,7 @@
     "saveOrSharePdf": "Save or share PDF file",
     "saveOrShareCsv": "Save or share CSV file",
     "total": "Total",
-    "visualizeYourData": "Visualize your filtered data"
+    "visualizeYourData": "Visualize your filtered data",
+    "failedToCreateReport": "Failed to create the report"
   }
 }

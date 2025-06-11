@@ -18,7 +18,6 @@ import * as Location from 'expo-location';
 import { useDispatch, useSelector } from "react-redux";
 import { selectUser } from "../../redux/slices/accountSlice";
 import { ThunkDispatch } from "@reduxjs/toolkit";
-import { addSafetyPerceptionReport, addQuickReport } from "../../redux/slices/mapSlice";
 import { isValidReport } from "../../utils/Validation";
 import * as TaskManager from 'expo-task-manager';
 import ViewShot from "react-native-view-shot";
@@ -27,6 +26,7 @@ import { BottomSheetModal, BottomSheetModalProvider, BottomSheetScrollView, Bott
 import RNHTMLtoPDF from 'react-native-html-to-pdf';
 import { createAuditReport } from "../../utils/Report";
 import { Picker } from "@react-native-picker/picker";
+import { createReportAsync, selectErrorMessage } from "../../redux/slices/homeSlice";
 
 const LOCATION_TRACKING_TASK = "location-tracking";
 
@@ -98,6 +98,7 @@ export default function Report() {
     const {t} = useTranslation();
     const navigation = useNavigation();
     const user = useSelector(selectUser);
+    const errorMessage = useSelector(selectErrorMessage);
     const dispatch = useDispatch<ThunkDispatch<any, any, any>>();
     const roadSegmentLocationRef = useRef<ViewShot | null>(null);
     const junctionLocationRef = useRef<ViewShot | null>(null);
@@ -495,12 +496,11 @@ export default function Report() {
                     }
 
                     if(isValidReport(report, ReportType.SafetyPerception)) {
-                        dispatch(addSafetyPerceptionReport(report));
-                        setReportError("");
-                        router.back();
+                        dispatch(createReportAsync({userId: user.id!, data: report}));
+                        setReportError(errorMessage);
                     }
                     else {
-                        setReportError(t("reportError"));
+                        setReportError(errorMessage));
                     }
                 }
                 break;
@@ -524,12 +524,11 @@ export default function Report() {
                     }
 
                     if(isValidReport(report, ReportType.Quick)) {
-                        dispatch(addQuickReport(report));
-                        setReportError("");
-                        router.back();
+                        dispatch(createReportAsync({userId: user.id!, data: report}));
+                        setReportError(errorMessage);
                     }
                     else {
-                        setReportError(t("reportError"));
+                        setReportError(errorMessage);
                     }
                 }
                 break;
@@ -581,13 +580,12 @@ export default function Report() {
                             break;
                     }
 
-                    if(isValidReport(report, ReportType.Quick)) {
-                        dispatch(addQuickReport(report));
-                        setReportError("");
-                        router.back();
+                    if(isValidReport(report, ReportType.Incident)) {
+                        dispatch(createReportAsync({userId: user.id!, data: report}));
+                        setReportError(errorMessage);
                     }
                     else {
-                        setReportError(t("reportError"));
+                        setReportError(errorMessage);
                     }
                 }
                 break;

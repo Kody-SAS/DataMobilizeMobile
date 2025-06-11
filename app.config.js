@@ -54,6 +54,12 @@ export default {
           "photosPermission": "Allow $(PRODUCT_NAME) to access your files.",
           "savePhotosPermission": "Allow $(PRODUCT_NAME) to save files."
         }
+      ],
+      [
+        "@react-native-google-signin/google-signin",
+        {
+          "iosUrlScheme": process.env.EXPO_PUBLIC_GOOGLE_ID_CLIENT_SCHEME
+        }
       ]
     ],
     experiments: {

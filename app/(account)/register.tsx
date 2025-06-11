@@ -16,6 +16,7 @@ import { useNetInfo } from "@react-native-community/netinfo";
 import { router } from "expo-router";
 import { getLocales } from "expo-localization";
 
+
 export default function Register() {
     const [username, setUsername] = useState<string>("");
     const [email, setEmail] = useState<string>("");
@@ -68,10 +69,6 @@ export default function Register() {
 
     const handleSigninWithApple = () => {
         ToastMessage("info", t("info"), t("comingSoon"));
-    }
-
-    const handleTermsOfService = () => {
-        router.push("/(account)/termsofservice");
     }
 
     const handlePrivacyPolicy = () => {
@@ -221,7 +218,7 @@ export default function Register() {
                 onPress={handleSigninWithGoogle}
             />
             {
-                Platform.OS != "ios" &&
+                Platform.OS == "ios" &&
                 <>
                     <Spacer variant="medium" />
                     <ButtonAction
@@ -246,19 +243,7 @@ export default function Register() {
 
             <View style={styles.termsAndPolicy}>
                 <TextBlock type={TextBlockTypeEnum.body} style={styles.secondaryText}>
-                    {t("informTermsAndPolicy")}
-                </TextBlock>
-                <ButtonAction
-                    variant={ButtonTypeEnum.quarternary}
-                    content={
-                        <TextBlock type={TextBlockTypeEnum.body} style={styles.primaryText}>
-                            {t("termsOfService")}
-                        </TextBlock>
-                    }
-                    onPress={handleTermsOfService}
-                />
-                <TextBlock type={TextBlockTypeEnum.body} style={styles.secondaryText}>
-                    {t("and")}
+                    {t("informPrivacyPolicy")}
                 </TextBlock>
                 <ButtonAction
                     variant={ButtonTypeEnum.quarternary}

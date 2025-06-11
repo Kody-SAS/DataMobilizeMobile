@@ -14,6 +14,7 @@ import { ThunkDispatch } from "@reduxjs/toolkit";
 import ToastMessage from "../../utils/Toast";
 import { useNetInfo } from "@react-native-community/netinfo";
 import { router } from "expo-router";
+import { GoogleSignin } from '@react-native-google-signin/google-signin';
 
 export default function Login() {
     const [email, setEmail] = useState<string>("");
@@ -215,19 +216,7 @@ export default function Login() {
 
             <View style={styles.termsAndPolicy}>
                 <TextBlock type={TextBlockTypeEnum.body} style={styles.secondaryText}>
-                    {t("informTermsAndPolicy")}
-                </TextBlock>
-                <ButtonAction
-                    variant={ButtonTypeEnum.quarternary}
-                    content={
-                        <TextBlock type={TextBlockTypeEnum.body} style={styles.primaryText}>
-                            {t("termsOfService")}
-                        </TextBlock>
-                    }
-                    onPress={handleTermsOfService}
-                />
-                <TextBlock type={TextBlockTypeEnum.body} style={styles.secondaryText}>
-                    {t("and")}
+                    {t("informPrivacyPolicy")}
                 </TextBlock>
                 <ButtonAction
                     variant={ButtonTypeEnum.quarternary}

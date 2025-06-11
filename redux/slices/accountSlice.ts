@@ -4,7 +4,11 @@ import ToastMessage from "../../utils/Toast";
 import i18n from "../../languages";
 import { CreateUser, ForgotUser, LoginUser, User, VerifyUser } from "../../type";
 import { router } from "expo-router";
+import { GoogleSignin } from '@react-native-google-signin/google-signin';
 
+GoogleSignin.configure({
+  webClientId: process.env.EXPO_PUBLIC_GOOGLE_ID_CLIENT, // from Google Console
+});
 
 const initialState = {
     createUser: {} as CreateUser,
@@ -258,6 +262,35 @@ export const changePassword = createAsyncThunk("account/changePassword", async({
     }
 })
 
+export const signInWithGoogle = createAsyncThunk("account/signInWithGoogle", async(_, thunkAPI) => {
+    try {
+        await GoogleSignin.hasPlayServices();
+        const userInfo = await GoogleSignin.signIn();
+        const idToken = (await GoogleSignin.getTokens()).idToken;
+
+        // Send the ID token to your Node.js backend
+        const response: Response = await fetch(process.env.EXPO_PUBLIC_API_URL + `/users/auth/google`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ idToken }),
+        });
+
+        if(response.ok) {
+            const json = await response.json();
+            console.log(json);
+            router.replace("/(tabs)/");
+            return json;
+        }
+        else {
+            console.log("Failed to sign in user with google");
+            return thunkAPI.rejectWithValue(await response.text());
+        }
+
+    } catch (error) {
+        console.error('Google Sign-In Error', error);
+    }
+});
+
 export const accountSlice = createSlice({
     name: 'account',
     initialState,
@@ -378,6 +411,20 @@ export const accountSlice = createSlice({
                 "error",
                 t("error"),
                 t("failedToChangePassword")
+            )
+        })
+        .addCase(signInWithGoogle.fulfilled, (state, action) => {
+            state.user = {... action.payload as any};
+            state.isAccountVerified = true;
+            router.push("/(tabs)/");
+        })
+        .addCase(signInWithGoogle.rejected, (state, action) => {
+            const t = i18n.t;
+
+            ToastMessage(
+                "error",
+                t("error"),
+                t("failedToLogin")
             )
         })
     },

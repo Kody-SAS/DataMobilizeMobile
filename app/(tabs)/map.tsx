@@ -15,7 +15,6 @@ import { Spacer } from '../../components/Spacer';
 import { registerForForegroundLocationPermissionAsync } from '../../utils/Permissions';
 import * as Location from 'expo-location';
 import ToastMessage from '../../utils/Toast';
-import { clearReports, selectIncidentReports, selectQuickReports, selectSafetyReports } from '../../redux/slices/mapSlice';
 import { MaterialCommunityIcons, MaterialIcons, Octicons } from '@expo/vector-icons';
 import { ButtonAction } from '../../components/ButtonAction';
 import { DateInput } from '../../components/DateInput';
@@ -23,6 +22,7 @@ import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import BottomSheet, { BottomSheetModal, BottomSheetModalProvider, BottomSheetView } from '@gorhom/bottom-sheet';
 import { conditionListData } from '../../utils/DataSeed';
 import { selectUser } from '../../redux/slices/accountSlice';
+import { selectIncidentReports, selectQuickReports, selectSafetyReports } from '../../redux/slices/homeSlice';
 
 const conditionIssues : {label: string, status: "checked" | "unchecked"}[] = conditionListData.map(
   (condition) => ({

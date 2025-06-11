@@ -1,9 +1,9 @@
-import WebView from "react-native-webview";
+import Pdf from "react-native-pdf";
 
 export default function PrivacyPolicy() {
     return (
-        <WebView
-            source={{uri: process.env.PRIVACY_POLICY_URL}}
+        <Pdf
+            source={{uri: "../../assets/docs/privacypolicy.pdf"}}
             style={{
                 flex: 1,
                 width: "100%",
