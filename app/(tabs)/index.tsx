@@ -1,4 +1,4 @@
-import { Image, StyleSheet, Platform, View, FlatList, ScrollView } from 'react-native';
+import { Image, StyleSheet, Platform, View, FlatList, ScrollView, Alert } from 'react-native';
 
 import { TextBlock } from '../../components/TextBlock';
 import { useEffect } from 'react';
@@ -17,6 +17,9 @@ import { ReportCard } from '../../components/ReportCard';
 import { LocationCard } from '../../components/LocationCard';
 import { router } from 'expo-router';
 import { MoreOptionCard } from '../../components/MoreOptionCard';
+import * as Share from 'expo-sharing';
+import * as Location from 'expo-location';
+import * as Linking from 'expo-linking';
 
 export default function HomeScreen() {
 
@@ -45,12 +48,43 @@ export default function HomeScreen() {
     router.push("/(homeStack)/findsupport");
   }
 
-  const handleShareLocation = () => {
-    ToastMessage(
-      "info",
-      t("info"),
-      t("comingSoon")
-    )
+  const handleShareLocation = async () => {
+    const location = await locateUser();
+
+    if (location == null) {
+      Alert.alert(
+        t("error"),
+        t("requiresLocationPermessionForReport"),
+        [
+          {
+              text: t("goBack"),
+              onPress: () => {},
+          },
+          {
+              text: t("addPermission"),
+              onPress: () => Linking.openSettings(),
+              style: 'cancel',
+          }
+        ],
+        {
+          cancelable: true
+        }
+      )
+      return;
+    }
+
+    const url = `https://www.google.com/maps?q=${location.coords.latitude},${location.coords.longitude}`;
+    await Share.shareAsync(
+      `Here's my location: ${url}`,
+      {
+        dialogTitle: 'Share my location'
+      }
+    );
+  }
+
+  const locateUser = async() => {
+    const location = await Location.getCurrentPositionAsync({accuracy: Location.Accuracy.Balanced});
+    return location ?? null;
   }
 
   const handleShortestPath = () => {
