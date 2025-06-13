@@ -39,17 +39,18 @@ export default function FindSupport() {
     return (
         <View style={styles.container}>
             <View style={styles.emergencyContainer}>
+                <TextBlock type={TextBlockTypeEnum.h5} style={{fontWeight: '700'}}>{t('emergencyNumbers')}</TextBlock>
                 {agencies.map((agency, index) => (
                     <View key={index} style={styles.agency}>
-                        <View>
+                        <View style={styles.agencyInfo}>
                             <Image source={agency.image}
                                 height={32}
                                 width={32}
                                 resizeMode='contain'/>
                             <View>
-                                <TextBlock type={TextBlockTypeEnum.title} style={{fontWeight: '600'}}>{agency.name}</TextBlock>
-                                <Spacer variant='medium' />
-                                <TextBlock type={TextBlockTypeEnum.body} style={{fontWeight: '300'}}>{agency.number}</TextBlock>
+                                <TextBlock type={TextBlockTypeEnum.title} style={{fontWeight: '700'}}>{agency.name}</TextBlock>
+                                <Spacer variant='small' />
+                                <TextBlock type={TextBlockTypeEnum.body} style={{fontWeight: '200', opacity: 0.4}}>{agency.number}</TextBlock>
                             </View>
                         </View>
                         <TouchableOpacity
@@ -91,6 +92,7 @@ const styles = StyleSheet.create({
         padding: 12,
         alignItems: 'center',
         justifyContent: "center",
-        backgroundColor: Colors.light.background.secondary
+        backgroundColor: Colors.light.background.secondary,
+        borderRadius: 8
     }
 })

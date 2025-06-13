@@ -1,4 +1,4 @@
-import { Image, StyleSheet, Platform, View, FlatList, ScrollView, Alert } from 'react-native';
+import { Image, StyleSheet, Platform, View, FlatList, ScrollView, Alert, Share } from 'react-native';
 
 import { TextBlock } from '../../components/TextBlock';
 import { useEffect } from 'react';
@@ -17,7 +17,6 @@ import { ReportCard } from '../../components/ReportCard';
 import { LocationCard } from '../../components/LocationCard';
 import { router } from 'expo-router';
 import { MoreOptionCard } from '../../components/MoreOptionCard';
-import * as Share from 'expo-sharing';
 import * as Location from 'expo-location';
 import * as Linking from 'expo-linking';
 
@@ -52,6 +51,7 @@ export default function HomeScreen() {
     const location = await locateUser();
 
     if (location == null) {
+      console.log("location is null");
       Alert.alert(
         t("error"),
         t("requiresLocationPermessionForReport"),
@@ -74,10 +74,12 @@ export default function HomeScreen() {
     }
 
     const url = `https://www.google.com/maps?q=${location.coords.latitude},${location.coords.longitude}`;
-    await Share.shareAsync(
-      `Here's my location: ${url}`,
+    await Share.share(
       {
-        dialogTitle: 'Share my location'
+        url,
+        title: "Share your location",
+        message: `Here's my location: ${url}`,
+
       }
     );
   }

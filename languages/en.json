@@ -205,6 +205,10 @@
     "total": "Total",
     "visualizeYourData": "Visualize your filtered data",
     "failedToCreateReport": "Failed to create the report",
-    "accountCreated": "Welcome, account created"
+    "accountCreated": "Welcome, account created",
+    "emergencyNumbers": "Emergency numbers",
+    "police": "Police",
+    "fireFighters": "Fire fighters",
+    "SAMU": "SAMU"
   }
 }
