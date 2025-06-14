@@ -120,7 +120,7 @@ export const homeSlice = createSlice({
     }
 });
 
-export const {addNotification, deleteNotification} = homeSlice.actions;
+export const {clearReports, addNotification, deleteNotification} = homeSlice.actions;
 
 //selectors
 export const selectNotifications = (state: any) => state.home.notifications

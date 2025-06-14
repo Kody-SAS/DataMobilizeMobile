@@ -283,8 +283,8 @@ export const createAuditReport = (
     // Generate image gallery HTML
     const imageGalleryHtml = auditReportData.images
         .map(
-            imageUrl => `
-            <img src="${imageUrl}" alt="Audit Report Image" onerror="this.src='https://placehold.co/400x300/CCCCCC/333333?text=Image+Load+Error';">
+            image => `
+            <img src="${image.uri}" alt="Audit Report Image" onerror="this.src='https://placehold.co/400x300/CCCCCC/333333?text=Image+Load+Error';">
         `
         )
         .join('');

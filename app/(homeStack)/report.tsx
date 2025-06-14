@@ -62,7 +62,7 @@ export default function Report() {
     const [isIncidentTypeModalVisible, setIsIncidentTypeModalVisible] = useState<boolean>(false);
     const [isConditionListModalVisible, setIsConditionListModalVisible] = useState<boolean>(false);
     const [conditionItem, setConditionItem] = useState<string>("");
-    const [reportImages, setReportImages] = useState<string[]>([]);
+    const [reportImages, setReportImages] = useState<{uri: string; base64: string;}[]>([]);
     const [reportError, setReportError] = useState<string>("");
     const [incidentPedestrianNumber, setIncidentPedestrianNumber] = useState<number>(0);
     const [incidentCyclistNumber, setIncidentCyclistNumber] = useState<number>(0);
@@ -436,12 +436,18 @@ export default function Report() {
             mediaTypes: ['images'],
             allowsEditing: false,
             quality: 0.3,
+            base64: true
         });
 
         console.log(result);
 
         if (!result.canceled) {
-            if(!reportImages.includes(result.assets[0].uri)) setReportImages([...reportImages, result.assets[0].uri]);
+            const existingImage = reportImages.find(obj => obj.uri == result.assets[0].uri)
+
+            if (!existingImage) {
+                setReportImages([...reportImages, {uri: result.assets[0].uri, base64: result.assets[0].base64!}]);
+            }
+            
         }
     };
 
@@ -458,7 +464,7 @@ export default function Report() {
                 {
                     text: t("delete"),
                     onPress: () => {
-                        const newList = reportImages.filter(item => item != selectedImage);
+                        const newList = reportImages.filter(item => item.uri != selectedImage);
                         setReportImages(newList);
                     },
                     style: 'destructive',
@@ -1458,7 +1464,7 @@ export default function Report() {
                                         onPress={() => handleDeleteImage(image)}>
                                         <Image
                                             key={index}
-                                            source={{uri: image}}
+                                            source={{uri: 'data:image/jpeg;base64,' + image.base64}}
                                             width={74}
                                             height={60}
                                             resizeMode="contain"

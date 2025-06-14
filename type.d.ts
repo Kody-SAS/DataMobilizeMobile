@@ -232,7 +232,7 @@ export type SafetyPerceptionReport =  {
         list: string[];
     }[];
     comment?: string;
-    images: string[];
+    images: {uri: string; base64: string}[];
 }
 
 export type QuickReport = {
@@ -247,7 +247,7 @@ export type QuickReport = {
     severityLevel: SeverityLevel;
     reportType: ReportType;
     comment?: string;
-    images: string[];
+    images: {uri: string; base64: string}[];
 }
 
 export type IncidentReport = {
@@ -266,7 +266,7 @@ export type IncidentReport = {
     };
     reportType: ReportType;
     comment?: string;
-    images: string[];
+    images: {uri: string; base64: string}[];
 }
 
 export type AuditReport = {
@@ -289,5 +289,5 @@ export type AuditReport = {
     createdAt: Date;
     reportType: ReportType;
     comment?: string;
-    images: string[];
+    images: {uri: string; base64: string}[];
 }

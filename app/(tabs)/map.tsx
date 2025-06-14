@@ -19,10 +19,10 @@ import { MaterialCommunityIcons, MaterialIcons, Octicons } from '@expo/vector-ic
 import { ButtonAction } from '../../components/ButtonAction';
 import { DateInput } from '../../components/DateInput';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
-import BottomSheet, { BottomSheetModal, BottomSheetModalProvider, BottomSheetView } from '@gorhom/bottom-sheet';
+import { BottomSheetModal, BottomSheetModalProvider, BottomSheetView } from '@gorhom/bottom-sheet';
 import { conditionListData } from '../../utils/DataSeed';
 import { selectUser } from '../../redux/slices/accountSlice';
-import { getAllReports, selectReports } from '../../redux/slices/homeSlice';
+import { clearReports, getAllReports, selectReports } from '../../redux/slices/homeSlice';
 
 const conditionIssues : {label: string, status: "checked" | "unchecked"}[] = conditionListData.map(
   (condition) => ({
@@ -1098,7 +1098,7 @@ export default function Map() {
                     {(currentOpenedReport as SafetyPerceptionReport).images.map((image, index) => (
                       <Image
                         key={index}
-                        source={{ uri: image }}
+                        source={{ uri: 'data:image/jpeg;base64,' + image.base64 }}
                         style={{ width: 150, height: 150, borderRadius: 8, marginBottom: 8 }}
                       />
                     ))}
@@ -1128,7 +1128,7 @@ export default function Map() {
                     {(currentOpenedReport as QuickReport).images.map((image, index) => (
                       <Image
                         key={index}
-                        source={{ uri: image }}
+                        source={{ uri: 'data:image/jpeg;base64,' + image.base64 }}
                         style={{ width: 150, height: 150, borderRadius: 8, marginBottom: 8 }}
                       />
                     ))}
@@ -1178,7 +1178,7 @@ export default function Map() {
                     {(currentOpenedReport as IncidentReport).images.map((image, index) => (
                       <Image
                         key={index}
-                        source={{ uri: image }}
+                        source={{ uri: 'data:image/jpeg;base64,' + image.base64 }}
                         style={{ width: 150, height: 150, borderRadius: 8, marginBottom: 8 }}
                       />
                     ))}
