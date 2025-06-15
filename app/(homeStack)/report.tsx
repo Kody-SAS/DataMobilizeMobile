@@ -451,7 +451,7 @@ export default function Report() {
         }
     };
 
-    const handleDeleteImage = (selectedImage: string) => {
+    const handleDeleteImage = (selectedImage: {uri: string; base64: string;}) => {
         Alert.alert(
             t("warning"),
             t("deleteImageRequest"),
@@ -464,7 +464,7 @@ export default function Report() {
                 {
                     text: t("delete"),
                     onPress: () => {
-                        const newList = reportImages.filter(item => item.uri != selectedImage);
+                        const newList = reportImages.filter(item => item.uri != selectedImage.uri);
                         setReportImages(newList);
                     },
                     style: 'destructive',
