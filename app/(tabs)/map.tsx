@@ -861,7 +861,7 @@ export default function Map() {
               <View style={{ backgroundColor: Colors.light.background.quinary, borderRadius: 8, padding: 12, gap: 8, width: "100%", height: "auto", zIndex: 99, maxWidth: 0.8*Dimensions.get('window').width }}>
                 <TextBlock type={TextBlockTypeEnum.title}>{t('visualizeYourData')}</TextBlock>
                 <View style={{flexDirection: 'row'}}>
-                  {isSafeSafetyChecked && (
+                  {isSafetyChecked && (
                     <TouchableOpacity
                       onPress={() => setSelectedStatisticsTab(ReportType.SafetyPerception)}
                       style={{borderBottomColor: selectedStatisticsTab == ReportType.SafetyPerception ? Colors.light.background.primary : undefined, borderBottomWidth: selectedStatisticsTab == ReportType.SafetyPerception ? 4 : undefined, marginHorizontal: 4, padding: 4}}>
