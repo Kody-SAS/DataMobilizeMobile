@@ -3,11 +3,11 @@
     "development": {
       "developmentClient": true,
       "distribution": "internal",
-      "env": { "NODE_ENV": "production" }
+      "env": { "NODE_ENV": "production", "EXPO_PUBLIC_GOOGLE_ID_CLIENT_SCHEME": "com.googleusercontent.apps.738142339290-rpsjnhduk6fkiu9brn0gbhsbceapadq0" }
     },
     "preview": {
       "distribution": "internal",
-      "env": { "NODE_ENV": "production" }
+      "env": { "NODE_ENV": "production", "EXPO_PUBLIC_GOOGLE_ID_CLIENT_SCHEME": "com.googleusercontent.apps.738142339290-rpsjnhduk6fkiu9brn0gbhsbceapadq0" }
     },
     "production": {}
   }
