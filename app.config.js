@@ -72,6 +72,12 @@ export default {
             kotlinVersion: '1.9.25', 
           }, 
         }
+      ],
+      [
+        "expo-asset",
+        {
+          "assets": ["./assets/docs/privacypolicy.pdf"]
+        }
       ]
     ],
     experiments: {
