@@ -1,4 +1,4 @@
-package com.monkeyk1n9.datamobilize
+package com.kody.datamobilize
 
 import android.app.Application
 import android.content.res.Configuration

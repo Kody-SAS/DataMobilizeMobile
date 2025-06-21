@@ -1,9 +1,10 @@
+import { version } from "react";
 
 export default {
   expo: {
     name: "Data Mobilize",
     slug: "DataMobilize",
-    version: "1.0.0",
+    version: "1.0.1",
     orientation: "portrait",
     icon: "./assets/images/applogo.png",
     scheme: "myapp",
@@ -15,14 +16,15 @@ export default {
     },
     ios: {
       supportsTablet: true,
-      bundleIdentifier: "com.monkeyk1n9.datamobilize"
+      bundleIdentifier: "com.kody.datamobilize"
     },
     android: {
       adaptiveIcon: {
         foregroundImage: "./assets/images/applogo.png",
         backgroundColor: "#ffffff"
       },
-      package: "com.monkeyk1n9.datamobilize",
+      versionCode: 2,
+      package: "com.kody.datamobilize",
       config: {
         googleMaps: {
           apiKey: process.env.EXPO_PUBLIC_GOOGLE_MAPS_API_KEY

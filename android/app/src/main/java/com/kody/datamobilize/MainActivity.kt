@@ -1,4 +1,4 @@
-package com.monkeyk1n9.datamobilize
+package com.kody.datamobilize
 import expo.modules.splashscreen.SplashScreenManager
 
 import android.os.Build

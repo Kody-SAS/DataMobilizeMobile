@@ -15,5 +15,12 @@
     "production": {
       "env": { "NODE_ENV": "production", "EXPO_PUBLIC_GOOGLE_ID_CLIENT_SCHEME": "com.googleusercontent.apps.223869268641-6oj8mdp3fdv2a7se0dhjvmogro15qrav" }
     }
+  },
+  "submit": {
+    "production": {
+      "android": {
+        "serviceAccountKeyPath": "../serviceAccountDataMobilize.json"
+      }
+    }
   }
 }
