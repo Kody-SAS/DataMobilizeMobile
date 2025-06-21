@@ -503,10 +503,10 @@ export default function Report() {
 
                     if(isValidReport(report, ReportType.SafetyPerception)) {
                         dispatch(createReportAsync({userId: user?.id!, data: report}));
-                        setReportError(errorMessage);
+                        setReportError("");
                     }
                     else {
-                        setReportError(errorMessage);
+                        setReportError(t("reportError"));
                     }
                 }
                 break;
@@ -515,7 +515,7 @@ export default function Report() {
                 const location = await locateUser();
                 if(location != null) {
                     const report : QuickReport = {
-                        id: user?.id,
+                        id: user?.id + Math.random().toString(),
                         userId: user?.id!,
                         latitude: location.coords.latitude,
                         longitude: location.coords.longitude,
@@ -531,10 +531,10 @@ export default function Report() {
 
                     if(isValidReport(report, ReportType.Quick)) {
                         dispatch(createReportAsync({userId: user?.id!, data: report}));
-                        setReportError(errorMessage);
+                        setReportError("");
                     }
                     else {
-                        setReportError(errorMessage);
+                        setReportError(t("reportError"));
                     }
                 }
                 break;
@@ -543,7 +543,7 @@ export default function Report() {
                 const location = await locateUser();
                 if(location != null) {
                     const report : IncidentReport = {
-                        id: user?.id,
+                        id: user?.id + Math.random().toString(),
                         userId: user?.id!,
                         latitude: location.coords.latitude,
                         longitude: location.coords.longitude,
@@ -585,13 +585,13 @@ export default function Report() {
                         default:
                             break;
                     }
-
+                    console.log("sending report");
                     if(isValidReport(report, ReportType.Incident)) {
                         dispatch(createReportAsync({userId: user?.id!, data: report}));
-                        setReportError(errorMessage);
+                        setReportError("");
                     }
                     else {
-                        setReportError(errorMessage);
+                        setReportError(t("reportError"));
                     }
                 }
                 break;
@@ -745,7 +745,7 @@ export default function Report() {
         }
 
         const report : AuditReport = {
-            id: user?.id,
+            id: user?.id + Math.random().toString(),
             userId: user?.id!,
             auditLocation: auditLocation,
             auditRoadType: roadTypeConverted,

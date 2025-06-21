@@ -1147,25 +1147,25 @@ export default function Map() {
                   <Spacer variant="medium" />
                   {(currentOpenedReport as IncidentReport).incidentType == IncidentType.Crash && (
                     <>
-                      <TextBlock type={TextBlockTypeEnum.body}>{t("incidentTypeData")}: {(currentOpenedReport as IncidentReport).incidentTypeData?.severity}</TextBlock>
+                      <TextBlock type={TextBlockTypeEnum.body}>{t("incidentSeverityData")}: {(currentOpenedReport as IncidentReport).incidentTypeData?.severity}</TextBlock>
                       <Spacer variant="medium" />
-                      <TextBlock type={TextBlockTypeEnum.body}>{t("incidentTypeData")}: {((currentOpenedReport as IncidentReport).incidentTypeData as IncidentCrashData)?.count.map((item) => `${item.type}: ${item.number}`).join(",\n ")}</TextBlock>
+                      <TextBlock type={TextBlockTypeEnum.body}>{t("incidentUserData")}: {((currentOpenedReport as IncidentReport).incidentTypeData as IncidentCrashData)?.count.map((item) => `${item.type}: ${item.number}`).join(",\n ")}</TextBlock>
                       <Spacer variant="medium" />
                     </>
                   )}
                   {(currentOpenedReport as IncidentReport).incidentType == IncidentType.Infrastructure && (
                     <>
-                      <TextBlock type={TextBlockTypeEnum.body}>{t("incidentTypeData")}: {(currentOpenedReport as IncidentReport).incidentTypeData?.severity}</TextBlock>
+                      <TextBlock type={TextBlockTypeEnum.body}>{t("incidentSeverityData")}: {(currentOpenedReport as IncidentReport).incidentTypeData?.severity}</TextBlock>
                       <Spacer variant="medium" />
-                      <TextBlock type={TextBlockTypeEnum.body}>{t("incidentTypeData")}: {((currentOpenedReport as IncidentReport).incidentTypeData as IncidentInfrastructureData)?.reasons.join(",\n ")}</TextBlock>
+                      <TextBlock type={TextBlockTypeEnum.body}>{t("incidentInfrastructureData")}: {((currentOpenedReport as IncidentReport).incidentTypeData as IncidentInfrastructureData)?.reasons.join(",\n ")}</TextBlock>
                       <Spacer variant="medium" />
                     </>
                   )}
                   {(currentOpenedReport as IncidentReport).incidentType == IncidentType.Equipment && (
                     <>
-                      <TextBlock type={TextBlockTypeEnum.body}>{t("incidentTypeData")}: {(currentOpenedReport as IncidentReport).incidentTypeData?.severity}</TextBlock>
+                      <TextBlock type={TextBlockTypeEnum.body}>{t("incidentSeverityData")}: {(currentOpenedReport as IncidentReport).incidentTypeData?.severity}</TextBlock>
                       <Spacer variant="medium" />
-                      <TextBlock type={TextBlockTypeEnum.body}>{t("incidentTypeData")}: {((currentOpenedReport as IncidentReport).incidentTypeData as IncidentEquipmentData)?.reasons.join(",\n ")}</TextBlock>
+                      <TextBlock type={TextBlockTypeEnum.body}>{t("incidentEquipmentData")}: {((currentOpenedReport as IncidentReport).incidentTypeData as IncidentEquipmentData)?.reasons.join(",\n ")}</TextBlock>
                       <Spacer variant="medium" />
                     </>
                   )}

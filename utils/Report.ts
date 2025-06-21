@@ -1,4 +1,4 @@
-import { AuditReport, UserType } from "../type.d";
+import { AuditReport, AuditRoadType, UserType } from "../type.d";
 
 // Helper to format date
 const formatDate = (dateString: string | Date) => {
@@ -450,7 +450,18 @@ export const createAuditReport = (
 
             <div class="location-image-section">
                 <img src="${locationImageUrl}" alt="Location of the Report" onerror="this.src='https://placehold.co/600x200/CCCCCC/333333?text=Location+Image+Error';">
-                <p>Image: Location of the audit, ${auditReportData.auditLocation}</p>
+                <p>Image: Location of the audit, ${auditReportData.auditLocation}</p><br/>
+                <div>
+                    ${auditReportData.auditRoadType == AuditRoadType.Junction ? 
+                        `<p>Latitude: ${auditReportData.junctionLocation?.latitude}</p><br/>
+                         <p>Longitude: ${auditReportData.junctionLocation?.longitude}</p>` :
+                        auditReportData.segmentPath ? 
+                            `<p>Start: { Latitude: ${auditReportData.segmentPath[0].latitude}, Longitude: ${auditReportData.segmentPath[0]?.longitude} }</p><br/>
+                             <p>End: {Latitude: ${auditReportData.segmentPath[auditReportData.segmentPath.length - 1].latitude}, Longitude: ${auditReportData.segmentPath[auditReportData.segmentPath.length - 1].longitude} }` :
+
+                            `<p>No road segment path available</p>`
+                    }
+                </div>
             </div>
 
             <h3 style="font-size: 1.2em; color: #34495e; margin-top: 20px; margin-bottom: 10px;">Pedestrian Questions</h3>

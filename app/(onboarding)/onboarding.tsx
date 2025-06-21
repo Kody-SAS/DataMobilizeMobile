@@ -21,6 +21,24 @@ export default function onboarding() {
         router.replace("/(account)/register")
     }
 
+    const onbonardingData = [
+        {
+            title: t("onboardingTitle1"),
+            description: t("onboardingDescription1"),
+            image: require("../../assets/images/onboarding1.png")
+        },
+        {
+            title: t("onboardingTitle2"),
+            description: t("onboardingDescription2"),
+            image: require("../../assets/images/onboarding2.png")
+        },
+        {
+            title: t("onboardingTitle3"),
+            description: t("onboardingDescription3"),
+            image: require("../../assets/images/onboarding3.png")
+        }
+    ]
+
     return (
         <View style={styles.container}>
             

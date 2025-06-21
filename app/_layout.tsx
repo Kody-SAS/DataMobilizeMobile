@@ -23,8 +23,8 @@ import Toast from 'react-native-toast-message';
 import { useTranslation } from 'react-i18next';
 
 // Prevent the splash screen from auto-hiding before asset loading is complete.
-SplashScreen.preventAutoHideAsync();
-store.dispatch(checkOnboardingStatus())
+//SplashScreen.preventAutoHideAsync();
+// store.dispatch(checkOnboardingStatus())
 
 let persistor = persistStore(store);
 

@@ -5,9 +5,9 @@ export default {
     slug: "DataMobilize",
     version: "1.0.0",
     orientation: "portrait",
-    icon: "./assets/images/icon.png",
+    icon: "./assets/images/applogo.png",
     scheme: "myapp",
-    userInterfaceStyle: "automatic",
+    userInterfaceStyle: "light",
     splash: {
       image: "./assets/images/splash.png",
       resizeMode: "contain",
@@ -19,7 +19,7 @@ export default {
     },
     android: {
       adaptiveIcon: {
-        foregroundImage: "./assets/images/adaptive-icon.png",
+        foregroundImage: "./assets/images/applogo.png",
         backgroundColor: "#ffffff"
       },
       package: "com.monkeyk1n9.datamobilize",
@@ -58,7 +58,7 @@ export default {
       [
         "@react-native-google-signin/google-signin",
         {
-          "iosUrlScheme": process.env.EXPO_PUBLIC_GOOGLE_ID_CLIENT_SCHEME
+          "iosUrlScheme":  "com.googleusercontent.apps.223869268641-6oj8mdp3fdv2a7se0dhjvmogro15qrav"
         }
       ],
       [

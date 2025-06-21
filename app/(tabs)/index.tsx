@@ -113,9 +113,8 @@ export default function HomeScreen() {
 
   return (
     <SafeAreaView style={styles.container}>
-      <Image source={require("../../assets/images/logo.png")} style={styles.logo} resizeMode='contain' />
+      <Image source={require("../../assets/images/splash.png")} style={styles.logo} resizeMode='contain' />
       <ScrollView>
-        <Spacer variant="large" />
         <TextBlock type={TextBlockTypeEnum.h3}>{t("homeHeading")}</TextBlock>
         <Spacer variant="large" />
         <View style={styles.cardContainer}>
@@ -189,12 +188,13 @@ export default function HomeScreen() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    padding: 16,
+    paddingHorizontal: 16,
+    paddingBottom: 16,
     backgroundColor: Colors.light.background.quinary
   },
   logo: {
     width: 140,
-    height: 40
+    height: 100
   },
   cardContainer: {
     flexDirection: "row",

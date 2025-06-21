@@ -3,12 +3,17 @@
     "development": {
       "developmentClient": true,
       "distribution": "internal",
-      "env": { "NODE_ENV": "production", "EXPO_PUBLIC_GOOGLE_ID_CLIENT_SCHEME": "com.googleusercontent.apps.738142339290-rpsjnhduk6fkiu9brn0gbhsbceapadq0" }
+      "env": { "NODE_ENV": "production", "EXPO_PUBLIC_GOOGLE_ID_CLIENT_SCHEME": "com.googleusercontent.apps.223869268641-6oj8mdp3fdv2a7se0dhjvmogro15qrav" }
     },
     "preview": {
+      "android": {
+        "buildType": "apk"
+      },
       "distribution": "internal",
-      "env": { "NODE_ENV": "production", "EXPO_PUBLIC_GOOGLE_ID_CLIENT_SCHEME": "com.googleusercontent.apps.738142339290-rpsjnhduk6fkiu9brn0gbhsbceapadq0" }
+      "env": { "NODE_ENV": "production", "EXPO_PUBLIC_GOOGLE_ID_CLIENT_SCHEME": "com.googleusercontent.apps.223869268641-6oj8mdp3fdv2a7se0dhjvmogro15qrav" }
     },
-    "production": {}
+    "production": {
+      "env": { "NODE_ENV": "production", "EXPO_PUBLIC_GOOGLE_ID_CLIENT_SCHEME": "com.googleusercontent.apps.223869268641-6oj8mdp3fdv2a7se0dhjvmogro15qrav" }
+    }
   }
 }

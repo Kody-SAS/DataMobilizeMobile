@@ -96,6 +96,13 @@ export const homeSlice = createSlice({
         .addCase(createReportAsync.fulfilled, (state, action) => {
             state.reports.push({... action.payload as any});
             state.errorMessage = "";
+            const t = i18n.t;
+            ToastMessage(
+                "success",
+                t("success"),
+                t("successfullyCreatedReport")
+            )
+            
             router.push("/(tabs)/");
         })
         .addCase(createReportAsync.rejected, (state, action) => {

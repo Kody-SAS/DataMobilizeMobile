@@ -44,7 +44,7 @@ export default function App() {
     return <Redirect href="/(onboarding)/onboarding" />
   }
   else{
-    if (isAccountVerified && user && user?.id) { console.log("there is a user", user); return <Redirect href="/(tabs)/" />}
+    if (isAccountVerified && user && user?.id) return <Redirect href="/(tabs)/" />
     else return <Redirect href="/(account)/" />
   }
 }

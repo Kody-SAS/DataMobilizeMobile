@@ -10,7 +10,7 @@ export const isValidReport = (report: SafetyPerceptionReport | QuickReport | Inc
         case ReportType.Quick:
             const quickReport = report as QuickReport;
 
-            return quickReport.roadType && quickReport.conditionType && quickReport.conditionDescription && quickReport.severityLevel && quickReport.reportType && quickReport.images.length > 0;
+            return !!quickReport.roadType && !!quickReport.conditionType && quickReport.conditionDescription.length > 0 && !!quickReport.severityLevel && !!quickReport.reportType && quickReport.images.length > 0;
 
         case ReportType.Incident:
             const incidentReport = report as IncidentReport;
@@ -30,13 +30,13 @@ export const isValidReport = (report: SafetyPerceptionReport | QuickReport | Inc
                 default:
                     break;
             }
-            
-            return incidentReport.roadType && incidentReport.incidentType && isValidIncidentTypeData && incidentReport.reportType && incidentReport.description && incidentReport.images.length > 0;
+
+            return !!incidentReport.roadType && !!incidentReport.incidentType && isValidIncidentTypeData && !!incidentReport.reportType && incidentReport.description.length > 0 && incidentReport.images.length > 0;
 
         case ReportType.Audit:
             const auditReport = report as AuditReport;
             
-            return auditReport.userId && auditReport.auditRoadType && auditReport.reportType && auditReport.author && auditReport.weatherCondition && auditReport.images.length > 0;
+            return auditReport.userId.length > 0 && !!auditReport.auditRoadType && !!auditReport.reportType && auditReport.author.length > 0 && !!auditReport.weatherCondition && auditReport.images.length > 0;
         default:
             return false;
     }
