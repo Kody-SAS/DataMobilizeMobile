@@ -193,8 +193,10 @@ const styles = StyleSheet.create({
     backgroundColor: Colors.light.background.quinary
   },
   logo: {
-    width: 140,
-    height: 100
+    width: 180,
+    height: 130,
+    marginTop: -16,
+    marginBottom: -16,
   },
   cardContainer: {
     flexDirection: "row",
