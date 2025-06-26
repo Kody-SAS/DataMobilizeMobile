@@ -6,10 +6,6 @@ import { CreateUser, ForgotUser, LoginUser, User, VerifyUser } from "../../type"
 import { router } from "expo-router";
 import { GoogleSignin } from '@react-native-google-signin/google-signin';
 
-GoogleSignin.configure({
-  webClientId: process.env.EXPO_PUBLIC_GOOGLE_ID_CLIENT, // from Google Console
-});
-
 const initialState = {
     createUser: {} as CreateUser,
     user: null as User | null,
@@ -264,6 +260,11 @@ export const changePassword = createAsyncThunk("account/changePassword", async({
 
 export const signInWithGoogle = createAsyncThunk("account/signInWithGoogle", async(_, thunkAPI) => {
     try {
+        GoogleSignin.configure({
+            offlineAccess: true,
+            
+            webClientId: process.env.EXPO_PUBLIC_GOOGLE_ID_CLIENT, // from Google Console,
+        });
         await GoogleSignin.hasPlayServices();
         const userInfo = await GoogleSignin.signIn();
         const idToken = (await GoogleSignin.getTokens()).idToken;
@@ -386,7 +387,15 @@ export const accountSlice = createSlice({
         .addCase(loginUser.fulfilled, (state, action) => {
             state.user = {... action.payload as any};
             state.isAccountVerified = true;
-            router.push("/(tabs)/");
+
+            if (!state.user?.isVerified) {
+                const t = i18n.t;
+                ToastMessage("success", t("success"), t("accountNotVerified"));
+                const data = JSON.stringify({createUser: state.createUser, user: state.user});
+                router.push({pathname: "/(account)/verify", params: {data}});
+                return;
+            }
+            router.replace("/(tabs)/");
         })
         .addCase(loginUser.rejected, (state, action) => {
             const t = i18n.t;
@@ -418,17 +427,19 @@ export const accountSlice = createSlice({
             if (action.payload == undefined) return;
             state.user = action.payload as User | null;
             state.isAccountVerified = true;
-            console.log("ahahah")
             router.push("/(tabs)/");
         })
         .addCase(signInWithGoogle.rejected, (state, action) => {
             const t = i18n.t;
             state.user = null;
-            ToastMessage(
-                "error",
-                t("error"),
-                t("failedToLogin")
-            )
+
+            ToastMessage("info", t("info"), t("comingSoon"));
+            return;
+            // ToastMessage(
+            //     "error",
+            //     t("error"),
+            //     t("failedToLogin")
+            // )
         })
     },
 });
