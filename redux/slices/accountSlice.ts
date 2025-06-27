@@ -301,7 +301,7 @@ export const accountSlice = createSlice({
         },
         setUser: (state, action) => {
             //state.isOnboarded = true
-            console.log("payload", action.payload);
+            //console.log("payload", action.payload);
             state.user = action.payload as User | null;
         },
         setIsGuess: (state, action) => {

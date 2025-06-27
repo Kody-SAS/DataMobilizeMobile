@@ -36,7 +36,7 @@ export default function onboarding() {
     }
 
     const finishOnboarding = () => {
-        dispatch(setOnboardingStatus());
+        dispatch(setOnboardingStatus(true));
 
         router.replace("/(account)/register")
     }

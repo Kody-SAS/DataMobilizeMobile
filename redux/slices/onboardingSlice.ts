@@ -16,9 +16,9 @@ export const onboardingSlice = createSlice({
     name: 'onboarding',
     initialState,
     reducers: {
-        setOnboardingStatus: (state) => {
+        setOnboardingStatus: (state, action) => {
             //state.isOnboarded = false;
-            state.isOnboarded = true;
+            state.isOnboarded = action.payload;
             //state.isOnboarded = !state.isOnboarded //for dev purpose
         }
     },
