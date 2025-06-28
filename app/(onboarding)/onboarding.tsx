@@ -10,7 +10,7 @@ import { setOnboardingStatus } from "../../redux/slices/onboardingSlice";
 import { router } from "expo-router";
 import { useRef, useState } from "react";
 import { SafeAreaView } from "react-native-safe-area-context";
-import AsyncStorage from "@react-native-async-storage/async-storage/lib/typescript/AsyncStorage";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 
 export default function onboarding() {
     const [currentPage, setCurrentPage] = useState<number>(0);
@@ -38,7 +38,7 @@ export default function onboarding() {
 
     const finishOnboarding = async () => {
         dispatch(setOnboardingStatus(true));
-        await AsyncStorage.setItem("onboardingStatus", "true");
+        AsyncStorage.setItem("onboardingStatus", JSON.stringify(true)).then(() => console.log("Onboarding status saved"));
         router.replace("/(account)/register")
     }
 
