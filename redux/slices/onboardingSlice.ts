@@ -25,7 +25,7 @@ export const onboardingSlice = createSlice({
     extraReducers: (builder) => {
         builder
         .addCase(checkOnboardingStatus.fulfilled, (state, action) => {
-            state.isOnboarded = action.payload;
+            state.isOnboarded = action.payload as boolean;
         })
     },
 });

@@ -14,6 +14,12 @@ const initialState = {
     isGuess: false,
 }
 
+export const checkIfUserExists = createAsyncThunk("account/checkIfUserExists", async () => {
+    const res = await AsyncStorage.getItem("user")
+
+    return res != null ? JSON.parse(res) : null;
+});
+
 export const getUser = createAsyncThunk("account/getUser", async (userId: string, thunkAPI) => {
     try {
         const response = await fetch(process.env.EXPO_PUBLIC_API_URL + `/users/${userId}`, {
@@ -303,6 +309,8 @@ export const accountSlice = createSlice({
             //state.isOnboarded = true
             //console.log("payload", action.payload);
             state.user = action.payload as User | null;
+            // Save user to AsyncStorage
+            AsyncStorage.setItem("user", JSON.stringify(action.payload as User | null));
         },
         setIsGuess: (state, action) => {
             state.isGuess = action.payload as boolean;
@@ -313,6 +321,11 @@ export const accountSlice = createSlice({
     },
     extraReducers: (builder) => {
         builder
+        .addCase(checkIfUserExists.fulfilled, (state, action) => {
+            state.user = action.payload as User | null;
+            AsyncStorage.setItem("user", JSON.stringify(state.user)).then(() => console.log("user saved to AsyncStorage"));
+            console.log("user exists", JSON.stringify(state.user));
+        })
         .addCase(sendValidationCode.fulfilled, (state, action) => {
             const t = i18n.t;
 
@@ -340,6 +353,7 @@ export const accountSlice = createSlice({
 
             state.isAccountVerified = true;
             state.user = {... action.payload as any};
+            AsyncStorage.setItem("user", JSON.stringify(state.user)).then(() => console.log("user saved to AsyncStorage"));
             
             ToastMessage("success", t("success"), t("accountCreated"));
             
@@ -355,6 +369,7 @@ export const accountSlice = createSlice({
         })
         .addCase(updateUser.fulfilled, (state, action) => {
             state.user = {... action.payload as any};
+            AsyncStorage.setItem("user", JSON.stringify(state.user)).then(() => console.log("user saved to AsyncStorage"));
         })
         .addCase(sendForgotPasswordCode.fulfilled, (state, action) => {
             const t = i18n.t;
@@ -395,6 +410,8 @@ export const accountSlice = createSlice({
                 router.push({pathname: "/(account)/verify", params: {data}});
                 return;
             }
+            // Save user to AsyncStorage
+            AsyncStorage.setItem("user", JSON.stringify(state.user)).then(() => console.log("user saved to AsyncStorage"));
             router.replace("/(tabs)/");
         })
         .addCase(loginUser.rejected, (state, action) => {
@@ -427,11 +444,13 @@ export const accountSlice = createSlice({
             if (action.payload == undefined) return;
             state.user = action.payload as User | null;
             state.isAccountVerified = true;
+            AsyncStorage.setItem("user", JSON.stringify(state.user)).then(() => console.log("user saved to AsyncStorage"));
             router.push("/(tabs)/");
         })
         .addCase(signInWithGoogle.rejected, (state, action) => {
             const t = i18n.t;
             state.user = null;
+            AsyncStorage.setItem("user", JSON.stringify(state.user)).then(() => console.log("user saved to AsyncStorage"));
 
             ToastMessage("info", t("info"), t("comingSoon"));
             return;

@@ -21,10 +21,12 @@ import { ActivityIndicator } from 'react-native-paper';
 import React from 'react';
 import Toast from 'react-native-toast-message';
 import { useTranslation } from 'react-i18next';
+import { checkIfUserExists } from '../redux/slices/accountSlice';
 
 // Prevent the splash screen from auto-hiding before asset loading is complete.
 //SplashScreen.preventAutoHideAsync();
-// store.dispatch(checkOnboardingStatus())
+store.dispatch(checkOnboardingStatus())
+store.dispatch(checkIfUserExists())
 
 let persistor = persistStore(store);
 

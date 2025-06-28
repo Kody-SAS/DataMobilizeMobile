@@ -15,6 +15,7 @@ import ToastMessage from "../../utils/Toast";
 import { useNetInfo } from "@react-native-community/netinfo";
 import { router } from "expo-router";
 import { getLocales } from "expo-localization";
+import { setOnboardingStatus } from "../../redux/slices/onboardingSlice";
 
 
 export default function Register() {
@@ -77,6 +78,7 @@ export default function Register() {
 
     useEffect(() => {
         setLocalisation(getLocales()[0].languageCode ?? "fr"); // get the first language code
+        dispatch(setOnboardingStatus(true));
     }, [])
 
     return (

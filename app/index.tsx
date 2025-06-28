@@ -35,7 +35,7 @@ export default function App() {
     SplashScreen.hideAsync();
 
     // for dev purpose
-    dispatch(setOnboardingStatus(true));
+    // dispatch(setOnboardingStatus(true));
   }, [])
 
   if (!fontsLoaded) return null;

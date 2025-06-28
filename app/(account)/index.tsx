@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { View, StyleSheet, Platform, Image, ScrollView } from "react-native";
 import { Colors } from "../../constants/Colors";
 import { SafeAreaView } from "react-native-safe-area-context";
@@ -15,6 +15,7 @@ import ToastMessage from "../../utils/Toast";
 import { useNetInfo } from "@react-native-community/netinfo";
 import { router } from "expo-router";
 import { GoogleSignin } from '@react-native-google-signin/google-signin';
+import { setOnboardingStatus } from "../../redux/slices/onboardingSlice";
 
 export default function Login() {
     const [email, setEmail] = useState<string>("");
@@ -63,6 +64,10 @@ export default function Login() {
     const handleNavigationToForgot = () => {
         router.push("/(account)/forgot");
     }
+
+    useEffect(() => {
+        dispatch(setOnboardingStatus(true));
+    }, []);
 
     return (
         <SafeAreaView style={styles.container}>
