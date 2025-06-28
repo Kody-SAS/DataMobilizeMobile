@@ -9,7 +9,7 @@ const initialState = {
 export const checkOnboardingStatus = createAsyncThunk("onboarding/checkOnboardingStatus", async () => {
     const res = await AsyncStorage.getItem("onboardingStatus")
 
-    return res != null ? JSON.parse(res) : false
+    return res != null ? true : false
 })
 
 export const onboardingSlice = createSlice({
@@ -19,6 +19,7 @@ export const onboardingSlice = createSlice({
         setOnboardingStatus: (state, action) => {
             //state.isOnboarded = false;
             state.isOnboarded = action.payload;
+            AsyncStorage.setItem("onboardingStatus", JSON.stringify(true)).then(() => console.log("Onboarding status saved"));
             //state.isOnboarded = !state.isOnboarded //for dev purpose
         }
     },

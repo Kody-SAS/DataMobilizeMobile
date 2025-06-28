@@ -38,7 +38,6 @@ export default function onboarding() {
 
     const finishOnboarding = async () => {
         dispatch(setOnboardingStatus(true));
-        AsyncStorage.setItem("onboardingStatus", JSON.stringify(true)).then(() => console.log("Onboarding status saved"));
         router.replace("/(account)/register")
     }
 
