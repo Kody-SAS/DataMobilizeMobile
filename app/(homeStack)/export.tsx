@@ -132,45 +132,37 @@ export default function Export() {
         return questionsData.map((data) => {
             switch(data.type) {
                 case UserType.Pedestrian: {
-                    return {
-                        type: data.type,
-                        questions: data.questions.map((item, index) => ({
-                            ...item,
-                            selected: parsedReport.answers.pedestrian[index]
-                        }))
-                    }
+                    return data.questions.map((item, index) => ({
+                        ...item,
+                        selected: parsedReport.answers.pedestrian[index],
+                        type: data.type
+                    }))
                 }
                 case UserType.Cyclist: {
-                    return {
-                        type: data.type,
-                        questions: data.questions.map((item, index) => ({
-                            ...item,
-                            selected: parsedReport.answers.cyclist[index]
-                        }))
-                    }
+                    return data.questions.map((item, index) => ({
+                        ...item,
+                        selected: parsedReport.answers.cyclist[index],
+                        type: data.type
+                    }))
                 }
                 case UserType.Motocyclist: {
-                    return {
-                        type: data.type,
-                        questions: data.questions.map((item, index) => ({
-                            ...item,
-                            selected: parsedReport.answers.motocyclist[index]
-                        }))
-                    }
+                    return data.questions.map((item, index) => ({
+                        ...item,
+                        selected: parsedReport.answers.motocyclist[index],
+                        type: data.type
+                    }))
                 }
                 case UserType.Car: {
-                    return {
-                        type: data.type,
-                        questions: data.questions.map((item, index) => ({
-                            ...item,
-                            selected: parsedReport.answers.car[index]
-                        }))
-                    }
+                    return data.questions.map((item, index) => ({
+                        ...item,
+                        selected: parsedReport.answers.car[index],
+                        type: data.type
+                    }))
                 }
                 default:
                     return [];
             }
-        });
+        }).flat();
     }
 
     return (
