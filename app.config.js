@@ -4,7 +4,7 @@ export default {
   expo: {
     name: "Data Mobilize",
     slug: "DataMobilize",
-    version: "1.0.7",
+    version: "1.0.8",
     orientation: "portrait",
     icon: "./assets/images/applogo.png",
     scheme: "myapp",
@@ -23,7 +23,7 @@ export default {
         foregroundImage: "./assets/images/applogo.png",
         backgroundColor: "#ffffff"
       },
-      versionCode: 8,
+      versionCode: 9,
       package: "com.kody.datamobilize",
       config: {
         googleMaps: {

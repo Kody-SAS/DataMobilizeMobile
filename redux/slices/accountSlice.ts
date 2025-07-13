@@ -273,13 +273,12 @@ export const signInWithGoogle = createAsyncThunk("account/signInWithGoogle", asy
         });
         await GoogleSignin.hasPlayServices();
         const userInfo = await GoogleSignin.signIn();
-        const idToken = (await GoogleSignin.getTokens()).idToken;
-
+        
         // Send the ID token to your Node.js backend
         const response: Response = await fetch(process.env.EXPO_PUBLIC_API_URL + `/users/auth/google`, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ idToken }),
+            body: JSON.stringify(userInfo.data?.user),
         });
 
         if(response.ok) {
