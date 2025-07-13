@@ -222,6 +222,10 @@
     "onboardingDescription2": "Access emergency contacts and nearby services instantly. Enhance your safety by sharing your location with others.",
     "onboardingTitle3": "Contribute to Road Safety",
     "onboardingDescription3": "Report incidents and road issues to help improve safety. Join the community effort in making roads safer for everyone.",
-    "accountNotVerified": "Your account is not verified"
+    "accountNotVerified": "Your account is not verified",
+    "newPhoto": "New photo",
+    "howDoYouWantToAddPhoto": "How do you want to add a photo?",
+    "camera": "Camera",
+    "gallery": "Gallery"
   }
 }

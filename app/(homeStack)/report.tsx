@@ -430,25 +430,69 @@ export default function Report() {
         await Location.stopLocationUpdatesAsync(LOCATION_TRACKING_TASK);
     }
 
-    const handleAddImage = async () => {
-        // No permissions request is necessary for launching the image library
-        let result = await ImagePicker.launchImageLibraryAsync({
-            mediaTypes: ['images'],
-            allowsEditing: false,
-            quality: 0.3,
-            base64: true
-        });
+    const handleAddImage = () => {
+        Alert.alert(
+            t("newPhoto"),
+            t("howDoYouWantToAddPhoto"),
+            [
+                {
+                    text: t("cancel"),
+                    onPress: () => {},
+                    style: 'cancel'
+                },
+                {
+                    text: t("camera"),
+                    onPress: async () => {
+                        let result = await ImagePicker.launchCameraAsync({
+                            mediaTypes: ['images'],
+                            allowsEditing: true,
+                            quality: 0.3,
+                            base64: true,
+                        });
 
-        console.log(result);
+                        console.log(result);
 
-        if (!result.canceled) {
-            const existingImage = reportImages.find(obj => obj.uri == result.assets[0].uri)
+                        if (!result.canceled) {
+                            const existingImage = reportImages.find(obj => obj.uri == result.assets[0].uri)
 
-            if (!existingImage) {
-                setReportImages([...reportImages, {uri: result.assets[0].uri, base64: result.assets[0].base64!}]);
+                            if (!existingImage) {
+                                setReportImages([...reportImages, {uri: result.assets[0].uri, base64: result.assets[0].base64!}]);
+                            }
+                            
+                        }
+                    },
+                    style: 'destructive',
+                },
+                {
+                    text: t("gallery"),
+                    onPress: async () => {
+                        // No permissions request is necessary for launching the image library
+                        let result = await ImagePicker.launchImageLibraryAsync({
+                            mediaTypes: ['images'],
+                            allowsEditing: true,
+                            quality: 0.3,
+                            base64: true,
+                        });
+
+                        console.log(result);
+
+                        if (!result.canceled) {
+                            const existingImage = reportImages.find(obj => obj.uri == result.assets[0].uri)
+
+                            if (!existingImage) {
+                                setReportImages([...reportImages, {uri: result.assets[0].uri, base64: result.assets[0].base64!}]);
+                            }
+                            
+                        }
+                    },
+                    style: 'destructive',
+                }
+            ],
+            {
+                cancelable: true
             }
-            
-        }
+        )
+        
     };
 
     const handleDeleteImage = (selectedImage: {uri: string; base64: string;}) => {
