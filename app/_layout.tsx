@@ -22,15 +22,11 @@ import React from 'react';
 import Toast from 'react-native-toast-message';
 import { useTranslation } from 'react-i18next';
 import { checkIfUserExists } from '../redux/slices/accountSlice';
-import { GoogleSignin } from '@react-native-google-signin/google-signin';
 
 // Prevent the splash screen from auto-hiding before asset loading is complete.
 //SplashScreen.preventAutoHideAsync();
 store.dispatch(checkOnboardingStatus())
 store.dispatch(checkIfUserExists())
-GoogleSignin.configure({
-  webClientId: process.env.EXPO_PUBLIC_GOOGLE_ID_CLIENT, // from Google Console,
-});
 
 let persistor = persistStore(store);
 

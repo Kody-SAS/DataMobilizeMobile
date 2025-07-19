@@ -77,7 +77,7 @@ export const sendValidationCode = createAsyncThunk("account/sendValidationCode",
 
 export const validateCode = createAsyncThunk("account/validateCode", async(verifyUser: VerifyUser, thunkAPI) => {
     try {
-        const response: Response = await fetch(process.env.EXPO_PUBLIC_API_URL + `/users/verify/${verifyUser.userId}`, {
+        const response = await fetch(process.env.EXPO_PUBLIC_API_URL + `/users/verify/${verifyUser.userId}`, {
             method: "POST",
             headers: {
                 'Accept': 'application/json',
@@ -132,7 +132,7 @@ export const loginUser = createAsyncThunk("account/loginUser", async(loginUser: 
 
 export const updateUser = createAsyncThunk("account/updateUser", async(user: User, thunkAPI) => {
     try {
-        const response: Response = await fetch(process.env.EXPO_PUBLIC_API_URL + `/users/${user.id}`, {
+        const response = await fetch(process.env.EXPO_PUBLIC_API_URL + `/users/${user.id}`, {
             method: "PUT",
             headers: {
                 'Accept': 'application/json',
@@ -159,7 +159,7 @@ export const updateUser = createAsyncThunk("account/updateUser", async(user: Use
 
 export const deleteUser = createAsyncThunk("account/deleteUser", async(user: User, thunkAPI) => {
     try {
-        const response: Response = await fetch(process.env.EXPO_PUBLIC_API_URL + `/users/${user.id}`, {
+        const response = await fetch(process.env.EXPO_PUBLIC_API_URL + `/users/${user.id}`, {
             method: "DELETE",
             headers: {
                 'Accept': 'application/json',
@@ -186,7 +186,7 @@ export const deleteUser = createAsyncThunk("account/deleteUser", async(user: Use
 
 export const sendForgotPasswordCode = createAsyncThunk("account/sendForgotPasswordCode", async(email: string, thunkAPI) => {
     try {
-        const response: Response = await fetch(process.env.EXPO_PUBLIC_API_URL + "/users/requestpasswordreset", {
+        const response = await fetch(process.env.EXPO_PUBLIC_API_URL + "/users/requestpasswordreset", {
             method: "POST",
             headers: {
                 'Accept': 'application/json',
@@ -213,7 +213,7 @@ export const sendForgotPasswordCode = createAsyncThunk("account/sendForgotPasswo
 
 export const validateForgotPasswordCode = createAsyncThunk("account/validateForgotPasswordCode", async({userId, code}: {userId: string, code: string}, thunkAPI) => {
     try {
-        const response: Response = await fetch(process.env.EXPO_PUBLIC_API_URL + `/users/${userId}/validcodeforpasswordreset`, {
+        const response = await fetch(process.env.EXPO_PUBLIC_API_URL + `/users/${userId}/validcodeforpasswordreset`, {
             method: "POST",
             headers: {
                 'Accept': 'application/json',
@@ -238,7 +238,7 @@ export const validateForgotPasswordCode = createAsyncThunk("account/validateForg
 
 export const changePassword = createAsyncThunk("account/changePassword", async({userId, password}: {userId: string, password: string}, thunkAPI) => {
     try {
-        const response: Response = await fetch(process.env.EXPO_PUBLIC_API_URL + `/users/${userId}/resetpassword`, {
+        const response = await fetch(process.env.EXPO_PUBLIC_API_URL + `/users/${userId}/resetpassword`, {
             method: "PUT",
             headers: {
                 'Accept': 'application/json',
@@ -267,20 +267,24 @@ export const changePassword = createAsyncThunk("account/changePassword", async({
 export const signInWithGoogle = createAsyncThunk("account/signInWithGoogle", async(_, thunkAPI) => {
     try {
         GoogleSignin.configure({
-            offlineAccess: true,
-            
             webClientId: process.env.EXPO_PUBLIC_GOOGLE_ID_CLIENT, // from Google Console,
         });
         await GoogleSignin.hasPlayServices();
         const userInfo = await GoogleSignin.signIn();
-        
-        // Send the ID token to your Node.js backend
-        const response: Response = await fetch(process.env.EXPO_PUBLIC_API_URL + `/users/auth/google`, {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify(userInfo.data?.user),
-        });
 
+        // Send the ID token to your Node.js backend
+        const response = await fetch(process.env.EXPO_PUBLIC_API_URL + "/users/auth/google", {
+            method: "POST", 
+            headers: {
+                'Accept': 'application/json',
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+                name: userInfo.data?.user.name,
+                email: userInfo.data?.user.email
+            })
+        })
+        
         if(response.ok) {
             const json = await response.json();
             console.log(json);
